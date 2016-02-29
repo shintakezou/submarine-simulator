@@ -38,31 +38,7 @@ Simulation::Simulation(QObject *parent) :
     m_time(0)
 {
     m_fluid = Fluid::makeDefault(this);
-    m_submarine = new Submarine(this);
-
-    m_submarine->setLength(2.9);
-    m_submarine->setWidth(0.6);
-    m_submarine->setHeight(0.7);
-    m_submarine->setMass(140);
-    m_submarine->setDragCoefficient(0.04);
-    m_submarine->setLiftCoefficientSlope(M_PI / 2.);
-    m_submarine->setSpinningDragCoefficient(2);
-    m_submarine->setBuoyancyPosition(QVector3D(0, 0.35, 0));
-    m_submarine->setWeightPosition(QVector3D());
-
-    m_submarine->setHasHorizontalFins(true);
-    m_submarine->setHorizontalFinsLiftCoefficientSlope(M_PI);
-    m_submarine->setHorizontalFinsArea(0.025);
-    m_submarine->setHorizontalFinsDragCoefficient(0.03);
-    m_submarine->setHorizontalFinsPosition(0);
-    m_submarine->setHorizontalFinsAspectRatio(3);
-
-    m_submarine->setHasVerticalFins(true);
-    m_submarine->setVerticalFinsArea(0.025);
-    m_submarine->setVerticalFinsLiftCoefficientSlope(M_PI);
-    m_submarine->setVerticalFinsDragCoefficient(0.03);
-    m_submarine->setVerticalFinsPosition(0);
-    m_submarine->setHorizontalFinsAspectRatio(3);
+    m_submarine = Submarine::makeDefault(this);
 
     m_collisionConfiguration = new btDefaultCollisionConfiguration();
     m_dispatcher = new btCollisionDispatcher(m_collisionConfiguration);

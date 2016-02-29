@@ -27,6 +27,8 @@ public:
     explicit Submarine(QObject *parent = 0);
     ~Submarine();
 
+    static Submarine *makeDefault(QObject *parent = 0);
+
     Q_PROPERTY(double length READ length WRITE setLength)
     Q_PROPERTY(double width READ width WRITE setWidth)
     Q_PROPERTY(double height READ height WRITE setHeight)

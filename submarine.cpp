@@ -92,6 +92,36 @@ Submarine::~Submarine() {
     }
 }
 
+Submarine *Submarine::makeDefault(QObject *parent) {
+    Submarine *submarine = new Submarine(parent);
+
+    submarine->setLength(2.9);
+    submarine->setWidth(0.6);
+    submarine->setHeight(0.7);
+    submarine->setMass(140);
+    submarine->setDragCoefficient(0.04);
+    submarine->setLiftCoefficientSlope(M_PI / 2.);
+    submarine->setSpinningDragCoefficient(2);
+    submarine->setBuoyancyPosition(QVector3D(0, 0.35, 0));
+    submarine->setWeightPosition(QVector3D());
+
+    submarine->setHasHorizontalFins(true);
+    submarine->setHorizontalFinsLiftCoefficientSlope(M_PI);
+    submarine->setHorizontalFinsArea(0.025);
+    submarine->setHorizontalFinsDragCoefficient(0.03);
+    submarine->setHorizontalFinsPosition(0);
+    submarine->setHorizontalFinsAspectRatio(3);
+
+    submarine->setHasVerticalFins(true);
+    submarine->setVerticalFinsArea(0.025);
+    submarine->setVerticalFinsLiftCoefficientSlope(M_PI);
+    submarine->setVerticalFinsDragCoefficient(0.03);
+    submarine->setVerticalFinsPosition(0);
+    submarine->setHorizontalFinsAspectRatio(3);
+
+    return submarine;
+}
+
 double Submarine::crossSectionalArea() const {
     return M_PI * m_width * m_height;
 }

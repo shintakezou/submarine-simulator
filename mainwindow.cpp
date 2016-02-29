@@ -15,7 +15,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    m_simulation = new Simulation(this);
+    m_simulation = new Simulation();
     m_simulation->show();
 
     QWidget *container = QWidget::createWindowContainer(m_simulation, this);
@@ -50,6 +50,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
+    delete m_simulation;
     delete ui;
 }
 

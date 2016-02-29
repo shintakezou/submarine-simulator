@@ -23,7 +23,7 @@ class Simulation : public Qt3D::QWindow
     Q_OBJECT
 
 public:
-    explicit Simulation(QObject *parent = 0);
+    explicit Simulation();
     ~Simulation();
 
     Fluid *fluid() const;

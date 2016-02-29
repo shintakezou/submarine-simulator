@@ -33,7 +33,7 @@
 
 #include "simulation.h"
 
-Simulation::Simulation(QObject *parent) :
+Simulation::Simulation() :
     Qt3D::QWindow(),
     m_time(0)
 {

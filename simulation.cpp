@@ -38,7 +38,7 @@ Simulation::Simulation(QObject *parent) :
     m_time(0)
 {
     m_fluid = Fluid::makeDefault(this);
-    m_submarine = new Submarine(m_fluid, this);
+    m_submarine = new Submarine(this);
 
     m_submarine->setLength(2.9);
     m_submarine->setWidth(0.6);
@@ -125,14 +125,14 @@ Simulation::~Simulation() {
     delete m_collisionConfiguration;
 }
 
-void Simulation::step() {
-    float dt = 1.f / 60.f;
+Fluid *Simulation::fluid() const
+{
+    return m_fluid;
+}
 
-    m_world->stepSimulation(dt, 10);
-
-    m_submarine->update(defaultCamera());
-
-    m_time += dt;
+void Simulation::setFluid(Fluid *fluid)
+{
+    m_fluid = fluid;
 }
 
 Submarine *Simulation::submarine() const
@@ -147,4 +147,14 @@ void Simulation::setSubmarine(Submarine *submarine)
 
 double Simulation::time() const {
     return m_time;
+}
+
+void Simulation::step() {
+    float dt = 1.f / 60.f;
+
+    m_world->stepSimulation(dt, 10);
+
+    m_submarine->update(m_fluid, defaultCamera());
+
+    m_time += dt;
 }

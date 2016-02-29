@@ -24,7 +24,7 @@ class Submarine : public QObject
     Q_OBJECT
 
 public:
-    explicit Submarine(Fluid *fluid, QObject *parent = 0);
+    explicit Submarine(QObject *parent = 0);
     ~Submarine();
 
     Q_PROPERTY(double length READ length WRITE setLength)
@@ -69,7 +69,7 @@ public:
     void addToWorld(btDynamicsWorld *world);
     void addToScene(Qt3D::QEntity *scene);
 
-    void update(Qt3D::QCamera *camera);
+    void update(Fluid *fluid, Qt3D::QCamera *camera);
 
     double length() const;
     void setLength(double length);
@@ -142,24 +142,22 @@ private:
     void applyWeight();
     void applyBuoyancy();
     void applyThrust();
-    void applyDrag();
-    void applyPitchLift();
-    void applyYawLift();
-    void applyLift();
-    void applyPitchSpinningDrag();
-    void applyYawSpinningDrag();
-    void applySpinningDrag();
-    void applyHorizontalFinsLift();
-    void applyVerticalFinsLift();
-    void applyFinsLift();
-    void applyHorizontalFinsDrag();
-    void applyVerticalFinsDrag();
-    void applyFinsDrag();
-    void applyHorizontalFinsDamping();
-    void applyVerticalFinsDamping();
-    void applyFinsDamping();
-
-    Fluid *m_fluid;
+    void applyDrag(Fluid *fluid);
+    void applyPitchLift(Fluid *fluid);
+    void applyYawLift(Fluid *fluid);
+    void applyLift(Fluid *fluid);
+    void applyPitchSpinningDrag(Fluid *fluid);
+    void applyYawSpinningDrag(Fluid *fluid);
+    void applySpinningDrag(Fluid *fluid);
+    void applyHorizontalFinsLift(Fluid *fluid);
+    void applyVerticalFinsLift(Fluid *fluid);
+    void applyFinsLift(Fluid *fluid);
+    void applyHorizontalFinsDrag(Fluid *fluid);
+    void applyVerticalFinsDrag(Fluid *fluid);
+    void applyFinsDrag(Fluid *fluid);
+    void applyHorizontalFinsDamping(Fluid *fluid);
+    void applyVerticalFinsDamping(Fluid *fluid);
+    void applyFinsDamping(Fluid *fluid);
 
     btCapsuleShape *m_shape;
     btRigidBody *m_body;

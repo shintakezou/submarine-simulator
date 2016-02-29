@@ -54,9 +54,8 @@ float wrapAngle(float angle) {
     return angle;
 }
 
-Submarine::Submarine(Fluid *fluid, QObject *parent) :
+Submarine::Submarine(QObject *parent) :
     QObject(parent),
-    m_fluid(fluid),
     m_shape(0),
     m_body(0),
     m_entity(0),
@@ -269,7 +268,7 @@ void Submarine::addToScene(Qt3D::QEntity *scene) {
     m_forceVerticalFinsDrag->addToScene(scene);
 }
 
-void Submarine::update(Qt3D::QCamera *camera) {
+void Submarine::update(Fluid *fluid, Qt3D::QCamera *camera) {
     btMotionState *motionState = m_body->getMotionState();
 
     btTransform transform;
@@ -284,7 +283,7 @@ void Submarine::update(Qt3D::QCamera *camera) {
     m_rotateTransform->setAxis(QVector3D(a.x(), a.y(), a.z()));
     m_rotateTransform->setAngleRad(q.getAngle());
 
-    qDebug() << position;
+    //qDebug() << position;
 
     camera->lookAt()->setPosition(position + QVector3D(2, 4, 10));
     camera->lookAt()->setViewCenter(position);
@@ -292,12 +291,12 @@ void Submarine::update(Qt3D::QCamera *camera) {
     applyWeight();
     applyBuoyancy();
     applyThrust();
-    applyDrag();
-    //applyLift();
-    //applySpinningDrag();
-    //applyFinsLift();
-    //applyFinsDrag();
-    //applyFinsDamping();
+    applyDrag(fluid);
+    //applyLift(fluid);
+    //applySpinningDrag(fluid);
+    //applyFinsLift(fluid);
+    //applyFinsDrag(fluid);
+    //applyFinsDamping(fluid);
 }
 
 double Submarine::length() const
@@ -540,13 +539,13 @@ void Submarine::applyThrust() {
     m_forceThrust->update(force, position);
 }
 
-void Submarine::applyDrag() {
+void Submarine::applyDrag(Fluid *fluid) {
     btVector3 velocity = m_body->getLinearVelocity();
     if (velocity.length() == 0) {
         return;  // can't be normalised
     }
 
-    float value = 0.5f * m_fluid->density() * crossSectionalArea() * m_dragCoefficient * velocity.length2();
+    float value = 0.5f * fluid->density() * crossSectionalArea() * m_dragCoefficient * velocity.length2();
     btVector3 force = velocity.normalized() * -value;
 
     btVector3 position = m_body->getCenterOfMassPosition();
@@ -570,12 +569,12 @@ QVector2D calculateLift(float fluidDensity, float angleOfAttack, float liftCoeff
     return result * value;
 }
 
-void Submarine::applyPitchLift() {
+void Submarine::applyPitchLift(Fluid *fluid) {
     QVector2D velocity = pitchVelocity();
     float angleOfAttack = pitchAngleOfAttack();
 
     if (qAbs(angleOfAttack) < qDegreesToRadians(15.)) {
-        QVector2D lift = calculateLift(m_fluid->density(), angleOfAttack, m_liftCoefficientSlope, crossSectionalArea(), velocity);
+        QVector2D lift = calculateLift(fluid->density(), angleOfAttack, m_liftCoefficientSlope, crossSectionalArea(), velocity);
 
         btVector3 position = m_body->getCenterOfMassTransform() * qtVector2btVector(m_liftPosition);
 
@@ -586,12 +585,12 @@ void Submarine::applyPitchLift() {
     }
 }
 
-void Submarine::applyYawLift() {
+void Submarine::applyYawLift(Fluid *fluid) {
     QVector2D velocity = yawVelocity();
     float angleOfAttack = yawAngleOfAttack();
 
     if (qAbs(angleOfAttack) < qDegreesToRadians(15.)) {
-        QVector2D lift = calculateLift(m_fluid->density(), angleOfAttack, m_liftCoefficientSlope, crossSectionalArea(), velocity);
+        QVector2D lift = calculateLift(fluid->density(), angleOfAttack, m_liftCoefficientSlope, crossSectionalArea(), velocity);
 
         btVector3 position = m_body->getCenterOfMassTransform() * qtVector2btVector(m_liftPosition);
 
@@ -602,9 +601,9 @@ void Submarine::applyYawLift() {
     }
 }
 
-void Submarine::applyLift() {
-    applyPitchLift();
-    applyYawLift();
+void Submarine::applyLift(Fluid *fluid) {
+    applyPitchLift(fluid);
+    applyYawLift(fluid);
 }
 
 float calculateSpinningDrag(float fluidDensity, float area, float spinningDragCoefficient, float angularVelocity, float length) {
@@ -619,33 +618,33 @@ float calculateSpinningDrag(float fluidDensity, float area, float spinningDragCo
     return drag;
 }
 
-void Submarine::applyPitchSpinningDrag() {
+void Submarine::applyPitchSpinningDrag(Fluid *fluid) {
     float angularVelocity = m_body->getAngularVelocity().z();
-    float drag = calculateSpinningDrag(m_fluid->density(), crossSectionalArea(), m_spinningDragCoefficient, angularVelocity, m_length);
+    float drag = calculateSpinningDrag(fluid->density(), crossSectionalArea(), m_spinningDragCoefficient, angularVelocity, m_length);
     m_body->applyTorque(btVector3(0, 0, drag));
 }
 
-void Submarine::applyYawSpinningDrag() {
+void Submarine::applyYawSpinningDrag(Fluid *fluid) {
     float angularVelocity = m_body->getAngularVelocity().y();
-    float drag = calculateSpinningDrag(m_fluid->density(), crossSectionalArea(), m_spinningDragCoefficient, angularVelocity, m_length);
+    float drag = calculateSpinningDrag(fluid->density(), crossSectionalArea(), m_spinningDragCoefficient, angularVelocity, m_length);
     m_body->applyTorque(btVector3(0, 0, drag));
 }
 
-void Submarine::applySpinningDrag() {
-    applyPitchSpinningDrag();
-    applyYawSpinningDrag();
+void Submarine::applySpinningDrag(Fluid *fluid) {
+    applyPitchSpinningDrag(fluid);
+    applyYawSpinningDrag(fluid);
 }
 
 float getEllipseProportion(float proportion) {
     return qSqrt(1.f - (proportion / 0.5f) * (proportion / 0.5f));
 }
 
-void Submarine::applyHorizontalFinsLift() {
+void Submarine::applyHorizontalFinsLift(Fluid *fluid) {
     QVector2D velocity = pitchVelocity();
     float angleOfAttack = pitchAngleOfAttack();
 
     if (qAbs(angleOfAttack) < qDegreesToRadians(15.)) {
-        QVector2D lift = calculateLift(m_fluid->density(), angleOfAttack, m_horizontalFinsLiftCoefficientSlope, m_horizontalFinsArea, velocity);
+        QVector2D lift = calculateLift(fluid->density(), angleOfAttack, m_horizontalFinsLiftCoefficientSlope, m_horizontalFinsArea, velocity);
 
         btVector3 position = m_body->getCenterOfMassTransform() * btVector3(m_horizontalFinsPosition, 0, 0);
 
@@ -656,12 +655,12 @@ void Submarine::applyHorizontalFinsLift() {
     }
 }
 
-void Submarine::applyVerticalFinsLift() {
+void Submarine::applyVerticalFinsLift(Fluid *fluid) {
     QVector2D velocity = yawVelocity();
     float angleOfAttack = yawAngleOfAttack();
 
     if (qAbs(angleOfAttack) < qDegreesToRadians(15.)) {
-        QVector2D lift = calculateLift(m_fluid->density(), angleOfAttack, m_verticalFinsLiftCoefficientSlope, m_verticalFinsArea, velocity);
+        QVector2D lift = calculateLift(fluid->density(), angleOfAttack, m_verticalFinsLiftCoefficientSlope, m_verticalFinsArea, velocity);
 
         btVector3 position = m_body->getCenterOfMassTransform() * btVector3(m_verticalFinsPosition, 0, 0);
 
@@ -672,21 +671,21 @@ void Submarine::applyVerticalFinsLift() {
     }
 }
 
-void Submarine::applyFinsLift() {
+void Submarine::applyFinsLift(Fluid *fluid) {
     if (m_hasHorizontalFins) {
-        applyHorizontalFinsLift();
+        applyHorizontalFinsLift(fluid);
     }
 
     if (m_hasVerticalFins) {
-        applyVerticalFinsLift();
+        applyVerticalFinsLift(fluid);
     }
 }
 
-void Submarine::applyHorizontalFinsDrag() {
+void Submarine::applyHorizontalFinsDrag(Fluid *fluid) {
     QVector2D velocity = pitchVelocity();
 
     float v2 = velocity.lengthSquared();
-    float value = 0.5f * m_fluid->density() * m_horizontalFinsArea * m_horizontalFinsDragCoefficient * v2;
+    float value = 0.5f * fluid->density() * m_horizontalFinsArea * m_horizontalFinsDragCoefficient * v2;
 
     QVector2D drag = velocity.normalized() * -value;
 
@@ -698,11 +697,11 @@ void Submarine::applyHorizontalFinsDrag() {
     m_forceHorizontalFinsDrag->update(force, position);
 }
 
-void Submarine::applyVerticalFinsDrag() {
+void Submarine::applyVerticalFinsDrag(Fluid *fluid) {
     QVector2D velocity = yawVelocity();
 
     float v2 = velocity.lengthSquared();
-    float value = 0.5f * m_fluid->density() * m_verticalFinsArea * m_verticalFinsDragCoefficient * v2;
+    float value = 0.5f * fluid->density() * m_verticalFinsArea * m_verticalFinsDragCoefficient * v2;
 
     QVector2D drag = velocity.normalized() * -value;
 
@@ -714,42 +713,42 @@ void Submarine::applyVerticalFinsDrag() {
     m_forceVerticalFinsDrag->update(force, position);
 }
 
-void Submarine::applyFinsDrag() {
+void Submarine::applyFinsDrag(Fluid *fluid) {
     if (m_hasHorizontalFins) {
-        applyHorizontalFinsDrag();
+        applyHorizontalFinsDrag(fluid);
     }
 
     if (m_hasVerticalFins) {
-        applyVerticalFinsDrag();
+        applyVerticalFinsDrag(fluid);
     }
 }
 
-void Submarine::applyHorizontalFinsDamping() {
+void Submarine::applyHorizontalFinsDamping(Fluid *fluid) {
     float span = qSqrt(m_horizontalFinsAspectRatio * m_horizontalFinsArea);
 
     float radius = getEllipseProportion(m_horizontalFinsPosition) * m_width / 2.f;
     float v2 = m_body->getAngularVelocity().x() * m_body->getAngularVelocity().x();
-    float torque = -2.f * m_fluid->density() * m_horizontalFinsArea * v2 * (radius + span) * (radius + span) * (radius + span / 2.f);
+    float torque = -2.f * fluid->density() * m_horizontalFinsArea * v2 * (radius + span) * (radius + span) * (radius + span / 2.f);
 
     m_body->applyTorque(btVector3(torque, 0, 0));
 }
 
-void Submarine::applyVerticalFinsDamping() {
+void Submarine::applyVerticalFinsDamping(Fluid *fluid) {
     float span = qSqrt(m_verticalFinsAspectRatio * m_verticalFinsArea);
 
     float radius = getEllipseProportion(m_verticalFinsPosition) * m_width / 2.f;
     float v2 = m_body->getAngularVelocity().x() * m_body->getAngularVelocity().x();
-    float torque = -2.f * m_fluid->density() * m_verticalFinsArea * v2 * (radius + span) * (radius + span) * (radius + span / 2.f);
+    float torque = -2.f * fluid->density() * m_verticalFinsArea * v2 * (radius + span) * (radius + span) * (radius + span / 2.f);
 
     m_body->applyTorque(btVector3(torque, 0, 0));
 }
 
-void Submarine::applyFinsDamping() {
+void Submarine::applyFinsDamping(Fluid *fluid) {
     if (m_hasHorizontalFins) {
-        applyHorizontalFinsDamping();
+        applyHorizontalFinsDamping(fluid);
     }
 
     if (m_hasVerticalFins) {
-        applyVerticalFinsDamping();
+        applyVerticalFinsDamping(fluid);
     }
 }

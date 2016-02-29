@@ -26,13 +26,17 @@ public:
     explicit Simulation(QObject *parent = 0);
     ~Simulation();
 
+    Fluid *fluid() const;
+    void setFluid(Fluid *fluid);
+
     Submarine *submarine() const;
     void setSubmarine(Submarine *submarine);
 
     double time() const;
 
+    Q_PROPERTY(Fluid *fluid READ fluid WRITE setFluid)
     Q_PROPERTY(Submarine *submarine READ submarine WRITE setSubmarine)
-    Q_PROPERTY(double time READ time);
+    Q_PROPERTY(double time READ time)
 
 public slots:
     void step();

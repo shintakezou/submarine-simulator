@@ -62,6 +62,10 @@ public:
     double pitchAngleOfAttack() const;
     double yawAngleOfAttack() const;
 
+    QVector3D angularVelocity() const;
+
+    QVector3D position() const;
+
     void addToWorld(btDynamicsWorld *world);
     void addToScene(Qt3D::QEntity *scene);
 

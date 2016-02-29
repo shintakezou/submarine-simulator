@@ -6,27 +6,33 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>600</height>
+    <width>1000</width>
+    <height>720</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>640</width>
-    <height>480</height>
+    <width>800</width>
+    <height>600</height>
    </size>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>Submarine Simulator</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <layout class="QVBoxLayout" name="verticalLayout">
+   <layout class="QHBoxLayout" name="horizontalLayout">
     <item>
-     <widget class="QPushButton" name="pushButton">
-      <property name="text">
-       <string>PushButton</string>
-      </property>
-     </widget>
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <item>
+       <widget class="QCustomPlot" name="chartAngle" native="true"/>
+      </item>
+      <item>
+       <widget class="QCustomPlot" name="chartAngularVelocity" native="true"/>
+      </item>
+      <item>
+       <widget class="QCustomPlot" name="chartPosition" native="true"/>
+      </item>
+     </layout>
     </item>
    </layout>
   </widget>
@@ -35,7 +41,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>800</width>
+     <width>1000</width>
      <height>22</height>
     </rect>
    </property>
@@ -43,6 +49,7 @@
     <property name="title">
      <string>Simulation</string>
     </property>
+    <addaction name="actionChange_Simulation_Properties"/>
    </widget>
    <widget class="QMenu" name="menuWindow">
     <property name="title">
@@ -66,8 +73,8 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
+   <addaction name="actionChange_Simulation_Properties"/>
   </widget>
-  <widget class="QStatusBar" name="statusBar"/>
   <action name="actionAbout">
    <property name="text">
     <string>About</string>
@@ -76,8 +83,21 @@
     <enum>QAction::AboutRole</enum>
    </property>
   </action>
+  <action name="actionChange_Simulation_Properties">
+   <property name="text">
+    <string>Change Simulation Properties</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>QCustomPlot</class>
+   <extends>QWidget</extends>
+   <header>qcustomplot.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections>
   <connection>
@@ -96,8 +116,25 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionChange_Simulation_Properties</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>changeSimulationProperties()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>399</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>showAbout()</slot>
+  <slot>changeSimulationProperties()</slot>
  </slots>
 </ui>

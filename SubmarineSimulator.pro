@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT += core gui widgets
+QT += core gui widgets printsupport
 QT += 3dcore 3drenderer 3dinput
 
 QT_CONFIG -= no-pkg-config
@@ -22,15 +22,20 @@ SOURCES += main.cpp\
     simulation.cpp \
     submarine.cpp \
     fluid.cpp \
-    forcearrow.cpp
+    forcearrow.cpp \
+    simulationpropertiesdialogue.cpp \
+    qcustomplot.cpp
 
 HEADERS  += mainwindow.h \
     simulation.h \
     submarine.h \
     fluid.h \
-    forcearrow.h
+    forcearrow.h \
+    simulationpropertiesdialogue.h \
+    qcustomplot.h
 
-FORMS    += mainwindow.ui
+FORMS    += mainwindow.ui \
+    simulationpropertiesdialogue.ui
 
 RESOURCES += \
     resources.qrc

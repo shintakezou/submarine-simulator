@@ -20,6 +20,8 @@ public:
 
 public slots:
     void showAbout();
+    void changeSimulationProperties();
+    void updateCharts();
 
 private:
     Ui::MainWindow *ui;

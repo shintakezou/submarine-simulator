@@ -23,13 +23,16 @@ class Simulation : public Qt3D::QWindow
     Q_OBJECT
 
 public:
-    explicit Simulation();
+    explicit Simulation(QObject *parent = 0);
     ~Simulation();
 
     Submarine *submarine() const;
     void setSubmarine(Submarine *submarine);
 
+    double time() const;
+
     Q_PROPERTY(Submarine *submarine READ submarine WRITE setSubmarine)
+    Q_PROPERTY(double time READ time);
 
 public slots:
     void step();
@@ -41,6 +44,8 @@ private:
     ForceArrow *m_axisX;
     ForceArrow *m_axisY;
     ForceArrow *m_axisZ;
+
+    double m_time;
 
     // physics
     btDiscreteDynamicsWorld *m_world;

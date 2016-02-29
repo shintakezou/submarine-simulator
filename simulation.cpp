@@ -25,6 +25,7 @@
 #include <Qt3DRenderer/QSphereMesh>
 #include <Qt3DRenderer/QTorusMesh>
 #include <Qt3DRenderer/QWindow>
+#include <Qt3DRenderer/QViewport>
 
 #include "fluid.h"
 #include "submarine.h"
@@ -32,7 +33,9 @@
 
 #include "simulation.h"
 
-Simulation::Simulation()
+Simulation::Simulation(QObject *parent) :
+    Qt3D::QWindow(),
+    m_time(0)
 {
     m_fluid = new Fluid(1000, this);
     m_submarine = new Submarine(m_fluid, this);
@@ -80,6 +83,14 @@ Simulation::Simulation()
 
     Qt3D::QCamera *camera = defaultCamera();
 
+    Qt3D::QFrameGraph *frameGraph = new Qt3D::QFrameGraph();
+    setFrameGraph(frameGraph);
+
+    Qt3D::QForwardRenderer *forwardRenderer = new Qt3D::QForwardRenderer();
+    forwardRenderer->setCamera(defaultCamera());
+    forwardRenderer->setClearColor(QColor(26, 164, 154));
+    frameGraph->setActiveFrameGraph(forwardRenderer);
+
     camera->lens()->setPerspectiveProjection(45.0f, 16.0f/9.0f, 0.1f, 1000.0f);
     camera->setPosition(QVector3D(0, 0, 8.0f));
     camera->setUpVector(QVector3D(0, 1, 0));
@@ -115,9 +126,13 @@ Simulation::~Simulation() {
 }
 
 void Simulation::step() {
-    m_world->stepSimulation(1.f / 60.f, 10);
+    float dt = 1.f / 60.f;
+
+    m_world->stepSimulation(dt, 10);
 
     m_submarine->update(defaultCamera());
+
+    m_time += dt;
 }
 
 Submarine *Simulation::submarine() const
@@ -128,4 +143,8 @@ Submarine *Simulation::submarine() const
 void Simulation::setSubmarine(Submarine *submarine)
 {
     m_submarine = submarine;
+}
+
+double Simulation::time() const {
+    return m_time;
 }

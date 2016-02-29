@@ -98,39 +98,48 @@ double Submarine::crossSectionalArea() const {
 }
 
 double Submarine::pitch() const {
-    btTransform transform;
+    return m_body->getOrientation().z();
+
+    /*btTransform transform;
     m_body->getMotionState()->getWorldTransform(transform);
 
     btMatrix3x3 basis = transform.getBasis();
 
     float yaw, pitch, roll;
-    basis.getEulerYPR(yaw, pitch, roll);
+    // yes, those do appear to be in the wrong order, but it is correct
+    basis.getEulerYPR(pitch, yaw, roll);
 
-    return wrapAngle(pitch);
+    return wrapAngle(pitch);*/
 }
 
 double Submarine::yaw() const {
-    btTransform transform;
+    return m_body->getOrientation().y();
+
+    /*btTransform transform;
     m_body->getMotionState()->getWorldTransform(transform);
 
     btMatrix3x3 basis = transform.getBasis();
 
     float yaw, pitch, roll;
-    basis.getEulerYPR(yaw, pitch, roll);
+    // yes, those do appear to be in the wrong order, but it is correct
+    basis.getEulerYPR(pitch, yaw, roll);
 
-    return wrapAngle(yaw);
+    return wrapAngle(yaw);*/
 }
 
 double Submarine::roll() const {
-    btTransform transform;
+    return m_body->getOrientation().x();
+
+    /*btTransform transform;
     m_body->getMotionState()->getWorldTransform(transform);
 
     btMatrix3x3 basis = transform.getBasis();
 
     float yaw, pitch, roll;
-    basis.getEulerYPR(yaw, pitch, roll);
+    // yes, those do appear to be in the wrong order, but it is correct
+    basis.getEulerYPR(pitch, yaw, roll);
 
-    return wrapAngle(roll);
+    return wrapAngle(roll);*/
 }
 
 QVector2D Submarine::pitchVelocity() const {
@@ -153,6 +162,16 @@ double Submarine::yawAngleOfAttack() const {
     btVector3 velocity = m_body->getLinearVelocity();
     float velocityAngle = wrapAngle(atan2(velocity.z(), velocity.x()));
     return wrapAngle(velocityAngle - yaw());
+}
+
+QVector3D Submarine::angularVelocity() const {
+    btVector3 v = m_body->getAngularVelocity();
+    return QVector3D(v.x(), v.y(), v.z());
+}
+
+QVector3D Submarine::position() const {
+    btVector3 p = m_body->getCenterOfMassPosition();
+    return QVector3D(p.x(), p.y(), p.z());
 }
 
 void Submarine::addToWorld(btDynamicsWorld *world) {
@@ -189,11 +208,13 @@ void Submarine::addToScene(Qt3D::QEntity *scene) {
     m_entity = new Qt3D::QEntity(scene);
 
     auto material = new Qt3D::QPhongMaterial(scene);
-    material->setAmbient(Qt::red);
+    material->setAmbient(QColor(50, 50, 50));
     m_entity->addComponent(material);
 
     auto mesh = new Qt3D::QSphereMesh;
     mesh->setRadius(0.5);
+    mesh->setRings(24);
+    mesh->setSlices(48);
     m_entity->addComponent(mesh);
 
     Qt3D::QTransform *transform = new Qt3D::QTransform;
@@ -209,8 +230,8 @@ void Submarine::addToScene(Qt3D::QEntity *scene) {
     m_rotateTransform->setAngleDeg(0);
 
     transform->addTransform(scaleTransform);
-    transform->addTransform(m_translateTransform);
     transform->addTransform(m_rotateTransform);
+    transform->addTransform(m_translateTransform);
 
     m_entity->addComponent(transform);
 
@@ -226,7 +247,7 @@ void Submarine::addToScene(Qt3D::QEntity *scene) {
     m_forceThrust = new ForceArrow(Qt::black, 5.f);
     m_forceThrust->addToScene(scene);
 
-    m_forceDrag = new ForceArrow(Qt::gray, 5.f);
+    m_forceDrag = new ForceArrow(Qt::white, 5.f);
     m_forceDrag->addToScene(scene);
 
     m_forcePitchLift = new ForceArrow(Qt::magenta, 1.f);
@@ -272,11 +293,11 @@ void Submarine::update(Qt3D::QCamera *camera) {
     applyBuoyancy();
     applyThrust();
     applyDrag();
-    applyLift();
-    applySpinningDrag();
-    applyFinsLift();
-    applyFinsDrag();
-    applyFinsDamping();
+    //applyLift();
+    //applySpinningDrag();
+    //applyFinsLift();
+    //applyFinsDrag();
+    //applyFinsDamping();
 }
 
 double Submarine::length() const
@@ -509,8 +530,8 @@ void Submarine::applyBuoyancy() {
 }
 
 void Submarine::applyThrust() {
-    btVector3 force(100, 0, 0);
-    force.rotate(m_body->getCenterOfMassTransform().getRotation().getAxis(), m_body->getCenterOfMassTransform().getRotation().getAngle());
+    btVector3 force(100, 0, 5);
+    force = force.rotate(m_body->getCenterOfMassTransform().getRotation().getAxis(), m_body->getCenterOfMassTransform().getRotation().getAngle());
 
     btVector3 position(-m_length / 2, 0, 0);
     position = m_body->getCenterOfMassTransform() * position;

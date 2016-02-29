@@ -1,8 +1,14 @@
 #include "fluid.h"
 
-Fluid::Fluid(double density, QObject *parent) : QObject(parent)
+Fluid::Fluid(QObject *parent) : QObject(parent)
 {
-    m_density = density;
+
+}
+
+Fluid *Fluid::makeDefault(QObject *parent) {
+    Fluid *fluid = new Fluid(parent);
+    fluid->setDensity(1000);  // water
+    return fluid;
 }
 
 double Fluid::density() const

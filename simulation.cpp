@@ -37,7 +37,7 @@ Simulation::Simulation(QObject *parent) :
     Qt3D::QWindow(),
     m_time(0)
 {
-    m_fluid = new Fluid(1000, this);
+    m_fluid = Fluid::makeDefault(this);
     m_submarine = new Submarine(m_fluid, this);
 
     m_submarine->setLength(2.9);

@@ -1,3 +1,4 @@
+#include <QMessageBox>
 #include <QWidget>
 
 #include "mainwindow.h"
@@ -21,4 +22,8 @@ MainWindow::MainWindow(QWidget *parent) :
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+void MainWindow::showAbout() {
+    QMessageBox::about(this, "Submarine Simulation", "A submarine simulation developed for SUHPS.");
 }

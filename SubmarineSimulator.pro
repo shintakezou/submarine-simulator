@@ -4,11 +4,8 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
-
+QT += core gui widgets
 QT += 3dcore 3drenderer 3dinput
-
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = SubmarineSimulator
 TEMPLATE = app
@@ -16,9 +13,13 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    simulationview.cpp
+    simulationview.cpp \
+    simulation.cpp \
+    submarine.cpp
 
 HEADERS  += mainwindow.h \
-    simulationview.h
+    simulationview.h \
+    simulation.h \
+    submarine.h
 
 FORMS    += mainwindow.ui

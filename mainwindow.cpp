@@ -1,10 +1,11 @@
 #include <QMessageBox>
 #include <QWidget>
+#include <QTimer>
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-#include "simulationview.h"
+#include "simulation.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -12,15 +13,22 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    SimulationView *view = new SimulationView();
-    view->show();
-    QWidget *container = QWidget::createWindowContainer(view, this);
+    m_simulation = new Simulation();
+    m_simulation->show();
+
+    QWidget *container = QWidget::createWindowContainer(m_simulation, this);
     container->setMinimumSize(320, 320);
     ui->verticalLayout->addWidget(container);
+
+    m_timer = new QTimer(this);
+    connect(m_timer, &QTimer::timeout, m_simulation, &Simulation::step);
+    m_timer->start(25);
 }
 
 MainWindow::~MainWindow()
 {
+    delete m_simulation;
+
     delete ui;
 }
 

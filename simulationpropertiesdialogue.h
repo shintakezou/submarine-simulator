@@ -7,6 +7,10 @@ namespace Ui {
 class SimulationPropertiesDialogue;
 }
 
+class Simulation;
+class Fluid;
+class Submarine;
+
 class SimulationPropertiesDialogue : public QDialog
 {
     Q_OBJECT
@@ -14,6 +18,16 @@ class SimulationPropertiesDialogue : public QDialog
 public:
     explicit SimulationPropertiesDialogue(QWidget *parent = 0);
     ~SimulationPropertiesDialogue();
+
+    void loadSimulation(const Simulation *simulation);
+    void saveSimulation(Simulation *simulation) const;
+
+private:
+    void loadFluid(const Fluid *fluid);
+    void saveFluid(Fluid *fluid) const;
+
+    void loadSubmarine(const Submarine *submarine);
+    void saveSubmarine(Submarine *submarine) const;
 
 private:
     Ui::SimulationPropertiesDialogue *ui;

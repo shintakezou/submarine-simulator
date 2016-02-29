@@ -104,6 +104,7 @@ Submarine *Submarine::makeDefault(QObject *parent) {
     submarine->setSpinningDragCoefficient(2);
     submarine->setBuoyancyPosition(QVector3D(0, 0.35, 0));
     submarine->setWeightPosition(QVector3D());
+    submarine->setThrust(QVector3D(100, 0, 0));
 
     submarine->setHasHorizontalFins(true);
     submarine->setHorizontalFinsLiftCoefficientSlope(M_PI);
@@ -322,11 +323,11 @@ void Submarine::update(Fluid *fluid, Qt3D::QCamera *camera) {
     applyBuoyancy();
     applyThrust();
     applyDrag(fluid);
-    //applyLift(fluid);
-    //applySpinningDrag(fluid);
-    //applyFinsLift(fluid);
-    //applyFinsDrag(fluid);
-    //applyFinsDamping(fluid);
+    applyLift(fluid);
+    applySpinningDrag(fluid);
+    applyFinsLift(fluid);
+    applyFinsDrag(fluid);
+    applyFinsDamping(fluid);
 }
 
 double Submarine::length() const
@@ -419,6 +420,17 @@ void Submarine::setWeightPosition(const QVector3D &weightPosition)
 {
     m_weightPosition = weightPosition;
 }
+
+QVector3D Submarine::thrust() const
+{
+    return m_thrust;
+}
+
+void Submarine::setThrust(const QVector3D &thrust)
+{
+    m_thrust = thrust;
+}
+
 
 double Submarine::hasHorizontalFins() const
 {
@@ -559,7 +571,7 @@ void Submarine::applyBuoyancy() {
 }
 
 void Submarine::applyThrust() {
-    btVector3 force(100, 0, 5);
+    btVector3 force(m_thrust.x(), m_thrust.y(), m_thrust.z());
     force = force.rotate(m_body->getCenterOfMassTransform().getRotation().getAxis(), m_body->getCenterOfMassTransform().getRotation().getAngle());
 
     btVector3 position(-m_length / 2, 0, 0);

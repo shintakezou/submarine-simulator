@@ -22,10 +22,12 @@ public slots:
     void showAbout();
     void changeSimulationProperties();
     void updateCharts();
+    void resetSimulation();
 
 private:
     Ui::MainWindow *ui;
     Simulation *m_simulation;
+    QWidget *m_simulationWidget;
     QTimer *m_timer;
 };
 

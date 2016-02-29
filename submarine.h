@@ -100,6 +100,9 @@ public:
     QVector3D weightPosition() const;
     void setWeightPosition(const QVector3D &weightPosition);
 
+    QVector3D thrust() const;
+    void setThrust(const QVector3D &thrust);
+
     double hasHorizontalFins() const;
     void setHasHorizontalFins(double hasHorizontalFins);
 
@@ -191,6 +194,7 @@ private:
     QVector3D m_buoyancyPosition;
     QVector3D m_weightPosition;
     QVector3D m_liftPosition;
+    QVector3D m_thrust;
 
     double m_hasHorizontalFins;
     double m_horizontalFinsArea;

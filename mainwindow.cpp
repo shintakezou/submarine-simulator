@@ -15,17 +15,18 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    m_timer = new QTimer(this);
+
     m_simulation = new Simulation();
     m_simulation->show();
 
-    QWidget *container = QWidget::createWindowContainer(m_simulation, this);
-    container->setMinimumSize(320, 320);
-    ui->horizontalLayout->insertWidget(0, container);
-
-    m_timer = new QTimer(this);
     connect(m_timer, &QTimer::timeout, m_simulation, &Simulation::step);
+
+    m_simulationWidget = QWidget::createWindowContainer(m_simulation, this);
+    m_simulationWidget->setMinimumSize(320, 320);
+    ui->horizontalLayout->insertWidget(0, m_simulationWidget);
+
     connect(m_timer, &QTimer::timeout, this, &MainWindow::updateCharts);
-    m_timer->start(25);
 
     ui->chartAngle->addGraph()->setPen(QPen(Qt::red));  // roll
     ui->chartAngle->addGraph()->setPen(QPen(Qt::green));  // pitch
@@ -46,6 +47,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->chartPosition->graph(0)->setScatterStyle(QCPScatterStyle::ssDisc);
     ui->chartPosition->xAxis->setLabel("X (m)");
     ui->chartPosition->yAxis->setLabel("Y (m)");
+
+    m_timer->start(25);
 }
 
 MainWindow::~MainWindow()
@@ -60,7 +63,11 @@ void MainWindow::showAbout() {
 
 void MainWindow::changeSimulationProperties() {
     SimulationPropertiesDialogue d(this);
-    d.exec();
+    d.loadSimulation(m_simulation);
+    if (d.exec() == QDialog::Accepted) {
+        resetSimulation();
+        d.saveSimulation(m_simulation);
+    }
 }
 
 void limitChartData(QCustomPlot *plot, int length) {
@@ -69,6 +76,13 @@ void limitChartData(QCustomPlot *plot, int length) {
         while (graph->data()->size() > length) {
             graph->data()->remove(graph->data()->firstKey());
         }
+    }
+}
+
+void clearPlots(QCustomPlot *plot) {
+    for (int i = 0; i < plot->graphCount(); i++) {
+        QCPGraph *graph = plot->graph(i);
+        graph->clearData();
     }
 }
 
@@ -95,4 +109,29 @@ void MainWindow::updateCharts() {
     ui->chartPosition->yAxis->rescale();
     limitChartData(ui->chartPosition, 2000);
     ui->chartPosition->replot();
+}
+
+void MainWindow::resetSimulation() {
+    clearPlots(ui->chartAngle);
+    clearPlots(ui->chartAngularVelocity);
+    clearPlots(ui->chartPosition);
+
+    disconnect(m_timer, &QTimer::timeout, m_simulation, &Simulation::step);
+    ui->horizontalLayout->removeWidget(m_simulationWidget);
+    m_simulation->hide();
+
+    // FIXME find a way around this
+    // instead we recreate the physics world
+    // tell the submarine to join the world again (deleting previous btRigidBody)
+    /*m_simulationWidget->deleteLater();
+    delete m_simulation;*/
+
+    m_simulation = new Simulation();
+    m_simulation->show();
+
+    connect(m_timer, &QTimer::timeout, m_simulation, &Simulation::step);
+
+    m_simulationWidget = QWidget::createWindowContainer(m_simulation, this);
+    m_simulationWidget->setMinimumSize(320, 320);
+    ui->horizontalLayout->insertWidget(0, m_simulationWidget);
 }

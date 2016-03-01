@@ -37,9 +37,6 @@ void ForceArrow::addToScene(Qt3D::QEntity *scene) {
 
     auto transform = new Qt3D::QTransform;
 
-    /*m_lookAtTransform = new Qt3D::QLookAtTransform;
-    transform->addTransform(m_lookAtTransform);*/
-
     m_rotateTransform = new Qt3D::QRotateTransform;
     transform->addTransform(m_rotateTransform);
 
@@ -57,13 +54,6 @@ void ForceArrow::update(QVector3D force, QVector3D position) {
     QVector3D dir = force.normalized();
 
     QQuaternion q = QQuaternion::rotationTo(up, dir);
-
-    /*float dot = QVector3D::dotProduct(up, dir);
-    if (dot >= 1.0f) {  // the same
-        q = QQuaternion();
-    } else if (dot <= -0.999) {
-        q = QQuaternion(0, 0, -1, 0);
-    }*/
 
     float angle;
     QVector3D axis;

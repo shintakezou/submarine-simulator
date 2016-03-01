@@ -29,8 +29,8 @@ public:
 private:
     QColor m_colour;
     float m_scale;
+
     Qt3D::QEntity *m_entity;
-    //Qt3D::QLookAtTransform *m_lookAtTransform;
     Qt3D::QRotateTransform *m_rotateTransform;
     Qt3D::QTranslateTransform *m_translateTransform;
     Qt3D::QScaleTransform *m_scaleTransform;

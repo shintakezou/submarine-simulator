@@ -7,7 +7,9 @@ Fluid::Fluid(QObject *parent) : QObject(parent)
 
 Fluid *Fluid::makeDefault(QObject *parent) {
     Fluid *fluid = new Fluid(parent);
+
     fluid->setDensity(1000);  // water
+
     return fluid;
 }
 

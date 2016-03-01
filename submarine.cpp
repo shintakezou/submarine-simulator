@@ -794,3 +794,4 @@ void Submarine::applyFinsDamping(Fluid *fluid) {
         applyVerticalFinsDamping(fluid);
     }
 }
+

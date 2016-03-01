@@ -118,7 +118,7 @@ Submarine *Submarine::makeDefault(QObject *parent) {
     submarine->setVerticalFinsLiftCoefficientSlope(M_PI);
     submarine->setVerticalFinsDragCoefficient(0.03);
     submarine->setVerticalFinsPosition(0);
-    submarine->setHorizontalFinsAspectRatio(3);
+    submarine->setVerticalFinsAspectRatio(3);
 
     return submarine;
 }

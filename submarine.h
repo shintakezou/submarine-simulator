@@ -139,11 +139,15 @@ public:
     double verticalFinsAspectRatio() const;
     void setVerticalFinsAspectRatio(double verticalFinsAspectRatio);
 
+    double propellorTorque() const;
+    void setPropellorTorque(double propellorTorque);
+
 signals:
 
 public slots:
 
 private:
+    void applyPropellorTorque();
     void applyWeight();
     void applyBuoyancy();
     void applyThrust();
@@ -190,6 +194,7 @@ private:
     double m_dragCoefficient;
     double m_liftCoefficientSlope;
     double m_spinningDragCoefficient;
+    double m_propellorTorque;
 
     QVector3D m_buoyancyPosition;
     QVector3D m_weightPosition;

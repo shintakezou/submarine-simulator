@@ -105,6 +105,7 @@ Submarine *Submarine::makeDefault(QObject *parent) {
     submarine->setBuoyancyPosition(QVector3D(0, 0.35, 0));
     submarine->setWeightPosition(QVector3D());
     submarine->setThrust(QVector3D(100, 0, 0));
+    submarine->setPropellorTorque(20);
 
     submarine->setHasHorizontalFins(true);
     submarine->setHorizontalFinsLiftCoefficientSlope(M_PI);
@@ -225,7 +226,7 @@ void Submarine::addToWorld(btDynamicsWorld *world) {
     auto motionState = new btDefaultMotionState();
     m_body->setMotionState(motionState);
 
-    m_body->applyTorqueImpulse(btVector3(40, 0, 0));
+    //m_body->applyTorqueImpulse(btVector3(40, 0, 0));
 
     world->addRigidBody(m_body);
 }
@@ -319,6 +320,7 @@ void Submarine::update(Fluid *fluid, Qt3D::QCamera *camera) {
     camera->lookAt()->setPosition(position + QVector3D(2, 4, 10));
     camera->lookAt()->setViewCenter(position);
 
+    applyPropellorTorque();
     applyWeight();
     applyBuoyancy();
     applyThrust();
@@ -550,6 +552,20 @@ double Submarine::verticalFinsAspectRatio() const
 void Submarine::setVerticalFinsAspectRatio(double verticalFinsAspectRatio)
 {
     m_verticalFinsAspectRatio = verticalFinsAspectRatio;
+}
+
+double Submarine::propellorTorque() const
+{
+    return m_propellorTorque;
+}
+
+void Submarine::setPropellorTorque(double propellorTorque)
+{
+    m_propellorTorque = propellorTorque;
+}
+
+void Submarine::applyPropellorTorque() {
+    m_body->applyTorque(btVector3(m_propellorTorque, 0, 0));
 }
 
 void Submarine::applyWeight() {

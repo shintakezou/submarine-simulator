@@ -425,6 +425,29 @@
         </item>
        </layout>
       </item>
+      <item row="8" column="0">
+       <widget class="QLabel" name="label_26">
+        <property name="text">
+         <string>Propellor Torque</string>
+        </property>
+       </widget>
+      </item>
+      <item row="8" column="1">
+       <widget class="QDoubleSpinBox" name="doubleSpinBox">
+        <property name="suffix">
+         <string> Nm</string>
+        </property>
+        <property name="decimals">
+         <number>3</number>
+        </property>
+        <property name="maximum">
+         <double>1000.000000000000000</double>
+        </property>
+        <property name="singleStep">
+         <double>0.100000000000000</double>
+        </property>
+       </widget>
+      </item>
      </layout>
     </widget>
    </item>
@@ -476,7 +499,7 @@
         <item row="3" column="1">
          <widget class="QDoubleSpinBox" name="spinHorizontalFinsLiftCoefficientSlope">
           <property name="decimals">
-           <number>3</number>
+           <number>4</number>
           </property>
           <property name="maximum">
            <double>5.000000000000000</double>
@@ -496,7 +519,7 @@
         <item row="2" column="1">
          <widget class="QDoubleSpinBox" name="spinHorizontalFinsDragCoefficient">
           <property name="decimals">
-           <number>3</number>
+           <number>4</number>
           </property>
           <property name="maximum">
            <double>5.000000000000000</double>
@@ -598,7 +621,7 @@
         <item row="3" column="1">
          <widget class="QDoubleSpinBox" name="spinVerticalFinsLiftCoefficientSlope">
           <property name="decimals">
-           <number>3</number>
+           <number>4</number>
           </property>
           <property name="maximum">
            <double>5.000000000000000</double>
@@ -618,7 +641,7 @@
         <item row="2" column="1">
          <widget class="QDoubleSpinBox" name="spinVerticalFinsDragCoefficient">
           <property name="decimals">
-           <number>3</number>
+           <number>4</number>
           </property>
           <property name="maximum">
            <double>5.000000000000000</double>

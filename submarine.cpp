@@ -15,20 +15,16 @@
 #include <Qt3DRenderer/QPhongMaterial>
 #include <Qt3DRenderer/QSphereMesh>
 #include <Qt3DRenderer/QTorusMesh>
-
-#include <Qt3DInput/QInputAspect>
-
+#include <Qt3DRenderer/QMesh>
 #include <Qt3DRenderer/QRenderAspect>
 #include <Qt3DRenderer/QFrameGraph>
 #include <Qt3DRenderer/QForwardRenderer>
-#include <Qt3DRenderer/QPhongMaterial>
-
-#include <Qt3DRenderer/QCylinderMesh>
-#include <Qt3DRenderer/QSphereMesh>
-#include <Qt3DRenderer/QTorusMesh>
 #include <Qt3DRenderer/QWindow>
 
+#include <Qt3DInput/QInputAspect>
+
 #include <QVector2D>
+#include <QPropertyAnimation>
 
 #include <QtMath>
 #include <QtDebug>
@@ -226,8 +222,6 @@ void Submarine::addToWorld(btDynamicsWorld *world) {
     auto motionState = new btDefaultMotionState();
     m_body->setMotionState(motionState);
 
-    //m_body->applyTorqueImpulse(btVector3(40, 0, 0));
-
     world->addRigidBody(m_body);
 }
 
@@ -240,27 +234,77 @@ void Submarine::addToScene(Qt3D::QEntity *scene) {
 
     auto material = new Qt3D::QPhongMaterial(scene);
     material->setAmbient(QColor(50, 50, 50));
-    m_entity->addComponent(material);
+
+    // body
+
+    m_bodyEntity = new Qt3D::QEntity(m_entity);
 
     auto mesh = new Qt3D::QSphereMesh;
     mesh->setRadius(0.5);
     mesh->setRings(24);
     mesh->setSlices(48);
-    m_entity->addComponent(mesh);
+    m_bodyEntity->addComponent(mesh);
+
+    m_bodyEntity->addComponent(material);
+
+    Qt3D::QTransform *bodyTransform = new Qt3D::QTransform;
+
+    Qt3D::QScaleTransform *bodyScaleTransform = new Qt3D::QScaleTransform;
+    bodyScaleTransform->setScale3D(QVector3D(m_length, m_height, m_width));
+    bodyTransform->addTransform(bodyScaleTransform);
+
+    m_bodyEntity->addComponent(bodyTransform);
+
+    // propellor
+
+    m_propellorEntity = new Qt3D::QEntity(m_entity);
+    auto mesh2 = new Qt3D::QMesh;
+    mesh2->setSource(QUrl("qrc:/models/propellor.obj"));
+    m_propellorEntity->addComponent(mesh2);
+
+    m_propellorEntity->addComponent(material);
+
+    Qt3D::QTransform *propellorTransform = new Qt3D::QTransform;
+
+    Qt3D::QScaleTransform *propellorScaleTransform = new Qt3D::QScaleTransform;
+    propellorScaleTransform->setScale(0.025);
+    propellorTransform->addTransform(propellorScaleTransform);
+
+    Qt3D::QRotateTransform *propellorRotateTransform = new Qt3D::QRotateTransform;
+    propellorRotateTransform->setAxis(QVector3D(0, 1, 0));
+    propellorRotateTransform->setAngleDeg(-90);
+    propellorTransform->addTransform(propellorRotateTransform);
+
+    Qt3D::QRotateTransform *propellorRotateTransform2 = new Qt3D::QRotateTransform;
+    propellorRotateTransform2->setAxis(QVector3D(1, 0, 0));
+    propellorTransform->addTransform(propellorRotateTransform2);
+
+    auto propellorTranslateTransform = new Qt3D::QTranslateTransform;
+    propellorTranslateTransform->setDx(-m_length / 2);
+    propellorTransform->addTransform(propellorTranslateTransform);
+
+    auto propellorRotationAnimation = new QPropertyAnimation(scene);
+    propellorRotationAnimation->setTargetObject(propellorRotateTransform2);
+    propellorRotationAnimation->setPropertyName("angle");
+    propellorRotationAnimation->setStartValue(QVariant::fromValue(0));
+    propellorRotationAnimation->setEndValue(QVariant::fromValue(360));
+    propellorRotationAnimation->setDuration(500);
+    propellorRotationAnimation->setLoopCount(-1);
+    propellorRotationAnimation->start();
+
+    m_propellorEntity->addComponent(propellorTransform);
+
+    // main entity
 
     Qt3D::QTransform *transform = new Qt3D::QTransform;
 
     m_translateTransform = new Qt3D::QTranslateTransform;
     m_translateTransform->setTranslation(QVector3D(0, 0, 0));
 
-    Qt3D::QScaleTransform *scaleTransform = new Qt3D::QScaleTransform;
-    scaleTransform->setScale3D(QVector3D(m_length, m_height, m_width));
-
     m_rotateTransform = new Qt3D::QRotateTransform;
     m_rotateTransform->setAxis(QVector3D(0, 1, 0));
     m_rotateTransform->setAngleDeg(0);
 
-    transform->addTransform(scaleTransform);
     transform->addTransform(m_rotateTransform);
     transform->addTransform(m_translateTransform);
 

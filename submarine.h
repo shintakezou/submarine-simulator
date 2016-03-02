@@ -175,6 +175,9 @@ private:
     Qt3D::QTranslateTransform *m_translateTransform;
     Qt3D::QRotateTransform *m_rotateTransform;
 
+    Qt3D::QEntity *m_propellorEntity;
+    Qt3D::QEntity *m_bodyEntity;
+
     ForceArrow *m_forceNoise;
     ForceArrow *m_forceWeight;
     ForceArrow *m_forceBuoyancy;

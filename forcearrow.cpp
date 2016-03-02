@@ -32,7 +32,7 @@ void ForceArrow::addToScene(Qt3D::QEntity *scene) {
     m_entity->addComponent(material);
 
     auto mesh = new Qt3D::QMesh;
-    mesh->setSource(QUrl("qrc:/arrow.obj"));
+    mesh->setSource(QUrl("qrc:/models/arrow.obj"));
     m_entity->addComponent(mesh);
 
     auto transform = new Qt3D::QTransform;

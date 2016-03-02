@@ -57,6 +57,7 @@ void SimulationPropertiesDialogue::loadSubmarine(const Submarine *submarine)
     ui->spinSubThrustX->setValue(submarine->thrust().x());
     ui->spinSubThrustY->setValue(submarine->thrust().y());
     ui->spinSubThrustZ->setValue(submarine->thrust().z());
+    ui->spinSubPropellorTorque->setValue(submarine->propellorTorque());
 
     ui->checkHorizontalFinsEnabled->setChecked(submarine->hasHorizontalFins());
     ui->spinHorizontalFinsArea->setValue(submarine->horizontalFinsArea());
@@ -91,6 +92,7 @@ void SimulationPropertiesDialogue::saveSubmarine(Submarine *submarine) const
     submarine->setThrust(QVector3D(ui->spinSubThrustX->value(),
                                    ui->spinSubThrustY->value(),
                                    ui->spinSubThrustZ->value()));
+    submarine->setPropellorTorque(ui->spinSubPropellorTorque->value());
 
     submarine->setHasHorizontalFins(ui->checkHorizontalFinsEnabled->isChecked());
     submarine->setHorizontalFinsArea(ui->spinHorizontalFinsArea->value());

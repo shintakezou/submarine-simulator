@@ -108,8 +108,8 @@ void Simulation::step()
     float dt = 1.f / 60.f;
 
     if (!m_paused) {
-        m_world->stepSimulation(dt, 10);
         m_submarine->update(m_fluid, defaultCamera());
+        m_world->stepSimulation(dt, 10);
         m_time += dt;
     }
 }

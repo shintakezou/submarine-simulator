@@ -12,10 +12,10 @@ public:
 
     static Fluid *makeDefault(QObject *parent = 0);
 
-    Q_PROPERTY(double density READ density WRITE setDensity)
-
     double density() const;
     void setDensity(double density);
+
+    Q_PROPERTY(double density READ density WRITE setDensity)
 
 private:
     double m_density;

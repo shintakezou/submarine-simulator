@@ -180,15 +180,15 @@ QVector2D Submarine::yawVelocity() const {
 }
 
 double Submarine::pitchAngleOfAttack() const {
-    btVector3 velocity = m_body->getLinearVelocity();
+    QVector2D velocity = pitchVelocity();
     float velocityAngle = wrapAngle(atan2(velocity.y(), velocity.x()));
-    return wrapAngle(velocityAngle - pitch());
+    return wrapAngle(pitch() - velocityAngle);
 }
 
 double Submarine::yawAngleOfAttack() const {
-    btVector3 velocity = m_body->getLinearVelocity();
-    float velocityAngle = wrapAngle(atan2(velocity.z(), velocity.x()));
-    return wrapAngle(velocityAngle - yaw());
+    QVector2D velocity = yawVelocity();
+    float velocityAngle = wrapAngle(atan2(velocity.y(), velocity.x()));
+    return wrapAngle(yaw() - velocityAngle);
 }
 
 QVector3D Submarine::angularVelocity() const {

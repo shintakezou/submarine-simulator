@@ -32,29 +32,31 @@ public:
     void addToWorld(btDynamicsWorld *world);
     void addToScene(Qt3D::QEntity *scene);
 
-    void update(Fluid *fluid, Qt3D::QCamera *camera);
+    void update(const Fluid *fluid, Qt3D::QCamera *camera);
+
+    void applyForces(const Fluid *fluid);
 
 private:
     void applyPropellorTorque();
     void applyWeight();
     void applyBuoyancy();
     void applyThrust();
-    void applyDrag(Fluid *fluid);
-    void applyPitchLift(Fluid *fluid);
-    void applyYawLift(Fluid *fluid);
-    void applyLift(Fluid *fluid);
-    void applyPitchSpinningDrag(Fluid *fluid);
-    void applyYawSpinningDrag(Fluid *fluid);
-    void applySpinningDrag(Fluid *fluid);
-    void applyHorizontalFinsLift(Fluid *fluid);
-    void applyVerticalFinsLift(Fluid *fluid);
-    void applyFinsLift(Fluid *fluid);
-    void applyHorizontalFinsDrag(Fluid *fluid);
-    void applyVerticalFinsDrag(Fluid *fluid);
-    void applyFinsDrag(Fluid *fluid);
-    void applyHorizontalFinsDamping(Fluid *fluid);
-    void applyVerticalFinsDamping(Fluid *fluid);
-    void applyFinsDamping(Fluid *fluid);
+    void applyDrag(const Fluid *fluid);
+    void applyPitchLift(const Fluid *fluid);
+    void applyYawLift(const Fluid *fluid);
+    void applyLift(const Fluid *fluid);
+    void applyPitchSpinningDrag(const Fluid *fluid);
+    void applyYawSpinningDrag(const Fluid *fluid);
+    void applySpinningDrag(const Fluid *fluid);
+    void applyHorizontalFinsLift(const Fluid *fluid);
+    void applyVerticalFinsLift(const Fluid *fluid);
+    void applyFinsLift(const Fluid *fluid);
+    void applyHorizontalFinsDrag(const Fluid *fluid);
+    void applyVerticalFinsDrag(const Fluid *fluid);
+    void applyFinsDrag(const Fluid *fluid);
+    void applyHorizontalFinsDamping(const Fluid *fluid);
+    void applyVerticalFinsDamping(const Fluid *fluid);
+    void applyFinsDamping(const Fluid *fluid);
 
 public:
     double crossSectionalArea() const;

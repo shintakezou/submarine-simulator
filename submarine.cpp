@@ -704,7 +704,7 @@ void Submarine::applyYawLift(Fluid *fluid) {
         btVector3 force(lift.x(), 0, lift.y());
 
         m_body->applyForce(force, position);
-        m_forcePitchLift->update(force, position);
+        m_forceYawLift->update(force, position);
     }
 }
 

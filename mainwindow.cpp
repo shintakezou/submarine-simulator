@@ -135,3 +135,11 @@ void MainWindow::resetSimulation() {
     m_simulationWidget->setMinimumSize(320, 320);
     ui->horizontalLayout->insertWidget(0, m_simulationWidget);
 }
+
+void MainWindow::pauseSimulation() {
+    m_simulation->pause();
+}
+
+void MainWindow::playSimulation() {
+    m_simulation->play();
+}

@@ -26,6 +26,12 @@ public:
     explicit Simulation();
     ~Simulation();
 
+public slots:
+    void step();
+    void play();
+    void pause();
+
+public:
     Fluid *fluid() const;
     void setFluid(Fluid *fluid);
 
@@ -38,9 +44,6 @@ public:
     Q_PROPERTY(Submarine *submarine READ submarine WRITE setSubmarine)
     Q_PROPERTY(double time READ time)
 
-public slots:
-    void step();
-
 private:
     // simulation
     Fluid *m_fluid;
@@ -50,6 +53,7 @@ private:
     ForceArrow *m_axisZ;
 
     double m_time;
+    bool m_paused;
 
     // physics
     btDiscreteDynamicsWorld *m_world;

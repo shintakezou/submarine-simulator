@@ -23,6 +23,8 @@ public slots:
     void changeSimulationProperties();
     void updateCharts();
     void resetSimulation();
+    void pauseSimulation();
+    void playSimulation();
 
 private:
     Ui::MainWindow *ui;

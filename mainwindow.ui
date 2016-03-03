@@ -76,6 +76,8 @@
    </attribute>
    <addaction name="actionChange_Properties"/>
    <addaction name="actionReset"/>
+   <addaction name="actionPlay"/>
+   <addaction name="actionPause"/>
   </widget>
   <action name="actionAbout">
    <property name="text">
@@ -96,6 +98,16 @@
   <action name="actionReset">
    <property name="text">
     <string>Reset</string>
+   </property>
+  </action>
+  <action name="actionPlay">
+   <property name="text">
+    <string>Play</string>
+   </property>
+  </action>
+  <action name="actionPause">
+   <property name="text">
+    <string>Pause</string>
    </property>
   </action>
  </widget>
@@ -158,10 +170,44 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionPlay</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>playSimulation()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>499</x>
+     <y>359</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionPause</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>pauseSimulation()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>499</x>
+     <y>359</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>showAbout()</slot>
   <slot>changeSimulationProperties()</slot>
   <slot>resetSimulation()</slot>
+  <slot>playSimulation()</slot>
+  <slot>pauseSimulation()</slot>
  </slots>
 </ui>

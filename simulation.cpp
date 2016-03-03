@@ -35,7 +35,8 @@
 
 Simulation::Simulation() :
     Qt3D::QWindow(),
-    m_time(0)
+    m_time(0),
+    m_paused(false)
 {
     m_fluid = Fluid::makeDefault(this);
     m_submarine = Submarine::makeDefault(this);
@@ -89,7 +90,8 @@ Simulation::Simulation() :
     m_axisZ->update(QVector3D(0, 0, 500), QVector3D());
 }
 
-Simulation::~Simulation() {
+Simulation::~Simulation()
+{
     delete m_submarine;
     delete m_fluid;
 
@@ -99,6 +101,27 @@ Simulation::~Simulation() {
     delete m_pairCache;
     delete m_dispatcher;
     delete m_collisionConfiguration;
+}
+
+void Simulation::step()
+{
+    float dt = 1.f / 60.f;
+
+    if (!m_paused) {
+        m_world->stepSimulation(dt, 10);
+        m_submarine->update(m_fluid, defaultCamera());
+        m_time += dt;
+    }
+}
+
+void Simulation::play()
+{
+    m_paused = false;
+}
+
+void Simulation::pause()
+{
+    m_paused = true;
 }
 
 Fluid *Simulation::fluid() const
@@ -121,16 +144,8 @@ void Simulation::setSubmarine(Submarine *submarine)
     m_submarine = submarine;
 }
 
-double Simulation::time() const {
+double Simulation::time() const
+{
     return m_time;
 }
 
-void Simulation::step() {
-    float dt = 1.f / 60.f;
-
-    m_world->stepSimulation(dt, 10);
-
-    m_submarine->update(m_fluid, defaultCamera());
-
-    m_time += dt;
-}

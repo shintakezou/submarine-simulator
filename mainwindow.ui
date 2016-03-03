@@ -30,6 +30,9 @@
        <widget class="QCustomPlot" name="chartAngularVelocity" native="true"/>
       </item>
       <item>
+       <widget class="QCustomPlot" name="chartLinearVelocity" native="true"/>
+      </item>
+      <item>
        <widget class="QCustomPlot" name="chartPosition" native="true"/>
       </item>
      </layout>

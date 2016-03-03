@@ -32,21 +32,31 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->chartAngle->addGraph()->setPen(QPen(Qt::green));  // pitch
     ui->chartAngle->addGraph()->setPen(QPen(Qt::blue)); // yaw
     ui->chartAngle->xAxis->setLabel("Time (s)");
-    ui->chartAngle->yAxis->setLabel("Angle (rad)");
-    ui->chartAngle->yAxis->setRange(-M_PI / 2., M_PI / 2.);
+    ui->chartAngle->yAxis->setLabel("Angle (°)");
+    ui->chartAngle->yAxis->setRange(-30, 30);
 
     ui->chartAngularVelocity->addGraph()->setPen(QPen(Qt::red));  // roll
     ui->chartAngularVelocity->addGraph()->setPen(QPen(Qt::green));  // pitch
     ui->chartAngularVelocity->addGraph()->setPen(QPen(Qt::blue)); // yaw
     ui->chartAngularVelocity->xAxis->setLabel("Time (s)");
     ui->chartAngularVelocity->yAxis->setLabel("Angular Velocity (rad/s)");
-    ui->chartAngularVelocity->yAxis->setRange(-5, 5);
+    ui->chartAngularVelocity->yAxis->setRange(-M_PI / 4., M_PI / 4.);
 
-    ui->chartPosition->addGraph()->setPen(QPen(Qt::black));
+    ui->chartLinearVelocity->addGraph()->setPen(QPen(Qt::red));  // X
+    ui->chartLinearVelocity->addGraph()->setPen(QPen(Qt::green));  // Y
+    ui->chartLinearVelocity->addGraph()->setPen(QPen(Qt::blue)); // Z
+    ui->chartLinearVelocity->xAxis->setLabel("Time (s)");
+    ui->chartLinearVelocity->yAxis->setLabel("Linear Velocity (m/s)");
+    ui->chartLinearVelocity->yAxis->setRange(-5, 5);
+
+    ui->chartPosition->addGraph()->setPen(QPen(Qt::red));
     ui->chartPosition->graph(0)->setLineStyle(QCPGraph::lsNone);
     ui->chartPosition->graph(0)->setScatterStyle(QCPScatterStyle::ssDisc);
+    ui->chartPosition->addGraph()->setPen(QPen(Qt::green));
+    ui->chartPosition->graph(1)->setLineStyle(QCPGraph::lsNone);
+    ui->chartPosition->graph(1)->setScatterStyle(QCPScatterStyle::ssDisc);
     ui->chartPosition->xAxis->setLabel("X (m)");
-    ui->chartPosition->yAxis->setLabel("Y (m)");
+    ui->chartPosition->yAxis->setLabel("Y/Z (m)");
 
     m_timer->start(25);
 }
@@ -90,9 +100,9 @@ void MainWindow::updateCharts() {
     Submarine *submarine = m_simulation->submarine();
     double time = m_simulation->time();
 
-    ui->chartAngle->graph(0)->addData(time, submarine->roll());
-    ui->chartAngle->graph(1)->addData(time, submarine->pitch());
-    ui->chartAngle->graph(2)->addData(time, submarine->yaw());
+    ui->chartAngle->graph(0)->addData(time, qRadiansToDegrees(submarine->roll()));
+    ui->chartAngle->graph(1)->addData(time, qRadiansToDegrees(submarine->pitch()));
+    ui->chartAngle->graph(2)->addData(time, qRadiansToDegrees(submarine->yaw()));
     ui->chartAngle->xAxis->rescale();
     limitChartData(ui->chartAngle, 500);
     ui->chartAngle->replot();
@@ -104,7 +114,15 @@ void MainWindow::updateCharts() {
     limitChartData(ui->chartAngularVelocity, 500);
     ui->chartAngularVelocity->replot();
 
+    ui->chartLinearVelocity->graph(0)->addData(time, submarine->linearVelocity().x());
+    ui->chartLinearVelocity->graph(1)->addData(time, submarine->linearVelocity().y());
+    ui->chartLinearVelocity->graph(2)->addData(time, submarine->linearVelocity().z());
+    ui->chartLinearVelocity->xAxis->rescale();
+    limitChartData(ui->chartLinearVelocity, 500);
+    ui->chartLinearVelocity->replot();
+
     ui->chartPosition->graph(0)->addData(submarine->position().x(), submarine->position().y());
+    ui->chartPosition->graph(1)->addData(submarine->position().x(), submarine->position().z());
     ui->chartPosition->xAxis->rescale();
     ui->chartPosition->yAxis->rescale();
     limitChartData(ui->chartPosition, 2000);
@@ -114,6 +132,7 @@ void MainWindow::updateCharts() {
 void MainWindow::resetSimulation() {
     clearPlots(ui->chartAngle);
     clearPlots(ui->chartAngularVelocity);
+    clearPlots(ui->chartLinearVelocity);
     clearPlots(ui->chartPosition);
 
     disconnect(m_timer, &QTimer::timeout, m_simulation, &Simulation::step);

@@ -196,6 +196,11 @@ QVector3D Submarine::angularVelocity() const {
     return QVector3D(v.x(), v.y(), v.z());
 }
 
+QVector3D Submarine::linearVelocity() const {
+    btVector3 v = m_body->getLinearVelocity();
+    return QVector3D(v.x(), v.y(), v.z());
+}
+
 QVector3D Submarine::position() const {
     btVector3 p = m_body->getCenterOfMassPosition();
     return QVector3D(p.x(), p.y(), p.z());

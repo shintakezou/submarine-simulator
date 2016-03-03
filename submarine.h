@@ -65,7 +65,7 @@ public:
     double yawAngleOfAttack() const;
 
     QVector3D angularVelocity() const;
-
+    QVector3D linearVelocity() const;
     QVector3D position() const;
 
     void addToWorld(btDynamicsWorld *world);

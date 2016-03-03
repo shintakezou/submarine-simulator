@@ -5,10 +5,10 @@
 #include <QVector3D>
 
 namespace Qt3D {
-    class QEntity;
-    class QTranslateTransform;
-    class QRotateTransform;
-    class QCamera;
+class QEntity;
+class QTranslateTransform;
+class QRotateTransform;
+class QCamera;
 }
 
 class btCapsuleShape;
@@ -29,29 +29,34 @@ public:
 
     static Submarine *makeDefault(QObject *parent = 0);
 
-    Q_PROPERTY(double length READ length WRITE setLength)
-    Q_PROPERTY(double width READ width WRITE setWidth)
-    Q_PROPERTY(double height READ height WRITE setHeight)
-    Q_PROPERTY(double mass READ mass WRITE setMass)
-    Q_PROPERTY(double dragCoefficient READ dragCoefficient WRITE setDragCoefficient)
-    Q_PROPERTY(double liftCoefficientSlope READ liftCoefficientSlope WRITE setLiftCoefficientSlope)
-    Q_PROPERTY(double spinningDragCoefficient READ spinningDragCoefficient WRITE setSpinningDragCoefficient)
-    Q_PROPERTY(double crossSectionalArea READ crossSectionalArea STORED false)
-    Q_PROPERTY(QVector3D buoyancyPosition READ buoyancyPosition WRITE setBuoyancyPosition)
-    Q_PROPERTY(QVector3D weightPosition READ weightPosition WRITE setWeightPosition)
-    Q_PROPERTY(bool hasHorizontalFins READ hasHorizontalFins WRITE setHasHorizontalFins)
-    Q_PROPERTY(double horizontalFinsArea READ horizontalFinsArea WRITE setHorizontalFinsArea)
-    Q_PROPERTY(double horizontalFinsLiftCoefficientSlope READ horizontalFinsLiftCoefficientSlope WRITE setHorizontalFinsLiftCoefficientSlope)
-    Q_PROPERTY(double horizontalFinsDragCoefficient READ horizontalFinsDragCoefficient WRITE setHorizontalFinsDragCoefficient)
-    Q_PROPERTY(double horizontalFinsPosition READ horizontalFinsPosition WRITE setHorizontalFinsPosition)
-    Q_PROPERTY(double horizontalFinsAspectRatio READ horizontalFinsAspectRatio WRITE setHorizontalFinsAspectRatio)
-    Q_PROPERTY(bool hasVerticalFins READ hasVerticalFins WRITE setHasVerticalFins)
-    Q_PROPERTY(double verticalFinsArea READ verticalFinsArea WRITE setVerticalFinsArea)
-    Q_PROPERTY(double verticalFinsLiftCoefficientSlope READ verticalFinsLiftCoefficientSlope WRITE setVerticalFinsLiftCoefficientSlope)
-    Q_PROPERTY(double verticalFinsDragCoefficient READ verticalFinsDragCoefficient WRITE setVerticalFinsDragCoefficient)
-    Q_PROPERTY(double verticalFinsPosition READ verticalFinsPosition WRITE setVerticalFinsPosition)
-    Q_PROPERTY(double verticalFinsAspectRatio READ verticalFinsAspectRatio WRITE setVerticalFinsAspectRatio)
+    void addToWorld(btDynamicsWorld *world);
+    void addToScene(Qt3D::QEntity *scene);
 
+    void update(Fluid *fluid, Qt3D::QCamera *camera);
+
+private:
+    void applyPropellorTorque();
+    void applyWeight();
+    void applyBuoyancy();
+    void applyThrust();
+    void applyDrag(Fluid *fluid);
+    void applyPitchLift(Fluid *fluid);
+    void applyYawLift(Fluid *fluid);
+    void applyLift(Fluid *fluid);
+    void applyPitchSpinningDrag(Fluid *fluid);
+    void applyYawSpinningDrag(Fluid *fluid);
+    void applySpinningDrag(Fluid *fluid);
+    void applyHorizontalFinsLift(Fluid *fluid);
+    void applyVerticalFinsLift(Fluid *fluid);
+    void applyFinsLift(Fluid *fluid);
+    void applyHorizontalFinsDrag(Fluid *fluid);
+    void applyVerticalFinsDrag(Fluid *fluid);
+    void applyFinsDrag(Fluid *fluid);
+    void applyHorizontalFinsDamping(Fluid *fluid);
+    void applyVerticalFinsDamping(Fluid *fluid);
+    void applyFinsDamping(Fluid *fluid);
+
+public:
     double crossSectionalArea() const;
 
     double pitch() const;
@@ -67,11 +72,6 @@ public:
     QVector3D angularVelocity() const;
     QVector3D linearVelocity() const;
     QVector3D position() const;
-
-    void addToWorld(btDynamicsWorld *world);
-    void addToScene(Qt3D::QEntity *scene);
-
-    void update(Fluid *fluid, Qt3D::QCamera *camera);
 
     double length() const;
     void setLength(double length);
@@ -142,32 +142,30 @@ public:
     double propellorTorque() const;
     void setPropellorTorque(double propellorTorque);
 
-signals:
-
-public slots:
+    Q_PROPERTY(double length READ length WRITE setLength)
+    Q_PROPERTY(double width READ width WRITE setWidth)
+    Q_PROPERTY(double height READ height WRITE setHeight)
+    Q_PROPERTY(double mass READ mass WRITE setMass)
+    Q_PROPERTY(double dragCoefficient READ dragCoefficient WRITE setDragCoefficient)
+    Q_PROPERTY(double liftCoefficientSlope READ liftCoefficientSlope WRITE setLiftCoefficientSlope)
+    Q_PROPERTY(double spinningDragCoefficient READ spinningDragCoefficient WRITE setSpinningDragCoefficient)
+    Q_PROPERTY(double crossSectionalArea READ crossSectionalArea STORED false)
+    Q_PROPERTY(QVector3D buoyancyPosition READ buoyancyPosition WRITE setBuoyancyPosition)
+    Q_PROPERTY(QVector3D weightPosition READ weightPosition WRITE setWeightPosition)
+    Q_PROPERTY(bool hasHorizontalFins READ hasHorizontalFins WRITE setHasHorizontalFins)
+    Q_PROPERTY(double horizontalFinsArea READ horizontalFinsArea WRITE setHorizontalFinsArea)
+    Q_PROPERTY(double horizontalFinsLiftCoefficientSlope READ horizontalFinsLiftCoefficientSlope WRITE setHorizontalFinsLiftCoefficientSlope)
+    Q_PROPERTY(double horizontalFinsDragCoefficient READ horizontalFinsDragCoefficient WRITE setHorizontalFinsDragCoefficient)
+    Q_PROPERTY(double horizontalFinsPosition READ horizontalFinsPosition WRITE setHorizontalFinsPosition)
+    Q_PROPERTY(double horizontalFinsAspectRatio READ horizontalFinsAspectRatio WRITE setHorizontalFinsAspectRatio)
+    Q_PROPERTY(bool hasVerticalFins READ hasVerticalFins WRITE setHasVerticalFins)
+    Q_PROPERTY(double verticalFinsArea READ verticalFinsArea WRITE setVerticalFinsArea)
+    Q_PROPERTY(double verticalFinsLiftCoefficientSlope READ verticalFinsLiftCoefficientSlope WRITE setVerticalFinsLiftCoefficientSlope)
+    Q_PROPERTY(double verticalFinsDragCoefficient READ verticalFinsDragCoefficient WRITE setVerticalFinsDragCoefficient)
+    Q_PROPERTY(double verticalFinsPosition READ verticalFinsPosition WRITE setVerticalFinsPosition)
+    Q_PROPERTY(double verticalFinsAspectRatio READ verticalFinsAspectRatio WRITE setVerticalFinsAspectRatio)
 
 private:
-    void applyPropellorTorque();
-    void applyWeight();
-    void applyBuoyancy();
-    void applyThrust();
-    void applyDrag(Fluid *fluid);
-    void applyPitchLift(Fluid *fluid);
-    void applyYawLift(Fluid *fluid);
-    void applyLift(Fluid *fluid);
-    void applyPitchSpinningDrag(Fluid *fluid);
-    void applyYawSpinningDrag(Fluid *fluid);
-    void applySpinningDrag(Fluid *fluid);
-    void applyHorizontalFinsLift(Fluid *fluid);
-    void applyVerticalFinsLift(Fluid *fluid);
-    void applyFinsLift(Fluid *fluid);
-    void applyHorizontalFinsDrag(Fluid *fluid);
-    void applyVerticalFinsDrag(Fluid *fluid);
-    void applyFinsDrag(Fluid *fluid);
-    void applyHorizontalFinsDamping(Fluid *fluid);
-    void applyVerticalFinsDamping(Fluid *fluid);
-    void applyFinsDamping(Fluid *fluid);
-
     btCapsuleShape *m_shape;
     btRigidBody *m_body;
 

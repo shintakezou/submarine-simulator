@@ -97,23 +97,23 @@ Submarine *Submarine::makeDefault(QObject *parent)
     submarine->setDragCoefficient(0.04);
     submarine->setLiftCoefficientSlope(M_PI / 2.);
     submarine->setSpinningDragCoefficient(2);
-    submarine->setBuoyancyPosition(QVector3D(0, 0.35, 0));
+    submarine->setBuoyancyPosition(QVector3D(0, 0.15, 0));
     submarine->setWeightPosition(QVector3D());
-    submarine->setThrust(QVector3D(100, 0, 1));
+    submarine->setThrust(QVector3D(100, 0, 10));
     submarine->setPropellorTorque(20);
 
     submarine->setHasHorizontalFins(true);
     submarine->setHorizontalFinsLiftCoefficientSlope(M_PI);
     submarine->setHorizontalFinsArea(0.025);
     submarine->setHorizontalFinsDragCoefficient(0.03);
-    submarine->setHorizontalFinsPosition(0);
+    submarine->setHorizontalFinsPosition(-0.725);
     submarine->setHorizontalFinsAspectRatio(3);
 
     submarine->setHasVerticalFins(true);
     submarine->setVerticalFinsArea(0.025);
     submarine->setVerticalFinsLiftCoefficientSlope(M_PI);
     submarine->setVerticalFinsDragCoefficient(0.03);
-    submarine->setVerticalFinsPosition(0);
+    submarine->setVerticalFinsPosition(-0.725);
     submarine->setVerticalFinsAspectRatio(3);
 
     return submarine;

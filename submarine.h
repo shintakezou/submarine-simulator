@@ -32,11 +32,16 @@ public:
     void addToWorld(btDynamicsWorld *world);
     void addToScene(Qt3D::QEntity *scene);
 
+private:
+
+public:
     void update(const Fluid *fluid, Qt3D::QCamera *camera);
 
-    void applyForces(const Fluid *fluid);
-
 private:
+    void updateTransformation();
+    void updateCamera(Qt3D::QCamera *camera);
+    void updateForces(const Fluid *fluid);
+
     void applyPropellorTorque();
     void applyWeight();
     void applyBuoyancy();

@@ -308,6 +308,13 @@ void Submarine::addToScene(Qt3D::QEntity *scene)
 
 void Submarine::update(const Fluid *fluid, Qt3D::QCamera *camera)
 {
+    updateTransformation();
+    updateCamera(camera);
+    updateForces(fluid);
+}
+
+void Submarine::updateTransformation()
+{
     btMotionState *motionState = m_body->getMotionState();
 
     btTransform transform;
@@ -321,14 +328,16 @@ void Submarine::update(const Fluid *fluid, Qt3D::QCamera *camera)
     btVector3 a = q.getAxis();
     m_rotateTransform->setAxis(QVector3D(a.x(), a.y(), a.z()));
     m_rotateTransform->setAngleRad(q.getAngle());
-
-    camera->lookAt()->setPosition(position + QVector3D(2, 4, 10));
-    camera->lookAt()->setViewCenter(position);
-
-    applyForces(fluid);
 }
 
-void Submarine::applyForces(const Fluid *fluid)
+void Submarine::updateCamera(Qt3D::QCamera *camera)
+{
+    QVector3D position = m_translateTransform->translation();
+    camera->lookAt()->setPosition(position + QVector3D(2, 4, 10));
+    camera->lookAt()->setViewCenter(position);
+}
+
+void Submarine::updateForces(const Fluid *fluid)
 {
     applyPropellorTorque();
     applyWeight();

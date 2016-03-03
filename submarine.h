@@ -9,6 +9,7 @@ class QEntity;
 class QTranslateTransform;
 class QRotateTransform;
 class QCamera;
+class QPhongMaterial;
 }
 
 class btCapsuleShape;
@@ -33,6 +34,10 @@ public:
     void addToScene(Qt3D::QEntity *scene);
 
 private:
+    void makeBodyEntity(Qt3D::QPhongMaterial *material);
+    void makePropellorEntity(Qt3D::QPhongMaterial *material);
+    void makeFinsEntities(Qt3D::QPhongMaterial *material);
+    void makeForceArrows(Qt3D::QEntity *scene);
 
 public:
     void update(const Fluid *fluid, Qt3D::QCamera *camera);
@@ -179,9 +184,6 @@ private:
     Qt3D::QEntity *m_entity;
     Qt3D::QTranslateTransform *m_translateTransform;
     Qt3D::QRotateTransform *m_rotateTransform;
-
-    Qt3D::QEntity *m_propellorEntity;
-    Qt3D::QEntity *m_bodyEntity;
 
     ForceArrow *m_forceNoise;
     ForceArrow *m_forceWeight;

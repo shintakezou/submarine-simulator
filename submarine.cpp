@@ -99,7 +99,7 @@ Submarine *Submarine::makeDefault(QObject *parent)
     submarine->setSpinningDragCoefficient(2);
     submarine->setBuoyancyPosition(QVector3D(0, 0.35, 0));
     submarine->setWeightPosition(QVector3D());
-    submarine->setThrust(QVector3D(100, 0, 0));
+    submarine->setThrust(QVector3D(100, 0, 1));
     submarine->setPropellorTorque(20);
 
     submarine->setHasHorizontalFins(true);
@@ -155,115 +155,16 @@ void Submarine::addToScene(Qt3D::QEntity *scene)
     auto material = new Qt3D::QPhongMaterial(scene);
     material->setAmbient(QColor(50, 50, 50));
 
-    // body
+    makeBodyEntity(material);
+    makePropellorEntity(material);
+    makeFinsEntities(material);
 
-    m_bodyEntity = new Qt3D::QEntity(m_entity);
+    Qt3D::QTransform *transform = new Qt3D::QTransform(m_entity);
 
-    auto mesh = new Qt3D::QSphereMesh;
-    mesh->setRadius(0.5);
-    mesh->setRings(24);
-    mesh->setSlices(48);
-    m_bodyEntity->addComponent(mesh);
-
-    m_bodyEntity->addComponent(material);
-
-    Qt3D::QTransform *bodyTransform = new Qt3D::QTransform;
-
-    Qt3D::QScaleTransform *bodyScaleTransform = new Qt3D::QScaleTransform;
-    bodyScaleTransform->setScale3D(QVector3D(m_length, m_height, m_width));
-    bodyTransform->addTransform(bodyScaleTransform);
-
-    m_bodyEntity->addComponent(bodyTransform);
-
-    // propellor
-
-    m_propellorEntity = new Qt3D::QEntity(m_entity);
-    auto mesh2 = new Qt3D::QMesh;
-    mesh2->setSource(QUrl("qrc:/models/propellor.obj"));
-    m_propellorEntity->addComponent(mesh2);
-
-    m_propellorEntity->addComponent(material);
-
-    Qt3D::QTransform *propellorTransform = new Qt3D::QTransform;
-
-    Qt3D::QScaleTransform *propellorScaleTransform = new Qt3D::QScaleTransform;
-    propellorScaleTransform->setScale(0.025);
-    propellorTransform->addTransform(propellorScaleTransform);
-
-    Qt3D::QRotateTransform *propellorRotateTransform = new Qt3D::QRotateTransform;
-    propellorRotateTransform->setAxis(QVector3D(0, 1, 0));
-    propellorRotateTransform->setAngleDeg(-90);
-    propellorTransform->addTransform(propellorRotateTransform);
-
-    Qt3D::QRotateTransform *propellorRotateTransform2 = new Qt3D::QRotateTransform;
-    propellorRotateTransform2->setAxis(QVector3D(1, 0, 0));
-    propellorTransform->addTransform(propellorRotateTransform2);
-
-    auto propellorTranslateTransform = new Qt3D::QTranslateTransform;
-    propellorTranslateTransform->setDx(-m_length / 2);
-    propellorTransform->addTransform(propellorTranslateTransform);
-
-    auto propellorRotationAnimation = new QPropertyAnimation(scene);
-    propellorRotationAnimation->setTargetObject(propellorRotateTransform2);
-    propellorRotationAnimation->setPropertyName("angle");
-    propellorRotationAnimation->setStartValue(QVariant::fromValue(0));
-    propellorRotationAnimation->setEndValue(QVariant::fromValue(360));
-    propellorRotationAnimation->setDuration(500);
-    propellorRotationAnimation->setLoopCount(-1);
-    propellorRotationAnimation->start();
-
-    m_propellorEntity->addComponent(propellorTransform);
-
-    // fins
-    auto finMesh = new Qt3D::QMesh(scene);
-    finMesh->setSource(QUrl("qrc:/models/fin.obj"));
-    m_propellorEntity->addComponent(mesh2);
-
-    auto finScaleTransform = new Qt3D::QScaleTransform(scene);
-    finScaleTransform->setScale(0.025);
-
-    if (m_hasHorizontalFins) {
-        /*auto horizontalFin1Entity = new Qt3D::QEntity(m_entity);
-
-        horizontalFin1Entity->addComponent(finMesh);
-        horizontalFin1Entity->addComponent(material);
-
-        Qt3D::QTransform *hfin1Transform = new Qt3D::QTransform;
-        hfin1Transform->addTransform(finScaleTransform);
-
-        Qt3D::QRotateTransform *propellorRotateTransform = new Qt3D::QRotateTransform;
-        propellorRotateTransform->setAxis(QVector3D(1, 0, 0));
-        propellorRotateTransform->setAngleDeg(0);
-        hfin1Transform->addTransform(propellorRotateTransform);
-
-        Qt3D::QRotateTransform *propellorRotateTransform2 = new Qt3D::QRotateTransform;
-        propellorRotateTransform2->setAxis(QVector3D(1, 0, 0));
-        propellorTransform->addTransform(propellorRotateTransform2);
-
-        auto propellorTranslateTransform = new Qt3D::QTranslateTransform;
-        propellorTranslateTransform->setDx(-m_length / 2);
-        propellorTransform->addTransform(propellorTranslateTransform);
-
-        auto propellorRotationAnimation = new QPropertyAnimation(scene);
-        propellorRotationAnimation->setTargetObject(propellorRotateTransform2);
-        propellorRotationAnimation->setPropertyName("angle");
-        propellorRotationAnimation->setStartValue(QVariant::fromValue(0));
-        propellorRotationAnimation->setEndValue(QVariant::fromValue(360));
-        propellorRotationAnimation->setDuration(500);
-        propellorRotationAnimation->setLoopCount(-1);
-        propellorRotationAnimation->start();
-
-        m_propellorEntity->addComponent(propellorTransform);*/
-    }
-
-    // main entity
-
-    Qt3D::QTransform *transform = new Qt3D::QTransform;
-
-    m_translateTransform = new Qt3D::QTranslateTransform;
+    m_translateTransform = new Qt3D::QTranslateTransform(m_entity);
     m_translateTransform->setTranslation(QVector3D(0, 0, 0));
 
-    m_rotateTransform = new Qt3D::QRotateTransform;
+    m_rotateTransform = new Qt3D::QRotateTransform(m_entity);
     m_rotateTransform->setAxis(QVector3D(0, 1, 0));
     m_rotateTransform->setAngleDeg(0);
 
@@ -272,6 +173,154 @@ void Submarine::addToScene(Qt3D::QEntity *scene)
 
     m_entity->addComponent(transform);
 
+    makeForceArrows(scene);
+}
+
+void Submarine::makeBodyEntity(Qt3D::QPhongMaterial *material)
+{
+    auto bodyEntity = new Qt3D::QEntity(m_entity);
+
+    auto mesh = new Qt3D::QSphereMesh(bodyEntity);
+    mesh->setRadius(0.5);
+    mesh->setRings(24);
+    mesh->setSlices(48);
+    bodyEntity->addComponent(mesh);
+
+    bodyEntity->addComponent(material);
+
+    Qt3D::QTransform *bodyTransform = new Qt3D::QTransform(bodyEntity);
+
+    Qt3D::QScaleTransform *bodyScaleTransform = new Qt3D::QScaleTransform(bodyEntity);
+    bodyScaleTransform->setScale3D(QVector3D(m_length, m_height, m_width));
+    bodyTransform->addTransform(bodyScaleTransform);
+
+    bodyEntity->addComponent(bodyTransform);
+}
+
+void Submarine::makePropellorEntity(Qt3D::QPhongMaterial *material)
+{
+    auto propellorEntity = new Qt3D::QEntity(m_entity);
+
+    auto mesh = new Qt3D::QMesh(propellorEntity);
+    mesh->setSource(QUrl("qrc:/models/propellor.obj"));
+    propellorEntity->addComponent(mesh);
+
+    propellorEntity->addComponent(material);
+
+    auto transform = new Qt3D::QTransform(propellorEntity);
+
+    auto scaleTransform = new Qt3D::QScaleTransform(propellorEntity);
+    scaleTransform->setScale(0.025);
+    transform->addTransform(scaleTransform);
+
+    auto rotateTransform = new Qt3D::QRotateTransform(propellorEntity);
+    rotateTransform->setAxis(QVector3D(0, 1, 0));
+    rotateTransform->setAngleDeg(-90);
+    transform->addTransform(rotateTransform);
+
+    auto rotateTransform2 = new Qt3D::QRotateTransform(propellorEntity);
+    rotateTransform2->setAxis(QVector3D(1, 0, 0));
+    transform->addTransform(rotateTransform2);
+
+    auto translateTransform = new Qt3D::QTranslateTransform(propellorEntity);
+    translateTransform->setDx(-m_length / 2);
+    transform->addTransform(translateTransform);
+
+    auto rotationAnimation = new QPropertyAnimation(propellorEntity);
+    rotationAnimation->setTargetObject(rotateTransform2);
+    rotationAnimation->setPropertyName("angle");
+    rotationAnimation->setStartValue(QVariant::fromValue(0));
+    rotationAnimation->setEndValue(QVariant::fromValue(360));
+    rotationAnimation->setDuration(500);
+    rotationAnimation->setLoopCount(-1);
+    rotationAnimation->start();
+
+    propellorEntity->addComponent(transform);
+}
+
+void Submarine::makeFinsEntities(Qt3D::QPhongMaterial *material)
+{
+    auto mesh = new Qt3D::QMesh(m_entity);
+    mesh->setSource(QUrl("qrc:/models/fin.obj"));
+
+    auto scaleTransform = new Qt3D::QScaleTransform(m_entity);
+    scaleTransform->setScale(0.7);
+
+    if (m_hasHorizontalFins) {
+        auto hTranslateTransform = new Qt3D::QTranslateTransform(m_entity);
+        hTranslateTransform->setDx(m_horizontalFinsPosition);
+
+        auto hEntity1 = new Qt3D::QEntity(m_entity);
+
+        hEntity1->addComponent(mesh);
+        hEntity1->addComponent(material);
+
+        Qt3D::QTransform *hTransform1 = new Qt3D::QTransform(m_entity);
+        hTransform1->addTransform(scaleTransform);
+        hTransform1->addTransform(hTranslateTransform);
+
+        hEntity1->addComponent(hTransform1);
+
+        auto hEntity2 = new Qt3D::QEntity(m_entity);
+
+        hEntity2->addComponent(mesh);
+        hEntity2->addComponent(material);
+
+        Qt3D::QTransform *hTransform2 = new Qt3D::QTransform(m_entity);
+        hTransform2->addTransform(scaleTransform);
+
+        auto hRotateTransform2 = new Qt3D::QRotateTransform(m_entity);
+        hRotateTransform2->setAxis(QVector3D(1, 0, 0));
+        hRotateTransform2->setAngleDeg(180);
+        hTransform2->addTransform(hRotateTransform2);
+
+        hTransform2->addTransform(hTranslateTransform);
+
+        hEntity2->addComponent(hTransform2);
+    }
+
+    if (m_hasVerticalFins) {
+        auto vTranslateTransform = new Qt3D::QTranslateTransform(m_entity);
+        vTranslateTransform->setDx(m_verticalFinsPosition);
+
+        auto vEntity1 = new Qt3D::QEntity(m_entity);
+
+        vEntity1->addComponent(mesh);
+        vEntity1->addComponent(material);
+
+        Qt3D::QTransform *vTransform1 = new Qt3D::QTransform(m_entity);
+        vTransform1->addTransform(scaleTransform);
+
+        auto vRotateTransform1 = new Qt3D::QRotateTransform(m_entity);
+        vRotateTransform1->setAxis(QVector3D(1, 0, 0));
+        vRotateTransform1->setAngleDeg(90);
+        vTransform1->addTransform(vRotateTransform1);
+
+        vTransform1->addTransform(vTranslateTransform);
+
+        vEntity1->addComponent(vTransform1);
+
+        auto vEntity2 = new Qt3D::QEntity(m_entity);
+
+        vEntity2->addComponent(mesh);
+        vEntity2->addComponent(material);
+
+        Qt3D::QTransform *vTransform2 = new Qt3D::QTransform(m_entity);
+        vTransform2->addTransform(scaleTransform);
+
+        auto vRotateTransform2 = new Qt3D::QRotateTransform(m_entity);
+        vRotateTransform2->setAxis(QVector3D(1, 0, 0));
+        vRotateTransform2->setAngleDeg(270);
+        vTransform2->addTransform(vRotateTransform2);
+
+        vTransform2->addTransform(vTranslateTransform);
+
+        vEntity2->addComponent(vTransform2);
+    }
+}
+
+void Submarine::makeForceArrows(Qt3D::QEntity *scene)
+{
     m_forceNoise = new ForceArrow(Qt::red, 1.f);
     m_forceNoise->addToScene(scene);
 

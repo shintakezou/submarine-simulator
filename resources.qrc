@@ -2,5 +2,6 @@
     <qresource prefix="/">
         <file>models/arrow.obj</file>
         <file>models/propellor.obj</file>
+        <file>models/fin.obj</file>
     </qresource>
 </RCC>

@@ -22,9 +22,10 @@ public slots:
     void showAbout();
     void changeSimulationProperties();
     void updateCharts();
-    void resetSimulation();
-    void pauseSimulation();
+
     void playSimulation();
+    void pauseSimulation();
+    void restartSimulation();
 
 private:
     Ui::MainWindow *ui;

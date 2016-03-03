@@ -75,7 +75,7 @@ void MainWindow::changeSimulationProperties() {
     SimulationPropertiesDialogue d(this);
     d.loadSimulation(m_simulation);
     if (d.exec() == QDialog::Accepted) {
-        resetSimulation();
+        restartSimulation();
         d.saveSimulation(m_simulation);
     }
 }
@@ -129,36 +129,22 @@ void MainWindow::updateCharts() {
     ui->chartPosition->replot();
 }
 
-void MainWindow::resetSimulation() {
+void MainWindow::playSimulation()
+{
+    m_simulation->play();
+}
+
+void MainWindow::pauseSimulation()
+{
+    m_simulation->pause();
+}
+
+void MainWindow::restartSimulation()
+{
     clearPlots(ui->chartAngle);
     clearPlots(ui->chartAngularVelocity);
     clearPlots(ui->chartLinearVelocity);
     clearPlots(ui->chartPosition);
 
-    disconnect(m_timer, &QTimer::timeout, m_simulation, &Simulation::step);
-    ui->horizontalLayout->removeWidget(m_simulationWidget);
-    m_simulation->hide();
-
-    // FIXME find a way around this
-    // instead we recreate the physics world
-    // tell the submarine to join the world again (deleting previous btRigidBody)
-    /*m_simulationWidget->deleteLater();
-    delete m_simulation;*/
-
-    m_simulation = new Simulation();
-    m_simulation->show();
-
-    connect(m_timer, &QTimer::timeout, m_simulation, &Simulation::step);
-
-    m_simulationWidget = QWidget::createWindowContainer(m_simulation, this);
-    m_simulationWidget->setMinimumSize(320, 320);
-    ui->horizontalLayout->insertWidget(0, m_simulationWidget);
-}
-
-void MainWindow::pauseSimulation() {
-    m_simulation->pause();
-}
-
-void MainWindow::playSimulation() {
-    m_simulation->play();
+    m_simulation->restart();
 }

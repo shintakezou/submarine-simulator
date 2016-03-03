@@ -124,6 +124,19 @@ void Simulation::pause()
     m_paused = true;
 }
 
+void Simulation::restart()
+{
+    m_submarine->removeFromWorld(m_world);
+    delete m_world;
+
+    m_world = new btDiscreteDynamicsWorld(m_dispatcher, m_pairCache,
+                                          m_solver, m_collisionConfiguration);
+
+    m_world->setGravity(btVector3(0, 0, 0));
+
+    m_submarine->addToWorld(m_world);
+}
+
 Fluid *Simulation::fluid() const
 {
     return m_fluid;

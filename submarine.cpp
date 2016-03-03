@@ -144,6 +144,21 @@ void Submarine::addToWorld(btDynamicsWorld *world)
     world->addRigidBody(m_body);
 }
 
+void Submarine::removeFromWorld(btDynamicsWorld *world)
+{
+    if (!m_body && !m_shape) {
+        qFatal("Not added to the world.");
+    }
+
+    world->removeRigidBody(m_body);
+
+    delete m_body;
+    delete m_shape;
+
+    m_body = 0;
+    m_shape = 0;
+}
+
 void Submarine::addToScene(Qt3D::QEntity *scene)
 {
     if (m_entity) {

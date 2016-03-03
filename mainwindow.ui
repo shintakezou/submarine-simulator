@@ -53,7 +53,7 @@
      <string>Simulation</string>
     </property>
     <addaction name="actionChange_Properties"/>
-    <addaction name="actionReset"/>
+    <addaction name="actionRestart"/>
    </widget>
    <widget class="QMenu" name="menuWindow">
     <property name="title">
@@ -80,7 +80,7 @@
    <addaction name="actionChange_Properties"/>
    <addaction name="actionPlay"/>
    <addaction name="actionPause"/>
-   <addaction name="actionReset"/>
+   <addaction name="actionRestart"/>
   </widget>
   <action name="actionAbout">
    <property name="text">
@@ -98,13 +98,16 @@
     <string>Change Properties</string>
    </property>
   </action>
-  <action name="actionReset">
+  <action name="actionRestart">
    <property name="icon">
     <iconset resource="resources.qrc">
      <normaloff>:/icons/restart.png</normaloff>:/icons/restart.png</iconset>
    </property>
    <property name="text">
-    <string>Reset</string>
+    <string>Restart</string>
+   </property>
+   <property name="toolTip">
+    <string>Restart</string>
    </property>
   </action>
   <action name="actionPlay">
@@ -172,10 +175,10 @@
    </hints>
   </connection>
   <connection>
-   <sender>actionReset</sender>
+   <sender>actionRestart</sender>
    <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
-   <slot>resetSimulation()</slot>
+   <slot>restartSimulation()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>-1</x>
@@ -223,7 +226,7 @@
  <slots>
   <slot>showAbout()</slot>
   <slot>changeSimulationProperties()</slot>
-  <slot>resetSimulation()</slot>
+  <slot>restartSimulation()</slot>
   <slot>playSimulation()</slot>
   <slot>pauseSimulation()</slot>
  </slots>

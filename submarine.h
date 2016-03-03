@@ -31,6 +31,8 @@ public:
     static Submarine *makeDefault(QObject *parent = 0);
 
     void addToWorld(btDynamicsWorld *world);
+    void removeFromWorld(btDynamicsWorld *world);
+
     void addToScene(Qt3D::QEntity *scene);
 
 private:

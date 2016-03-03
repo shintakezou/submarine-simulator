@@ -30,6 +30,7 @@ public slots:
     void step();
     void play();
     void pause();
+    void restart();
 
 public:
     Fluid *fluid() const;

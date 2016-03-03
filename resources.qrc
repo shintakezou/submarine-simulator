@@ -3,5 +3,8 @@
         <file>models/arrow.obj</file>
         <file>models/propellor.obj</file>
         <file>models/fin.obj</file>
+        <file>icons/pause.png</file>
+        <file>icons/play.png</file>
+        <file>icons/restart.png</file>
     </qresource>
 </RCC>

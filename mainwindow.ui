@@ -78,9 +78,9 @@
     <bool>false</bool>
    </attribute>
    <addaction name="actionChange_Properties"/>
-   <addaction name="actionReset"/>
    <addaction name="actionPlay"/>
    <addaction name="actionPause"/>
+   <addaction name="actionReset"/>
   </widget>
   <action name="actionAbout">
    <property name="text">
@@ -99,16 +99,28 @@
    </property>
   </action>
   <action name="actionReset">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/icons/restart.png</normaloff>:/icons/restart.png</iconset>
+   </property>
    <property name="text">
     <string>Reset</string>
    </property>
   </action>
   <action name="actionPlay">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/icons/play.png</normaloff>:/icons/play.png</iconset>
+   </property>
    <property name="text">
     <string>Play</string>
    </property>
   </action>
   <action name="actionPause">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/icons/pause.png</normaloff>:/icons/pause.png</iconset>
+   </property>
    <property name="text">
     <string>Pause</string>
    </property>
@@ -123,7 +135,9 @@
    <container>1</container>
   </customwidget>
  </customwidgets>
- <resources/>
+ <resources>
+  <include location="resources.qrc"/>
+ </resources>
  <connections>
   <connection>
    <sender>actionAbout</sender>

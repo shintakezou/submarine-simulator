@@ -389,7 +389,7 @@ double Submarine::length() const
 void Submarine::setLength(double length)
 {
     m_length = length;
-    m_liftPosition = QVector3D(length / 2., 0, 0);
+    m_liftPosition = QVector3D(length / 4., 0, 0);
 }
 
 double Submarine::width() const

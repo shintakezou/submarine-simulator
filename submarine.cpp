@@ -736,9 +736,9 @@ double Submarine::crossSectionalArea() const
 
 double Submarine::pitch() const
 {
-    return m_body->getOrientation().z();
+    //return m_body->getOrientation().z();
 
-    /*btTransform transform;
+    btTransform transform;
     m_body->getMotionState()->getWorldTransform(transform);
 
     btMatrix3x3 basis = transform.getBasis();
@@ -747,14 +747,14 @@ double Submarine::pitch() const
     // yes, those do appear to be in the wrong order, but it is correct
     basis.getEulerYPR(pitch, yaw, roll);
 
-    return wrapAngle(pitch);*/
+    return wrapAngle(pitch);
 }
 
 double Submarine::yaw() const
 {
-    return m_body->getOrientation().y();
+    //return m_body->getOrientation().y();
 
-    /*btTransform transform;
+    btTransform transform;
     m_body->getMotionState()->getWorldTransform(transform);
 
     btMatrix3x3 basis = transform.getBasis();
@@ -763,14 +763,14 @@ double Submarine::yaw() const
     // yes, those do appear to be in the wrong order, but it is correct
     basis.getEulerYPR(pitch, yaw, roll);
 
-    return wrapAngle(yaw);*/
+    return wrapAngle(yaw);
 }
 
 double Submarine::roll() const
 {
-    return m_body->getOrientation().x();
+    //return m_body->getOrientation().x();
 
-    /*btTransform transform;
+    btTransform transform;
     m_body->getMotionState()->getWorldTransform(transform);
 
     btMatrix3x3 basis = transform.getBasis();
@@ -779,7 +779,7 @@ double Submarine::roll() const
     // yes, those do appear to be in the wrong order, but it is correct
     basis.getEulerYPR(pitch, yaw, roll);
 
-    return wrapAngle(roll);*/
+    return wrapAngle(roll);
 }
 
 QVector2D Submarine::pitchVelocity() const

@@ -24,7 +24,8 @@ SOURCES += main.cpp\
     fluid.cpp \
     forcearrow.cpp \
     simulationpropertiesdialogue.cpp \
-    qcustomplot.cpp
+    qcustomplot.cpp \
+    fin.cpp
 
 HEADERS  += mainwindow.h \
     simulation.h \
@@ -32,10 +33,15 @@ HEADERS  += mainwindow.h \
     fluid.h \
     forcearrow.h \
     simulationpropertiesdialogue.h \
-    qcustomplot.h
+    qcustomplot.h \
+    fin.h
 
 FORMS    += mainwindow.ui \
     simulationpropertiesdialogue.ui
 
 RESOURCES += \
     resources.qrc
+
+mac {
+    PKG_CONFIG = /usr/local/bin/pkg-config
+}

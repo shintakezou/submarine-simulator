@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QVector3D>
+#include <QVector>
 
 namespace Qt3D {
 class QEntity;
@@ -17,6 +18,7 @@ class btRigidBody;
 class btDynamicsWorld;
 class btVector3;
 
+class Fin;
 class Fluid;
 class ForceArrow;
 
@@ -38,7 +40,7 @@ public:
 private:
     void makeBodyEntity(Qt3D::QPhongMaterial *material);
     void makePropellorEntity(Qt3D::QPhongMaterial *material);
-    void makeFinsEntities(Qt3D::QPhongMaterial *material);
+    void makeFinsEntities(Qt3D::QEntity *scene, Qt3D::QPhongMaterial *material);
     void makeForceArrows(Qt3D::QEntity *scene);
 
 public:
@@ -60,17 +62,10 @@ private:
     void applyPitchSpinningDrag(const Fluid *fluid);
     void applyYawSpinningDrag(const Fluid *fluid);
     void applySpinningDrag(const Fluid *fluid);
-    void applyHorizontalFinsLift(const Fluid *fluid);
-    void applyVerticalFinsLift(const Fluid *fluid);
-    void applyFinsLift(const Fluid *fluid);
-    void applyHorizontalFinsDrag(const Fluid *fluid);
-    void applyVerticalFinsDrag(const Fluid *fluid);
-    void applyFinsDrag(const Fluid *fluid);
-    void applyHorizontalFinsDamping(const Fluid *fluid);
-    void applyVerticalFinsDamping(const Fluid *fluid);
-    void applyFinsDamping(const Fluid *fluid);
 
 public:
+    btRigidBody *body() const;
+
     double crossSectionalArea() const;
 
     double pitch() const;
@@ -186,6 +181,8 @@ private:
     Qt3D::QEntity *m_entity;
     Qt3D::QTranslateTransform *m_translateTransform;
     Qt3D::QRotateTransform *m_rotateTransform;
+
+    QVector<Fin *> m_fins;
 
     ForceArrow *m_forceNoise;
     ForceArrow *m_forceWeight;

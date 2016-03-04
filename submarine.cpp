@@ -256,9 +256,6 @@ void Submarine::makePropellorEntity(Qt3D::QPhongMaterial *material)
 
 void Submarine::makeFinsEntities(Qt3D::QPhongMaterial *material)
 {
-    auto scaleTransform = new Qt3D::QScaleTransform(m_entity);
-    scaleTransform->setScale(0.7);
-
     if (m_hasHorizontalFins) {
         auto hTranslateTransform = new Qt3D::QTranslateTransform(m_entity);
         hTranslateTransform->setDx(m_horizontalFinsPosition);
@@ -268,7 +265,6 @@ void Submarine::makeFinsEntities(Qt3D::QPhongMaterial *material)
         hEntity1->addComponent(material);
 
         Qt3D::QTransform *hTransform1 = new Qt3D::QTransform(m_entity);
-        hTransform1->addTransform(scaleTransform);
         hTransform1->addTransform(hTranslateTransform);
 
         hEntity1->addComponent(hTransform1);
@@ -278,7 +274,6 @@ void Submarine::makeFinsEntities(Qt3D::QPhongMaterial *material)
         hEntity2->addComponent(material);
 
         Qt3D::QTransform *hTransform2 = new Qt3D::QTransform(m_entity);
-        hTransform2->addTransform(scaleTransform);
 
         auto hRotateTransform2 = new Qt3D::QRotateTransform(m_entity);
         hRotateTransform2->setAxis(QVector3D(1, 0, 0));
@@ -299,7 +294,6 @@ void Submarine::makeFinsEntities(Qt3D::QPhongMaterial *material)
         vEntity1->addComponent(material);
 
         Qt3D::QTransform *vTransform1 = new Qt3D::QTransform(m_entity);
-        vTransform1->addTransform(scaleTransform);
 
         auto vRotateTransform1 = new Qt3D::QRotateTransform(m_entity);
         vRotateTransform1->setAxis(QVector3D(1, 0, 0));
@@ -315,7 +309,6 @@ void Submarine::makeFinsEntities(Qt3D::QPhongMaterial *material)
         vEntity2->addComponent(material);
 
         Qt3D::QTransform *vTransform2 = new Qt3D::QTransform(m_entity);
-        vTransform2->addTransform(scaleTransform);
 
         auto vRotateTransform2 = new Qt3D::QRotateTransform(m_entity);
         vRotateTransform2->setAxis(QVector3D(1, 0, 0));

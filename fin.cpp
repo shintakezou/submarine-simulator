@@ -177,8 +177,6 @@ void Fin::applyLift(const Fluid *fluid) const
             return;
         }
 
-        qDebug() << position.x() << position.y();
-
         submarine()->body()->applyForce(force, position);
 
         position += transform.getOrigin();
@@ -295,7 +293,6 @@ void Fin::setAspectRatio(double aspectRatio)
 {
     m_aspectRatio = aspectRatio;
 }
-
 
 double Fin::liftCoefficientSlope() const
 {

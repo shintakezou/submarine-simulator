@@ -575,7 +575,8 @@ double Submarine::roll() const
     btMatrix3x3 basis = transform.getBasis();
 
     float yaw, pitch, roll;
-    // yes, those do appear to be in the wrong order, but it is correct
+
+    // yes, those do appear to be in the wrong order, but I'm sure it is correct
     basis.getEulerYPR(pitch, yaw, roll);
 
     return wrapAngle(roll);

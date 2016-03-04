@@ -2,8 +2,16 @@
 #include <Qt3DCore/QTransform>
 #include <Qt3DCore/QTranslateTransform>
 #include <Qt3DRenderer/QMesh>
+#include <QtMath>
+
+#include "submarine.h"
 
 #include "fin.h"
+
+float calculateEllipseProportion(float proportion)
+{
+    return qSqrt(1.f - (proportion * proportion));
+}
 
 Fin::Fin(Qt3D::QNode *parent) :
     Qt3D::QEntity(parent),
@@ -19,13 +27,20 @@ Fin::Fin(Qt3D::QNode *parent) :
     m_translateTransform = new Qt3D::QTranslateTransform(this);
 
     auto transform = new Qt3D::QTransform(this);
-    transform->addTransform(m_rotateTransform);
     transform->addTransform(m_translateTransform);
+    transform->addTransform(m_rotateTransform);
     addComponent(transform);
 }
 
 void Fin::calculatePosition(Submarine *submarine, Orientation orientation, float position) {
     m_translateTransform->setDx(position);
+
+    float p = qAbs(position) / (submarine->length() / 2.);
+    float radius = calculateEllipseProportion(p) * (submarine->width() / 2.f);
+
+    m_translateTransform->setDy(radius);
+
+    // TODO rotate fin
 
     switch (orientation) {
     case North:

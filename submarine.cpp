@@ -318,8 +318,6 @@ void Submarine::update(const Fluid *fluid, Qt3D::QCamera *camera)
     updateTransformation();
     updateCamera(camera);
     updateForces(fluid);
-
-    qDebug() << roll();
 }
 
 void Submarine::updateTransformation()
@@ -635,6 +633,7 @@ void Submarine::applyHorizontalFinsDamping(const Fluid *fluid)
 {
     float span = qSqrt(m_horizontalFinsAspectRatio * m_horizontalFinsArea);
 
+    // FIXME should be position not area here
     float p = qAbs(m_horizontalFinsArea) / (m_length / 2.);
     float radius = getEllipseProportion(p) * m_width / 2.f;
     if (m_horizontalFinsArea < 0) {

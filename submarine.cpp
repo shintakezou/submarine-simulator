@@ -257,67 +257,23 @@ void Submarine::makePropellorEntity(Qt3D::QPhongMaterial *material)
 void Submarine::makeFinsEntities(Qt3D::QPhongMaterial *material)
 {
     if (m_hasHorizontalFins) {
-        auto hTranslateTransform = new Qt3D::QTranslateTransform(m_entity);
-        hTranslateTransform->setDx(m_horizontalFinsPosition);
-
         auto hEntity1 = new Fin(m_entity);
-
+        hEntity1->calculatePosition(this, Fin::North, m_horizontalFinsPosition);
         hEntity1->addComponent(material);
 
-        Qt3D::QTransform *hTransform1 = new Qt3D::QTransform(m_entity);
-        hTransform1->addTransform(hTranslateTransform);
-
-        hEntity1->addComponent(hTransform1);
-
         auto hEntity2 = new Fin(m_entity);
-
+        hEntity2->calculatePosition(this, Fin::South, m_horizontalFinsPosition);
         hEntity2->addComponent(material);
-
-        Qt3D::QTransform *hTransform2 = new Qt3D::QTransform(m_entity);
-
-        auto hRotateTransform2 = new Qt3D::QRotateTransform(m_entity);
-        hRotateTransform2->setAxis(QVector3D(1, 0, 0));
-        hRotateTransform2->setAngleDeg(180);
-        hTransform2->addTransform(hRotateTransform2);
-
-        hTransform2->addTransform(hTranslateTransform);
-
-        hEntity2->addComponent(hTransform2);
     }
 
     if (m_hasVerticalFins) {
-        auto vTranslateTransform = new Qt3D::QTranslateTransform(m_entity);
-        vTranslateTransform->setDx(m_verticalFinsPosition);
-
         auto vEntity1 = new Fin(m_entity);
-
+        vEntity1->calculatePosition(this, Fin::East, m_verticalFinsPosition);
         vEntity1->addComponent(material);
 
-        Qt3D::QTransform *vTransform1 = new Qt3D::QTransform(m_entity);
-
-        auto vRotateTransform1 = new Qt3D::QRotateTransform(m_entity);
-        vRotateTransform1->setAxis(QVector3D(1, 0, 0));
-        vRotateTransform1->setAngleDeg(90);
-        vTransform1->addTransform(vRotateTransform1);
-
-        vTransform1->addTransform(vTranslateTransform);
-
-        vEntity1->addComponent(vTransform1);
-
         auto vEntity2 = new Fin(m_entity);
-
+        vEntity2->calculatePosition(this, Fin::West, m_verticalFinsPosition);
         vEntity2->addComponent(material);
-
-        Qt3D::QTransform *vTransform2 = new Qt3D::QTransform(m_entity);
-
-        auto vRotateTransform2 = new Qt3D::QRotateTransform(m_entity);
-        vRotateTransform2->setAxis(QVector3D(1, 0, 0));
-        vRotateTransform2->setAngleDeg(270);
-        vTransform2->addTransform(vRotateTransform2);
-
-        vTransform2->addTransform(vTranslateTransform);
-
-        vEntity2->addComponent(vTransform2);
     }
 }
 

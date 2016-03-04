@@ -25,7 +25,8 @@ SOURCES += main.cpp\
     forcearrow.cpp \
     simulationpropertiesdialogue.cpp \
     qcustomplot.cpp \
-    fin.cpp
+    fin.cpp \
+    physics/force.cpp
 
 HEADERS  += mainwindow.h \
     simulation.h \
@@ -34,7 +35,8 @@ HEADERS  += mainwindow.h \
     forcearrow.h \
     simulationpropertiesdialogue.h \
     qcustomplot.h \
-    fin.h
+    fin.h \
+    physics/force.h
 
 FORMS    += mainwindow.ui \
     simulationpropertiesdialogue.ui

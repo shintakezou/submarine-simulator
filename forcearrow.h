@@ -14,6 +14,10 @@ class QScaleTransform;
 
 class btVector3;
 
+namespace Physics {
+class Force;
+}
+
 class ForceArrow : public QObject
 {
     Q_OBJECT
@@ -26,6 +30,7 @@ public:
 
     void update(QVector3D force, QVector3D position);
     void update(btVector3 force, btVector3 position);
+    void update(const Physics::Force *force);
 
     QColor colour() const;
     void setColour(const QColor &colour);

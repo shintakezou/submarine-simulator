@@ -10,6 +10,8 @@
 #include <Qt3DRenderer/QPhongMaterial>
 #include <Qt3DRenderer/QMesh>
 
+#include "physics/force.h"
+
 #include "forcearrow.h"
 
 ForceArrow::ForceArrow(QColor colour, float scale, QObject *parent) :
@@ -75,6 +77,11 @@ void ForceArrow::update(btVector3 force, btVector3 position)
     QVector3D forceVector(force.x(), force.y(), force.z());
     QVector3D positionVector(position.x(), position.y(), position.z());
     update(forceVector, positionVector);
+}
+
+void ForceArrow::update(const Physics::Force *force)
+{
+    update(force->value(), force->worldPosition());
 }
 
 QColor ForceArrow::colour() const

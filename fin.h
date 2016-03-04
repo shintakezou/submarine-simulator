@@ -1,16 +1,15 @@
 #ifndef FIN_H
 #define FIN_H
 
-#include <QObject>
+#include <Qt3DCore/QEntity>
 
 namespace Qt3D {
-class QEntity;
 }
 
 class Fin : public Qt3D::QEntity
 {
 public:
-    Fin();
+    Fin(Qt3D::QNode *parent = 0);
 };
 
 #endif // FIN_H

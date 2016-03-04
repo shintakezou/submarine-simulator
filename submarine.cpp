@@ -24,6 +24,7 @@
 #include <QtMath>
 #include <QtDebug>
 
+#include "fin.h"
 #include "fluid.h"
 #include "forcearrow.h"
 
@@ -255,9 +256,6 @@ void Submarine::makePropellorEntity(Qt3D::QPhongMaterial *material)
 
 void Submarine::makeFinsEntities(Qt3D::QPhongMaterial *material)
 {
-    auto mesh = new Qt3D::QMesh(m_entity);
-    mesh->setSource(QUrl("qrc:/models/fin.obj"));
-
     auto scaleTransform = new Qt3D::QScaleTransform(m_entity);
     scaleTransform->setScale(0.7);
 
@@ -265,9 +263,8 @@ void Submarine::makeFinsEntities(Qt3D::QPhongMaterial *material)
         auto hTranslateTransform = new Qt3D::QTranslateTransform(m_entity);
         hTranslateTransform->setDx(m_horizontalFinsPosition);
 
-        auto hEntity1 = new Qt3D::QEntity(m_entity);
+        auto hEntity1 = new Fin(m_entity);
 
-        hEntity1->addComponent(mesh);
         hEntity1->addComponent(material);
 
         Qt3D::QTransform *hTransform1 = new Qt3D::QTransform(m_entity);
@@ -276,9 +273,8 @@ void Submarine::makeFinsEntities(Qt3D::QPhongMaterial *material)
 
         hEntity1->addComponent(hTransform1);
 
-        auto hEntity2 = new Qt3D::QEntity(m_entity);
+        auto hEntity2 = new Fin(m_entity);
 
-        hEntity2->addComponent(mesh);
         hEntity2->addComponent(material);
 
         Qt3D::QTransform *hTransform2 = new Qt3D::QTransform(m_entity);
@@ -298,9 +294,8 @@ void Submarine::makeFinsEntities(Qt3D::QPhongMaterial *material)
         auto vTranslateTransform = new Qt3D::QTranslateTransform(m_entity);
         vTranslateTransform->setDx(m_verticalFinsPosition);
 
-        auto vEntity1 = new Qt3D::QEntity(m_entity);
+        auto vEntity1 = new Fin(m_entity);
 
-        vEntity1->addComponent(mesh);
         vEntity1->addComponent(material);
 
         Qt3D::QTransform *vTransform1 = new Qt3D::QTransform(m_entity);
@@ -315,9 +310,8 @@ void Submarine::makeFinsEntities(Qt3D::QPhongMaterial *material)
 
         vEntity1->addComponent(vTransform1);
 
-        auto vEntity2 = new Qt3D::QEntity(m_entity);
+        auto vEntity2 = new Fin(m_entity);
 
-        vEntity2->addComponent(mesh);
         vEntity2->addComponent(material);
 
         Qt3D::QTransform *vTransform2 = new Qt3D::QTransform(m_entity);
@@ -375,6 +369,8 @@ void Submarine::update(const Fluid *fluid, Qt3D::QCamera *camera)
     updateTransformation();
     updateCamera(camera);
     updateForces(fluid);
+
+    qDebug() << roll();
 }
 
 void Submarine::updateTransformation()

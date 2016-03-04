@@ -33,7 +33,8 @@ HEADERS  += mainwindow.h \
     fluid.h \
     forcearrow.h \
     simulationpropertiesdialogue.h \
-    qcustomplot.h
+    qcustomplot.h \
+    fin.h
 
 FORMS    += mainwindow.ui \
     simulationpropertiesdialogue.ui

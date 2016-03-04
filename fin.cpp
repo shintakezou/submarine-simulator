@@ -112,7 +112,7 @@ void Fin::calculatePosition(Orientation orientation, float position)
 void Fin::applyForces(const Fluid *fluid) const
 {
     applyLift(fluid);
-    //applyDrag(fluid);
+    applyDrag(fluid);
     applyDamping(fluid);
 }
 

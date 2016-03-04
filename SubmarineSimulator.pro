@@ -24,7 +24,8 @@ SOURCES += main.cpp\
     fluid.cpp \
     forcearrow.cpp \
     simulationpropertiesdialogue.cpp \
-    qcustomplot.cpp
+    qcustomplot.cpp \
+    fin.cpp
 
 HEADERS  += mainwindow.h \
     simulation.h \

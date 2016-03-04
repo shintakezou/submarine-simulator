@@ -41,3 +41,7 @@ FORMS    += mainwindow.ui \
 
 RESOURCES += \
     resources.qrc
+
+mac {
+    PKG_CONFIG = /usr/local/bin/pkg-config
+}

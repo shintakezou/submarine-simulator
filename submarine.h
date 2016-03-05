@@ -18,6 +18,12 @@ class btRigidBody;
 class btDynamicsWorld;
 class btVector3;
 
+namespace Physics {
+class Force;
+class Torque;
+class PropellorTorque;
+}
+
 class Fin;
 class Fluid;
 class ForceArrow;
@@ -148,8 +154,7 @@ public:
     double verticalFinsAspectRatio() const;
     void setVerticalFinsAspectRatio(double verticalFinsAspectRatio);
 
-    double propellorTorque() const;
-    void setPropellorTorque(double propellorTorque);
+    Physics::PropellorTorque *propellorTorque() const;
 
     Q_PROPERTY(double length READ length WRITE setLength)
     Q_PROPERTY(double width READ width WRITE setWidth)
@@ -203,7 +208,7 @@ private:
     double m_dragCoefficient;
     double m_liftCoefficientSlope;
     double m_spinningDragCoefficient;
-    double m_propellorTorque;
+    Physics::PropellorTorque *m_propellorTorque;
 
     QVector3D m_buoyancyPosition;
     QVector3D m_weightPosition;

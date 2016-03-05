@@ -27,6 +27,8 @@
 #include "fin.h"
 #include "fluid.h"
 #include "forcearrow.h"
+#include "physics/force.h"
+#include "physics/torque.h"
 
 #include "submarine.h"
 
@@ -60,6 +62,7 @@ Submarine::Submarine(QObject *parent) :
     m_dragCoefficient(0),
     m_liftCoefficientSlope(0),
     m_spinningDragCoefficient(0),
+    m_propellorTorque(new Physics::PropellorTorque(this)),
     m_hasHorizontalFins(false),
     m_horizontalFinsArea(0),
     m_horizontalFinsLiftCoefficientSlope(0),
@@ -101,7 +104,7 @@ Submarine *Submarine::makeDefault(QObject *parent)
     submarine->setBuoyancyPosition(QVector3D(0, 0.15, 0));
     submarine->setWeightPosition(QVector3D());
     submarine->setThrust(QVector3D(100, 0, 10));
-    submarine->setPropellorTorque(20);
+    submarine->propellorTorque()->setValue(QVector3D(20, 0, 0));
 
     submarine->setHasHorizontalFins(true);
     submarine->setHorizontalFinsLiftCoefficientSlope(M_PI);
@@ -143,6 +146,8 @@ void Submarine::addToWorld(btDynamicsWorld *world)
     m_body->setMotionState(motionState);
 
     world->addRigidBody(m_body);
+
+    m_propellorTorque->setBody(m_body);
 }
 
 void Submarine::removeFromWorld(btDynamicsWorld *world)
@@ -369,7 +374,8 @@ void Submarine::updateForces(const Fluid *fluid)
 
 void Submarine::applyPropellorTorque()
 {
-    m_body->applyTorque(btVector3(m_propellorTorque, 0, 0));
+    m_propellorTorque->apply();
+    //m_body->applyTorque(btVector3(m_propellorTorque, 0, 0));
 }
 
 void Submarine::applyWeight()
@@ -848,12 +854,7 @@ void Submarine::setVerticalFinsAspectRatio(double verticalFinsAspectRatio)
     m_verticalFinsAspectRatio = verticalFinsAspectRatio;
 }
 
-double Submarine::propellorTorque() const
+Physics::PropellorTorque *Submarine::propellorTorque() const
 {
     return m_propellorTorque;
-}
-
-void Submarine::setPropellorTorque(double propellorTorque)
-{
-    m_propellorTorque = propellorTorque;
 }

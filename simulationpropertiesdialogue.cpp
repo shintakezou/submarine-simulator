@@ -1,3 +1,5 @@
+#include "physics/force.h"
+#include "physics/torque.h"
 #include "simulation.h"
 #include "fluid.h"
 #include "submarine.h"
@@ -57,7 +59,7 @@ void SimulationPropertiesDialogue::loadSubmarine(const Submarine *submarine)
     ui->spinSubThrustX->setValue(submarine->thrust().x());
     ui->spinSubThrustY->setValue(submarine->thrust().y());
     ui->spinSubThrustZ->setValue(submarine->thrust().z());
-    ui->spinSubPropellorTorque->setValue(submarine->propellorTorque());
+    ui->spinSubPropellorTorque->setValue(submarine->propellorTorque()->value().x());
 
     ui->checkHorizontalFinsEnabled->setChecked(submarine->hasHorizontalFins());
     ui->spinHorizontalFinsArea->setValue(submarine->horizontalFinsArea());
@@ -92,7 +94,7 @@ void SimulationPropertiesDialogue::saveSubmarine(Submarine *submarine) const
     submarine->setThrust(QVector3D(ui->spinSubThrustX->value(),
                                    ui->spinSubThrustY->value(),
                                    ui->spinSubThrustZ->value()));
-    submarine->setPropellorTorque(ui->spinSubPropellorTorque->value());
+    submarine->propellorTorque()->setValue(QVector3D(ui->spinSubPropellorTorque->value(), 0, 0));
 
     submarine->setHasHorizontalFins(ui->checkHorizontalFinsEnabled->isChecked());
     submarine->setHorizontalFinsArea(ui->spinHorizontalFinsArea->value());

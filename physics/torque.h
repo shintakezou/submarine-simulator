@@ -13,7 +13,7 @@ class Torque : public QObject
     Q_OBJECT
 
 public:
-    explicit Torque(QString name, btRigidBody *body, QObject *parent = 0);
+    explicit Torque(QString name, QObject *parent = 0);
 
     void apply();
 
@@ -25,6 +25,7 @@ public:
     void setName(const QString &name);
 
     btRigidBody *body() const;
+    void setBody(btRigidBody *body);
 
     QVector3D value() const;
 
@@ -38,6 +39,28 @@ protected:
     btRigidBody *m_body;
 
     QVector3D m_value;
+};
+
+class FixedTorque : public Torque
+{
+    Q_OBJECT
+
+public:
+    explicit FixedTorque(QString name, QObject *parent = 0);
+
+protected:
+    void calculate();
+
+public:
+    void setValue(const QVector3D &value);
+};
+
+class PropellorTorque : public FixedTorque
+{
+    Q_OBJECT
+
+public:
+    explicit PropellorTorque(QObject *parent = 0);
 };
 
 } // namespace Physics

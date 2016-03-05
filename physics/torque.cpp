@@ -1,19 +1,26 @@
 #include <bullet/btBulletDynamicsCommon.h>
 
+#include <QtDebug>
+
 #include "physics/torque.h"
 
 using namespace Physics;
 
-Torque::Torque(QString name, btRigidBody *body, QObject *parent) :
+Torque::Torque(QString name, QObject *parent) :
     QObject(parent),
     m_name(name),
-    m_body(body)
+    m_body(0)
 {
 
 }
 
 void Torque::apply()
 {
+    if (!m_body) {
+        qCritical() << "Body not set on:" << m_name;
+        return;
+    }
+
     calculate();
 
     btVector3 torque = btVector3(m_value.x(), m_value.y(), m_value.z());
@@ -35,7 +42,34 @@ btRigidBody *Torque::body() const
     return m_body;
 }
 
+void Torque::setBody(btRigidBody *body)
+{
+    m_body = body;
+}
+
 QVector3D Torque::value() const
 {
     return m_value;
+}
+
+FixedTorque::FixedTorque(QString name, QObject *parent) :
+    Torque(name, parent)
+{
+
+}
+
+void FixedTorque::calculate()
+{
+    // intentionally do nothing
+}
+
+void FixedTorque::setValue(const QVector3D &value)
+{
+    m_value = value;
+}
+
+PropellorTorque::PropellorTorque(QObject *parent) :
+    FixedTorque("Propellor", parent)
+{
+
 }

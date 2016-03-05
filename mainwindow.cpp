@@ -25,7 +25,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
     m_simulationWidget = QWidget::createWindowContainer(m_simulation, this);
     m_simulationWidget->setMinimumSize(320, 320);
-    ui->horizontalLayout->insertWidget(0, m_simulationWidget);
+    ui->leftLayout->insertWidget(0, m_simulationWidget, 1);
+
+    ui->chartPosition->setMinimumHeight(200);
 
     connect(m_timer, &QTimer::timeout, this, &MainWindow::updateCharts);
 

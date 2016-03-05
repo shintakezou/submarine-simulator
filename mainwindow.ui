@@ -22,7 +22,14 @@
   <widget class="QWidget" name="centralWidget">
    <layout class="QHBoxLayout" name="horizontalLayout">
     <item>
-     <layout class="QVBoxLayout" name="verticalLayout">
+     <layout class="QVBoxLayout" name="leftLayout">
+      <item>
+       <widget class="QCustomPlot" name="chartPosition" native="true"/>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <layout class="QVBoxLayout" name="rightLayout">
       <item>
        <widget class="QCustomPlot" name="chartAngle" native="true"/>
       </item>
@@ -31,9 +38,6 @@
       </item>
       <item>
        <widget class="QCustomPlot" name="chartLinearVelocity" native="true"/>
-      </item>
-      <item>
-       <widget class="QCustomPlot" name="chartPosition" native="true"/>
       </item>
      </layout>
     </item>

@@ -299,20 +299,20 @@ void Submarine::makeFinsEntities(Qt3D::QEntity *scene, Qt3D::QPhongMaterial *mat
 
 void Submarine::makeForceArrows(Qt3D::QEntity *scene)
 {
-    m_forceWeight = new ForceArrow(Qt::green, 0.5f, scene);
-    m_forceWeight->setForce(m_weight);
+    auto weightArrow = new ForceArrow(Qt::green, 0.25f, scene);
+    weightArrow->setForce(m_weight);
 
-    m_forceBuoyancy = new ForceArrow(Qt::blue, 0.5f, scene);
-    m_forceBuoyancy->setForce(m_buoyancy);
+    auto buoyancyArrow = new ForceArrow(Qt::blue, 0.25f, scene);
+    buoyancyArrow->setForce(m_buoyancy);
 
-    m_forceThrust = new ForceArrow(Qt::black, 5.f, scene);
-    m_forceThrust->setForce(m_thrust);
+    auto thrustArrow = new ForceArrow(Qt::black, 5.f, scene);
+    thrustArrow->setForce(m_thrust);
 
-    m_forceDrag = new ForceArrow(Qt::white, 5.f, scene);
-    m_forceDrag->setForce(m_drag);
+    auto dragArrow = new ForceArrow(Qt::white, 5.f, scene);
+    dragArrow->setForce(m_drag);
 
-    m_forceLift = new ForceArrow(Qt::magenta, 3.f, scene);
-    m_forceLift->setForce(m_lift);
+    auto liftArrow = new ForceArrow(Qt::magenta, 3.f, scene);
+    liftArrow->setForce(m_lift);
 }
 
 void Submarine::update(const Fluid *fluid, Qt3D::QCamera *camera)

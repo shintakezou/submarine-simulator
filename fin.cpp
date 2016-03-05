@@ -44,11 +44,11 @@ Fin::Fin(Qt3D::QEntity *scene, Qt3D::QNode *parent) :
     transform->addTransform(m_rotateTransform);
     addComponent(transform);
 
-    m_forceLift = new ForceArrow(Qt::red, 150., scene);
-    m_forceLift->setForce(m_lift);
+    auto liftArrow = new ForceArrow(Qt::red, 150., scene);
+    liftArrow->setForce(m_lift);
 
-    m_forceDrag = new ForceArrow(Qt::green, 150., scene);
-    m_forceDrag->setForce(m_drag);
+    auto dragArrow = new ForceArrow(Qt::green, 150., scene);
+    dragArrow->setForce(m_drag);
 }
 
 void Fin::calculatePosition(Orientation orientation, float position)

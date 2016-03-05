@@ -67,9 +67,6 @@ private:
     Qt3D::QRotateTransform *m_rotateTransform;
     Qt3D::QTranslateTransform *m_translateTransform;
 
-    ForceArrow *m_forceLift;
-    ForceArrow *m_forceDrag;
-
     Submarine *m_submarine;
     Plane m_plane;
     double m_area;

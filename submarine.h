@@ -162,12 +162,6 @@ private:
 
     QVector<Fin *> m_fins;
 
-    ForceArrow *m_forceWeight;
-    ForceArrow *m_forceBuoyancy;
-    ForceArrow *m_forceThrust;
-    ForceArrow *m_forceDrag;
-    ForceArrow *m_forceLift;
-
     double m_length;
     double m_width;
     double m_height;

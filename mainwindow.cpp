@@ -98,6 +98,10 @@ void clearPlots(QCustomPlot *plot) {
 }
 
 void MainWindow::updateCharts() {
+    if (m_simulation->paused()) {
+        return;
+    }
+
     Submarine *submarine = m_simulation->submarine();
     double time = m_simulation->time();
 

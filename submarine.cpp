@@ -27,6 +27,7 @@
 #include "fin.h"
 #include "fluid.h"
 #include "forcearrow.h"
+#include "physics/body.h"
 #include "physics/force.h"
 #include "physics/torque.h"
 
@@ -84,10 +85,6 @@ Submarine::Submarine(QObject *parent) :
 
 Submarine::~Submarine()
 {
-    if (m_body) {
-        delete m_body;
-    }
-
     if (m_shape) {
         delete m_shape;
     }
@@ -141,14 +138,16 @@ void Submarine::addToWorld(btDynamicsWorld *world)
     auto info = btRigidBody::btRigidBodyConstructionInfo(m_mass, 0, m_shape,
                                                          localInertia);
 
-    m_body = new btRigidBody(info);
+    auto body = new btRigidBody(info);
 
-    m_body->setSleepingThresholds(0, 0);
+    body->setSleepingThresholds(0, 0);
 
     auto motionState = new btDefaultMotionState();
-    m_body->setMotionState(motionState);
+    body->setMotionState(motionState);
 
-    world->addRigidBody(m_body);
+    world->addRigidBody(body);
+
+    m_body = new Physics::Body(body, this);
 
     m_propellorTorque->setBody(m_body);
     m_weight->setBody(m_body);
@@ -163,7 +162,7 @@ void Submarine::removeFromWorld(btDynamicsWorld *world)
         qFatal("Not added to the world.");
     }
 
-    world->removeRigidBody(m_body);
+    world->removeRigidBody(m_body->body());
 
     delete m_body;
     delete m_shape;
@@ -342,7 +341,7 @@ void Submarine::update(const Fluid *fluid, Qt3D::QCamera *camera)
 
 void Submarine::updateTransformation()
 {
-    btMotionState *motionState = m_body->getMotionState();
+    btMotionState *motionState = m_body->body()->getMotionState();
 
     btTransform transform;
     motionState->getWorldTransform(transform);
@@ -429,7 +428,7 @@ QVector2D calculateLift(float fluidDensity, float angleOfAttack, float liftCoeff
 
 void Submarine::applyPitchLift(const Fluid *fluid)
 {
-    btTransform transform = m_body->getCenterOfMassTransform();
+    btTransform transform = m_body->body()->getCenterOfMassTransform();
 
     QVector2D velocity = pitchVelocity();
     float angleOfAttack = pitchAngleOfAttack();
@@ -442,7 +441,7 @@ void Submarine::applyPitchLift(const Fluid *fluid)
 
         btVector3 force(lift.x(), lift.y(), 0);
 
-        m_body->applyForce(force, position);
+        m_body->body()->applyForce(force, position);
 
         position += transform.getOrigin();
         m_forcePitchLift->update(force, position);
@@ -451,7 +450,7 @@ void Submarine::applyPitchLift(const Fluid *fluid)
 
 void Submarine::applyYawLift(const Fluid *fluid)
 {
-    btTransform transform = m_body->getCenterOfMassTransform();
+    btTransform transform = m_body->body()->getCenterOfMassTransform();
 
     QVector2D velocity = yawVelocity();
     float angleOfAttack = yawAngleOfAttack();
@@ -464,7 +463,7 @@ void Submarine::applyYawLift(const Fluid *fluid)
 
         btVector3 force(lift.x(), 0, lift.y());
 
-        m_body->applyForce(force, position);
+        m_body->body()->applyForce(force, position);
 
         position += transform.getOrigin();
         m_forceYawLift->update(force, position);
@@ -492,16 +491,16 @@ float calculateSpinningDrag(float fluidDensity, float area, float spinningDragCo
 
 void Submarine::applyPitchSpinningDrag(const Fluid *fluid)
 {
-    float angularVelocity = m_body->getAngularVelocity().z();
+    float angularVelocity = m_body->body()->getAngularVelocity().z();
     float drag = calculateSpinningDrag(fluid->density(), crossSectionalArea(), m_spinningDragCoefficient, angularVelocity, m_length);
-    m_body->applyTorque(btVector3(0, 0, drag));
+    m_body->body()->applyTorque(btVector3(0, 0, drag));
 }
 
 void Submarine::applyYawSpinningDrag(const Fluid *fluid)
 {
-    float angularVelocity = m_body->getAngularVelocity().y();
+    float angularVelocity = m_body->body()->getAngularVelocity().y();
     float drag = calculateSpinningDrag(fluid->density(), crossSectionalArea(), m_spinningDragCoefficient, angularVelocity, m_length);
-    m_body->applyTorque(btVector3(0, 0, drag));
+    m_body->body()->applyTorque(btVector3(0, 0, drag));
 }
 
 void Submarine::applySpinningDrag(const Fluid *fluid)
@@ -510,7 +509,7 @@ void Submarine::applySpinningDrag(const Fluid *fluid)
     applyYawSpinningDrag(fluid);
 }
 
-btRigidBody *Submarine::body() const
+Physics::Body *Submarine::body() const
 {
     return m_body;
 }
@@ -525,7 +524,7 @@ double Submarine::pitch() const
     //return m_body->getOrientation().z();
 
     btTransform transform;
-    m_body->getMotionState()->getWorldTransform(transform);
+    m_body->body()->getMotionState()->getWorldTransform(transform);
 
     btMatrix3x3 basis = transform.getBasis();
 
@@ -541,7 +540,7 @@ double Submarine::yaw() const
     //return m_body->getOrientation().y();
 
     btTransform transform;
-    m_body->getMotionState()->getWorldTransform(transform);
+    m_body->body()->getMotionState()->getWorldTransform(transform);
 
     btMatrix3x3 basis = transform.getBasis();
 
@@ -557,7 +556,7 @@ double Submarine::roll() const
     //return m_body->getOrientation().x();
 
     btTransform transform;
-    m_body->getMotionState()->getWorldTransform(transform);
+    m_body->body()->getMotionState()->getWorldTransform(transform);
 
     btMatrix3x3 basis = transform.getBasis();
 
@@ -571,13 +570,13 @@ double Submarine::roll() const
 
 QVector2D Submarine::pitchVelocity() const
 {
-    btVector3 velocity = m_body->getLinearVelocity();
+    btVector3 velocity = m_body->body()->getLinearVelocity();
     return QVector2D(velocity.x(), velocity.y());
 }
 
 QVector2D Submarine::yawVelocity() const
 {
-    btVector3 velocity = m_body->getLinearVelocity();
+    btVector3 velocity = m_body->body()->getLinearVelocity();
     return QVector2D(velocity.x(), velocity.z());
 }
 
@@ -597,19 +596,19 @@ double Submarine::yawAngleOfAttack() const
 
 QVector3D Submarine::angularVelocity() const
 {
-    btVector3 v = m_body->getAngularVelocity();
+    btVector3 v = m_body->body()->getAngularVelocity();
     return QVector3D(v.x(), v.y(), v.z());
 }
 
 QVector3D Submarine::linearVelocity() const
 {
-    btVector3 v = m_body->getLinearVelocity();
+    btVector3 v = m_body->body()->getLinearVelocity();
     return QVector3D(v.x(), v.y(), v.z());
 }
 
 QVector3D Submarine::position() const
 {
-    btVector3 p = m_body->getCenterOfMassPosition();
+    btVector3 p = m_body->body()->getCenterOfMassPosition();
     return QVector3D(p.x(), p.y(), p.z());
 }
 

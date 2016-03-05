@@ -2,6 +2,8 @@
 
 #include <QtDebug>
 
+#include "physics/body.h"
+
 #include "physics/torque.h"
 
 using namespace Physics;
@@ -24,7 +26,7 @@ void Torque::apply()
     calculate();
 
     btVector3 torque = btVector3(m_value.x(), m_value.y(), m_value.z());
-    m_body->applyTorque(torque);
+    m_body->body()->applyTorque(torque);
 }
 
 QString Torque::name() const
@@ -37,12 +39,12 @@ void Torque::setName(const QString &name)
     m_name = name;
 }
 
-btRigidBody *Torque::body() const
+Physics::Body *Torque::body() const
 {
     return m_body;
 }
 
-void Torque::setBody(btRigidBody *body)
+void Torque::setBody(Physics::Body *body)
 {
     m_body = body;
 }

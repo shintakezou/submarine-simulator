@@ -27,7 +27,8 @@ SOURCES += main.cpp\
     qcustomplot.cpp \
     fin.cpp \
     physics/force.cpp \
-    physics/torque.cpp
+    physics/torque.cpp \
+    physics/body.cpp
 
 HEADERS  += mainwindow.h \
     simulation.h \
@@ -38,7 +39,8 @@ HEADERS  += mainwindow.h \
     qcustomplot.h \
     fin.h \
     physics/force.h \
-    physics/torque.h
+    physics/torque.h \
+    physics/body.h
 
 FORMS    += mainwindow.ui \
     simulationpropertiesdialogue.ui

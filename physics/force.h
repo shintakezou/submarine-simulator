@@ -4,9 +4,9 @@
 #include <QObject>
 #include <QVector3D>
 
-class btRigidBody;
-
 namespace Physics {
+
+class Body;
 
 class Force : public QObject
 {
@@ -24,8 +24,8 @@ public:
     QString name() const;
     void setName(const QString &name);
 
-    btRigidBody *body() const;
-    void setBody(btRigidBody *body);
+    Physics::Body *body() const;
+    void setBody(Physics::Body *body);
 
     QVector3D localPosition() const;
     QVector3D worldPosition() const;
@@ -33,7 +33,7 @@ public:
     QVector3D force() const;
 
     Q_PROPERTY(QString name READ name WRITE setName)
-    Q_PROPERTY(btRigidBody *body READ body WRITE setBody)
+    Q_PROPERTY(Physics::Body *body READ body WRITE setBody)
     Q_PROPERTY(QVector3D localPosition READ localPosition)
     Q_PROPERTY(QVector3D worldPosition READ worldPosition STORED false)
     Q_PROPERTY(QVector3D force READ force)
@@ -41,7 +41,7 @@ public:
 protected:
     QString m_name;
 
-    btRigidBody *m_body;
+    Physics::Body *m_body;
 
     QVector3D m_localPosition;
     QVector3D m_force;

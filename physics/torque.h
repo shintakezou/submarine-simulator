@@ -8,6 +8,8 @@ class btRigidBody;
 
 namespace Physics {
 
+class Body;
+
 class Torque : public QObject
 {
     Q_OBJECT
@@ -24,19 +26,19 @@ public:
     QString name() const;
     void setName(const QString &name);
 
-    btRigidBody *body() const;
-    void setBody(btRigidBody *body);
+    Physics::Body *body() const;
+    void setBody(Physics::Body *body);
 
     QVector3D value() const;
 
     Q_PROPERTY(QString name READ name WRITE setName)
-    Q_PROPERTY(btRigidBody *body READ body)
+    Q_PROPERTY(Physics::Body *body READ body)
     Q_PROPERTY(QVector3D value READ value)
 
 protected:
     QString m_name;
 
-    btRigidBody *m_body;
+    Physics::Body *m_body;
 
     QVector3D m_value;
 };

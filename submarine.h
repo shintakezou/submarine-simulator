@@ -19,6 +19,7 @@ class btDynamicsWorld;
 class btVector3;
 
 namespace Physics {
+class Body;
 class BuoyancyForce;
 class DragForce;
 class PropellorTorque;
@@ -72,7 +73,7 @@ private:
     void applySpinningDrag(const Fluid *fluid);
 
 public:
-    btRigidBody *body() const;
+    Physics::Body *body() const;
 
     double crossSectionalArea() const;
 
@@ -173,7 +174,7 @@ public:
 
 private:
     btCapsuleShape *m_shape;
-    btRigidBody *m_body;
+    Physics::Body *m_body;
 
     Qt3D::QEntity *m_entity;
     Qt3D::QTranslateTransform *m_translateTransform;

@@ -7,6 +7,8 @@
 
 #include <bullet/btBulletDynamicsCommon.h>
 
+#include "physics/body.h"
+
 #include "fluid.h"
 #include "forcearrow.h"
 #include "submarine.h"
@@ -134,7 +136,7 @@ QVector2D calcLift(float fluidDensity, float angleOfAttack, float liftCoefficien
 
 void Fin::applyLift(const Fluid *fluid) const
 {
-    btTransform transform = submarine()->body()->getCenterOfMassTransform();
+    btTransform transform = submarine()->body()->body()->getCenterOfMassTransform();
 
     QVector2D velocity;
     float angleOfAttack;
@@ -177,7 +179,7 @@ void Fin::applyLift(const Fluid *fluid) const
             return;
         }
 
-        submarine()->body()->applyForce(force, position);
+        submarine()->body()->body()->applyForce(force, position);
 
         position += transform.getOrigin();
         m_forceLift->update(force, position);
@@ -186,7 +188,7 @@ void Fin::applyLift(const Fluid *fluid) const
 
 void Fin::applyDrag(const Fluid *fluid) const
 {
-    btTransform transform = submarine()->body()->getCenterOfMassTransform();
+    btTransform transform = submarine()->body()->body()->getCenterOfMassTransform();
 
     QVector2D velocity;
 
@@ -228,7 +230,7 @@ void Fin::applyDrag(const Fluid *fluid) const
         return;
     }
 
-    submarine()->body()->applyForce(force, position);
+    submarine()->body()->body()->applyForce(force, position);
 
     position += transform.getOrigin();
     m_forceDrag->update(force, position);
@@ -253,10 +255,10 @@ void Fin::applyDamping(const Fluid *fluid) const
         return;
     }
 
-    float v2 = submarine()->body()->getAngularVelocity().x() * submarine()->body()->getAngularVelocity().x();
+    float v2 = submarine()->body()->body()->getAngularVelocity().x() * submarine()->body()->body()->getAngularVelocity().x();
     float torque = -2.f * fluid->density() * m_area * v2 * (radius + span) * (radius + span) * (radius + span / 2.f);
 
-    submarine()->body()->applyTorque(btVector3(torque, 0, 0));
+    submarine()->body()->body()->applyTorque(btVector3(torque, 0, 0));
 }
 
 Fin::Plane Fin::plane() const

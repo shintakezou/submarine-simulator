@@ -2,6 +2,8 @@
 
 #include <QtDebug>
 
+#include "physics/body.h"
+
 #include "physics/force.h"
 
 using namespace Physics;
@@ -26,7 +28,7 @@ void Force::apply()
     btVector3 force = btVector3(m_force.x(), m_force.y(), m_force.z());
     btVector3 localPosition = btVector3(m_localPosition.x(), m_localPosition.y(), m_localPosition.z());
 
-    m_body->applyForce(force, localPosition);
+    m_body->body()->applyForce(force, localPosition);
 }
 
 QString Force::name() const
@@ -39,12 +41,12 @@ void Force::setName(const QString &name)
     m_name = name;
 }
 
-btRigidBody *Force::body() const
+Physics::Body *Force::body() const
 {
     return m_body;
 }
 
-void Force::setBody(btRigidBody *body)
+void Force::setBody(Physics::Body *body)
 {
     m_body = body;
 }
@@ -61,7 +63,7 @@ QVector3D Force::worldPosition() const
         return QVector3D();
     }
 
-    btTransform transform = m_body->getCenterOfMassTransform();
+    btTransform transform = m_body->body()->getCenterOfMassTransform();
 
     btVector3 localPosition = btVector3(m_localPosition.x(), m_localPosition.y(), m_localPosition.z());
     btVector3 worldPosition = localPosition + transform.getOrigin();
@@ -81,10 +83,9 @@ WeightForce::WeightForce(QObject *parent) :
 
 void WeightForce::calculate()
 {
-    btTransform transform = m_body->getCenterOfMassTransform();
-
-    double mass = 1. / m_body->getInvMass();
-    m_force = QVector3D(0, -9.81 * mass, 0);
+    btTransform transform = m_body->body()->getCenterOfMassTransform();
+;
+    m_force = QVector3D(0, -9.81 * m_body->mass(), 0);
 
     btVector3 position(m_position.x(), m_position.y(), m_position.z());
     btVector3 localPosition = (transform * position) - transform.getOrigin();
@@ -109,10 +110,9 @@ BuoyancyForce::BuoyancyForce(QObject *parent) :
 
 void BuoyancyForce::calculate()
 {
-    btTransform transform = m_body->getCenterOfMassTransform();
+    btTransform transform = m_body->body()->getCenterOfMassTransform();
 
-    double mass = 1. / m_body->getInvMass();
-    m_force = QVector3D(0, 9.81 * mass, 0);
+    m_force = QVector3D(0, 9.81 * m_body->mass(), 0);
 
     btVector3 position(m_position.x(), m_position.y(), m_position.z());
     btVector3 localPosition = (transform * position) - transform.getOrigin();
@@ -137,7 +137,7 @@ ThrustForce::ThrustForce(QObject *parent) :
 
 void ThrustForce::calculate()
 {
-    btTransform transform = m_body->getCenterOfMassTransform();
+    btTransform transform = m_body->body()->getCenterOfMassTransform();
 
     btVector3 value(m_value.x(), m_value.y(), m_value.z());
     btVector3 localValue = (transform * value) - transform.getOrigin();
@@ -177,7 +177,7 @@ DragForce::DragForce(QObject *parent) :
 
 void DragForce::calculate()
 {
-    btVector3 velocity = m_body->getLinearVelocity();
+    btVector3 velocity = m_body->body()->getLinearVelocity();
     if (velocity.length() == 0) {
         return;  // can't be normalised
     }

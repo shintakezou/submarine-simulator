@@ -67,7 +67,7 @@ void ForceArrow::update()
 
     m_translateTransform->setTranslation(position);
 
-    m_scaleTransform->setScale((force.length() / 500.) * m_scale);
+    m_scaleTransform->setScale((force.length() / 250.) * m_scale);
 }
 
 QColor ForceArrow::colour() const

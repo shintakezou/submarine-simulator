@@ -44,10 +44,10 @@ Fin::Fin(Qt3D::QEntity *scene, Qt3D::QNode *parent) :
     transform->addTransform(m_rotateTransform);
     addComponent(transform);
 
-    auto liftArrow = new ForceArrow(Qt::red, 150., scene);
+    auto liftArrow = new ForceArrow(QColor(0xc0392b), 200., scene);
     liftArrow->setForce(m_lift);
 
-    auto dragArrow = new ForceArrow(Qt::green, 150., scene);
+    auto dragArrow = new ForceArrow(QColor(0x27ae60), 150., scene);
     dragArrow->setForce(m_drag);
 }
 

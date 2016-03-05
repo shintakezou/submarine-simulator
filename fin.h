@@ -14,6 +14,10 @@ class Fluid;
 class ForceArrow;
 class Submarine;
 
+namespace Physics {
+class DragForce;
+}
+
 class Fin : public Qt3D::QEntity
 {
     Q_OBJECT
@@ -55,15 +59,13 @@ public:
     double liftCoefficientSlope() const;
     void setLiftCoefficientSlope(double liftCoefficientSlope);
 
-    double dragCoefficient() const;
-    void setDragCoefficient(double dragCoefficient);
+    Physics::DragForce *drag() const;
 
     Q_PROPERTY(Submarine *submarine READ submarine WRITE setSubmarine)
     Q_PROPERTY(Plane plane READ plane)
     Q_PROPERTY(double area READ area WRITE setArea)
     Q_PROPERTY(double aspectRatio READ aspectRatio WRITE setAspectRatio)
     Q_PROPERTY(double liftCoefficientSlope READ liftCoefficientSlope WRITE setLiftCoefficientSlope)
-    Q_PROPERTY(double dragCoefficient READ dragCoefficient WRITE setDragCoefficient)
 
 private:
     Qt3D::QRotateTransform *m_rotateTransform;
@@ -77,9 +79,10 @@ private:
     double m_area;
     double m_aspectRatio;
     double m_liftCoefficientSlope;
-    double m_dragCoefficient;
 
     btVector3 *m_forcePosition;
+
+    Physics::DragForce *m_drag;
 };
 
 #endif // FIN_H

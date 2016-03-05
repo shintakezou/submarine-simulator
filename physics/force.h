@@ -125,10 +125,14 @@ public:
     double coefficient() const;
     void setCoefficient(double coefficient);
 
+    QVector3D position() const;
+    void setPosition(const QVector3D &position);
+
 private:
     double m_fluidDensity;
     double m_crossSectionalArea;
     double m_coefficient;
+    QVector3D m_position;
 };
 
 } // namespace Physics

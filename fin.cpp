@@ -8,6 +8,7 @@
 #include <bullet/btBulletDynamicsCommon.h>
 
 #include "physics/body.h"
+#include "physics/force.h"
 
 #include "fluid.h"
 #include "forcearrow.h"
@@ -23,7 +24,8 @@ float calculateEllipseProportion(float proportion)
 Fin::Fin(Qt3D::QEntity *scene, Qt3D::QNode *parent) :
     Qt3D::QEntity(parent),
     m_plane(Unknown),
-    m_forcePosition(new btVector3())
+    m_forcePosition(new btVector3()),
+    m_drag(new Physics::DragForce(this))
 {
     auto mesh = new Qt3D::QMesh(this);
     mesh->setSource(QUrl("qrc:/models/fin.obj"));
@@ -42,7 +44,7 @@ Fin::Fin(Qt3D::QEntity *scene, Qt3D::QNode *parent) :
     m_forceLift = new ForceArrow(Qt::red, 50., scene);
     m_forceLift->addToScene(scene);
 
-    m_forceDrag = new ForceArrow(Qt::green, 50., scene);
+    m_forceDrag = new ForceArrow(Qt::green, 150., scene);
     m_forceDrag->addToScene(scene);
 }
 
@@ -109,6 +111,9 @@ void Fin::calculatePosition(Orientation orientation, float position)
         m_plane = Vertical;
         break;
     }
+
+    m_drag->setBody(submarine()->body());
+    m_drag->setPosition(QVector3D(m_forcePosition->x(), m_forcePosition->y(), m_forcePosition->z()));
 }
 
 void Fin::applyForces(const Fluid *fluid) const
@@ -188,52 +193,11 @@ void Fin::applyLift(const Fluid *fluid) const
 
 void Fin::applyDrag(const Fluid *fluid) const
 {
-    btTransform transform = submarine()->body()->body()->getCenterOfMassTransform();
+    m_drag->setCrossSectionalArea(m_area);
+    m_drag->setFluidDensity(fluid->density());
 
-    QVector2D velocity;
-
-    switch (m_plane) {
-    case Horizontal:
-        velocity = submarine()->pitchVelocity();
-        break;
-
-    case Vertical:
-        velocity = submarine()->yawVelocity();
-        break;
-
-    default:
-        qFatal("Unknown fin plane.");
-        return;
-    }
-
-    float v2 = velocity.lengthSquared();
-    float value = 0.5f * fluid->density() * m_area * m_dragCoefficient * v2;
-
-    QVector2D drag = velocity.normalized() * -value;
-
-    btVector3 position = btVector3(m_forcePosition->x(), m_forcePosition->y(), m_forcePosition->z());
-    position = (transform * position) - transform.getOrigin();
-
-    btVector3 force;
-
-    switch (m_plane) {
-    case Horizontal:
-        force = btVector3(drag.x(), drag.y(), 0);
-        break;
-
-    case Vertical:
-        force = btVector3(drag.x(), 0, drag.y());
-        break;
-
-    default:
-        qFatal("Unknown fin plane.");
-        return;
-    }
-
-    submarine()->body()->body()->applyForce(force, position);
-
-    position += transform.getOrigin();
-    m_forceDrag->update(force, position);
+    m_drag->apply();
+    m_forceDrag->update(m_drag);
 }
 
 void Fin::applyDamping(const Fluid *fluid) const
@@ -306,12 +270,7 @@ void Fin::setLiftCoefficientSlope(double liftCoefficientSlope)
     m_liftCoefficientSlope = liftCoefficientSlope;
 }
 
-double Fin::dragCoefficient() const
+Physics::DragForce *Fin::drag() const
 {
-    return m_dragCoefficient;
-}
-
-void Fin::setDragCoefficient(double dragCoefficient)
-{
-    m_dragCoefficient = dragCoefficient;
+    return m_drag;
 }

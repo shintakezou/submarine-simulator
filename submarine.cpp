@@ -273,7 +273,7 @@ void Submarine::makeFinsEntities(Qt3D::QEntity *scene, Qt3D::QPhongMaterial *mat
         hEntity1->calculatePosition(Fin::North, m_horizontalFinsPosition);
         hEntity1->addComponent(material);
         hEntity1->setArea(m_horizontalFinsArea);
-        hEntity1->setDragCoefficient(m_horizontalFinsDragCoefficient);
+        hEntity1->drag()->setCoefficient(m_horizontalFinsDragCoefficient);
         hEntity1->setLiftCoefficientSlope(m_horizontalFinsLiftCoefficientSlope);
         m_fins.append(hEntity1);
 
@@ -282,7 +282,7 @@ void Submarine::makeFinsEntities(Qt3D::QEntity *scene, Qt3D::QPhongMaterial *mat
         hEntity2->calculatePosition(Fin::South, m_horizontalFinsPosition);
         hEntity2->addComponent(material);
         hEntity2->setArea(m_horizontalFinsArea);
-        hEntity2->setDragCoefficient(m_horizontalFinsDragCoefficient);
+        hEntity2->drag()->setCoefficient(m_horizontalFinsDragCoefficient);
         hEntity2->setLiftCoefficientSlope(m_horizontalFinsLiftCoefficientSlope);
         m_fins.append(hEntity2);
     }
@@ -293,7 +293,7 @@ void Submarine::makeFinsEntities(Qt3D::QEntity *scene, Qt3D::QPhongMaterial *mat
         vEntity1->calculatePosition(Fin::East, m_verticalFinsPosition);
         vEntity1->addComponent(material);
         vEntity1->setArea(m_verticalFinsArea);
-        vEntity1->setDragCoefficient(m_verticalFinsDragCoefficient);
+        vEntity1->drag()->setCoefficient(m_verticalFinsDragCoefficient);
         vEntity1->setLiftCoefficientSlope(m_verticalFinsLiftCoefficientSlope);
         m_fins.append(vEntity1);
 
@@ -302,7 +302,7 @@ void Submarine::makeFinsEntities(Qt3D::QEntity *scene, Qt3D::QPhongMaterial *mat
         vEntity2->calculatePosition(Fin::West, m_verticalFinsPosition);
         vEntity2->addComponent(material);
         vEntity2->setArea(m_verticalFinsArea);
-        vEntity2->setDragCoefficient(m_verticalFinsDragCoefficient);
+        vEntity2->drag()->setCoefficient(m_verticalFinsDragCoefficient);
         vEntity2->setLiftCoefficientSlope(m_verticalFinsLiftCoefficientSlope);
         m_fins.append(vEntity2);
     }

@@ -177,6 +177,8 @@ DragForce::DragForce(QObject *parent) :
 
 void DragForce::calculate()
 {
+    btTransform transform = m_body->body()->getCenterOfMassTransform();
+
     btVector3 velocity = m_body->body()->getLinearVelocity();
     if (velocity.length() == 0) {
         return;  // can't be normalised
@@ -186,7 +188,10 @@ void DragForce::calculate()
     btVector3 force = velocity.normalized() * -value;
 
     m_force = QVector3D(force.x(), force.y(), force.z());
-    m_localPosition = QVector3D();
+
+    btVector3 position(m_position.x(), m_position.y(), m_position.z());
+    btVector3 localPosition = (transform * position) - transform.getOrigin();
+    m_localPosition = QVector3D(localPosition.x(), localPosition.y(), localPosition.z());
 }
 
 double DragForce::fluidDensity() const
@@ -217,4 +222,14 @@ double DragForce::coefficient() const
 void DragForce::setCoefficient(double coefficient)
 {
     m_coefficient = coefficient;
+}
+
+QVector3D DragForce::position() const
+{
+    return m_position;
+}
+
+void DragForce::setPosition(const QVector3D &position)
+{
+    m_position = position;
 }

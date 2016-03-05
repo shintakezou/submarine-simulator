@@ -10,6 +10,7 @@ namespace Physics {
 class Body : public QObject
 {
     Q_OBJECT
+
 public:
     explicit Body(btRigidBody *body, QObject *parent = 0);
     ~Body();

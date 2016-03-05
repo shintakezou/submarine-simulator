@@ -42,15 +42,15 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->chartAngularVelocity->addGraph()->setPen(QPen(Qt::green));  // pitch
     ui->chartAngularVelocity->addGraph()->setPen(QPen(Qt::blue)); // yaw
     ui->chartAngularVelocity->xAxis->setLabel("Time (s)");
-    ui->chartAngularVelocity->yAxis->setLabel("Angular Velocity (rad/s)");
-    ui->chartAngularVelocity->yAxis->setRange(-M_PI / 4., M_PI / 4.);
+    ui->chartAngularVelocity->yAxis->setLabel("Angular Velocity (°/s)");
+    ui->chartAngularVelocity->yAxis->setRange(-30, 30);
 
     ui->chartLinearVelocity->addGraph()->setPen(QPen(Qt::red));  // X
     ui->chartLinearVelocity->addGraph()->setPen(QPen(Qt::green));  // Y
     ui->chartLinearVelocity->addGraph()->setPen(QPen(Qt::blue)); // Z
     ui->chartLinearVelocity->xAxis->setLabel("Time (s)");
     ui->chartLinearVelocity->yAxis->setLabel("Linear Velocity (m/s)");
-    ui->chartLinearVelocity->yAxis->setRange(-5, 5);
+    ui->chartLinearVelocity->yAxis->setRange(-4, 4);
 
     ui->chartPosition->addGraph()->setPen(QPen(Qt::red));
     ui->chartPosition->graph(0)->setLineStyle(QCPGraph::lsNone);
@@ -114,9 +114,9 @@ void MainWindow::updateCharts() {
     limitChartData(ui->chartAngle, 500);
     ui->chartAngle->replot();
 
-    ui->chartAngularVelocity->graph(0)->addData(time, submarine->body()->angularVelocity().x());
-    ui->chartAngularVelocity->graph(1)->addData(time, submarine->body()->angularVelocity().y());
-    ui->chartAngularVelocity->graph(2)->addData(time, submarine->body()->angularVelocity().z());
+    ui->chartAngularVelocity->graph(0)->addData(time, qRadiansToDegrees(submarine->body()->angularVelocity().x()));
+    ui->chartAngularVelocity->graph(1)->addData(time, qRadiansToDegrees(submarine->body()->angularVelocity().y()));
+    ui->chartAngularVelocity->graph(2)->addData(time, qRadiansToDegrees(submarine->body()->angularVelocity().z()));
     ui->chartAngularVelocity->xAxis->rescale();
     limitChartData(ui->chartAngularVelocity, 500);
     ui->chartAngularVelocity->replot();

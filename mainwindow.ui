@@ -37,6 +37,9 @@
        <widget class="QCustomPlot" name="chartAngularVelocity" native="true"/>
       </item>
       <item>
+       <widget class="QCustomPlot" name="chartAngleOfAttack" native="true"/>
+      </item>
+      <item>
        <widget class="QCustomPlot" name="chartLinearVelocity" native="true"/>
       </item>
      </layout>

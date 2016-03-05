@@ -32,18 +32,25 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(m_timer, &QTimer::timeout, this, &MainWindow::updateCharts);
 
     ui->chartAngle->addGraph()->setPen(QPen(Qt::red));  // roll
-    ui->chartAngle->addGraph()->setPen(QPen(Qt::green));  // pitch
-    ui->chartAngle->addGraph()->setPen(QPen(Qt::blue)); // yaw
+    ui->chartAngle->addGraph()->setPen(QPen(Qt::green));  // yaw
+    ui->chartAngle->addGraph()->setPen(QPen(Qt::blue)); // pitch
     ui->chartAngle->xAxis->setLabel("Time (s)");
     ui->chartAngle->yAxis->setLabel("Angle (°)");
     ui->chartAngle->yAxis->setRange(-30, 30);
 
     ui->chartAngularVelocity->addGraph()->setPen(QPen(Qt::red));  // roll
-    ui->chartAngularVelocity->addGraph()->setPen(QPen(Qt::green));  // pitch
-    ui->chartAngularVelocity->addGraph()->setPen(QPen(Qt::blue)); // yaw
+    ui->chartAngularVelocity->addGraph()->setPen(QPen(Qt::green));  // yaw
+    ui->chartAngularVelocity->addGraph()->setPen(QPen(Qt::blue)); // pitch
     ui->chartAngularVelocity->xAxis->setLabel("Time (s)");
     ui->chartAngularVelocity->yAxis->setLabel("Angular Velocity (°/s)");
     ui->chartAngularVelocity->yAxis->setRange(-30, 30);
+
+    ui->chartAngleOfAttack->addGraph()->setPen(QPen(Qt::red));  // roll
+    ui->chartAngleOfAttack->addGraph()->setPen(QPen(Qt::green));  // yaw
+    ui->chartAngleOfAttack->addGraph()->setPen(QPen(Qt::blue)); // pitch
+    ui->chartAngleOfAttack->xAxis->setLabel("Time (s)");
+    ui->chartAngleOfAttack->yAxis->setLabel("Angle of Attack (°)");
+    ui->chartAngleOfAttack->yAxis->setRange(-1, 1);
 
     ui->chartLinearVelocity->addGraph()->setPen(QPen(Qt::red));  // X
     ui->chartLinearVelocity->addGraph()->setPen(QPen(Qt::green));  // Y
@@ -120,6 +127,13 @@ void MainWindow::updateCharts() {
     ui->chartAngularVelocity->xAxis->rescale();
     limitChartData(ui->chartAngularVelocity, 500);
     ui->chartAngularVelocity->replot();
+
+    ui->chartAngleOfAttack->graph(0)->addData(time, qRadiansToDegrees(submarine->body()->rollAngleOfAttack()));
+    ui->chartAngleOfAttack->graph(1)->addData(time, qRadiansToDegrees(submarine->body()->yawAngleOfAttack()));
+    ui->chartAngleOfAttack->graph(2)->addData(time, qRadiansToDegrees(submarine->body()->pitchAngleOfAttack()));
+    ui->chartAngleOfAttack->xAxis->rescale();
+    limitChartData(ui->chartAngleOfAttack, 500);
+    ui->chartAngleOfAttack->replot();
 
     ui->chartLinearVelocity->graph(0)->addData(time, submarine->body()->linearVelocity().x());
     ui->chartLinearVelocity->graph(1)->addData(time, submarine->body()->linearVelocity().y());

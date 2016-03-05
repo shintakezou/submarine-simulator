@@ -144,6 +144,12 @@ void Submarine::addToWorld(btDynamicsWorld *world)
     m_drag->setBody(m_body);
     m_lift->setBody(m_body);
     m_spinningDrag->setBody(m_body);
+
+    for (Fin *fin : m_fins) {
+        fin->drag()->setBody(m_body);
+        fin->lift()->setBody(m_body);
+        fin->damping()->setBody(m_body);
+    }
 }
 
 void Submarine::removeFromWorld(btDynamicsWorld *world)

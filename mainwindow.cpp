@@ -2,6 +2,7 @@
 #include <QWidget>
 #include <QTimer>
 
+#include "physics/body.h"
 #include "simulationpropertiesdialogue.h"
 #include "submarine.h"
 #include "simulation.h"
@@ -100,29 +101,29 @@ void MainWindow::updateCharts() {
     Submarine *submarine = m_simulation->submarine();
     double time = m_simulation->time();
 
-    ui->chartAngle->graph(0)->addData(time, qRadiansToDegrees(submarine->roll()));
-    ui->chartAngle->graph(1)->addData(time, qRadiansToDegrees(submarine->pitch()));
-    ui->chartAngle->graph(2)->addData(time, qRadiansToDegrees(submarine->yaw()));
+    ui->chartAngle->graph(0)->addData(time, qRadiansToDegrees(submarine->body()->roll()));
+    ui->chartAngle->graph(1)->addData(time, qRadiansToDegrees(submarine->body()->pitch()));
+    ui->chartAngle->graph(2)->addData(time, qRadiansToDegrees(submarine->body()->yaw()));
     ui->chartAngle->xAxis->rescale();
     limitChartData(ui->chartAngle, 500);
     ui->chartAngle->replot();
 
-    ui->chartAngularVelocity->graph(0)->addData(time, submarine->angularVelocity().x());
-    ui->chartAngularVelocity->graph(1)->addData(time, submarine->angularVelocity().y());
-    ui->chartAngularVelocity->graph(2)->addData(time, submarine->angularVelocity().z());
+    ui->chartAngularVelocity->graph(0)->addData(time, submarine->body()->angularVelocity().x());
+    ui->chartAngularVelocity->graph(1)->addData(time, submarine->body()->angularVelocity().y());
+    ui->chartAngularVelocity->graph(2)->addData(time, submarine->body()->angularVelocity().z());
     ui->chartAngularVelocity->xAxis->rescale();
     limitChartData(ui->chartAngularVelocity, 500);
     ui->chartAngularVelocity->replot();
 
-    ui->chartLinearVelocity->graph(0)->addData(time, submarine->linearVelocity().x());
-    ui->chartLinearVelocity->graph(1)->addData(time, submarine->linearVelocity().y());
-    ui->chartLinearVelocity->graph(2)->addData(time, submarine->linearVelocity().z());
+    ui->chartLinearVelocity->graph(0)->addData(time, submarine->body()->linearVelocity().x());
+    ui->chartLinearVelocity->graph(1)->addData(time, submarine->body()->linearVelocity().y());
+    ui->chartLinearVelocity->graph(2)->addData(time, submarine->body()->linearVelocity().z());
     ui->chartLinearVelocity->xAxis->rescale();
     limitChartData(ui->chartLinearVelocity, 500);
     ui->chartLinearVelocity->replot();
 
-    ui->chartPosition->graph(0)->addData(submarine->position().x(), submarine->position().y());
-    ui->chartPosition->graph(1)->addData(submarine->position().x(), submarine->position().z());
+    ui->chartPosition->graph(0)->addData(submarine->body()->position().x(), submarine->body()->position().y());
+    ui->chartPosition->graph(1)->addData(submarine->body()->position().x(), submarine->body()->position().z());
     ui->chartPosition->xAxis->rescale();
     ui->chartPosition->yAxis->rescale();
     limitChartData(ui->chartPosition, 2000);

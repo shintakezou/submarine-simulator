@@ -19,6 +19,20 @@ public:
 
     double mass() const;
 
+    double pitch() const;
+    double yaw() const;
+    double roll() const;
+
+    QVector2D pitchVelocity() const;
+    QVector2D yawVelocity() const;
+
+    double pitchAngleOfAttack() const;
+    double yawAngleOfAttack() const;
+
+    QVector3D angularVelocity() const;
+    QVector3D linearVelocity() const;
+    QVector3D position() const;
+
     Q_PROPERTY(btRigidBody *body READ body)
 
 private:

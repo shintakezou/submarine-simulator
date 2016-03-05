@@ -1,6 +1,6 @@
-#include <bullet/btBulletDynamicsCommon.h>
-
 #include <QtDebug>
+
+#include <bullet/btBulletDynamicsCommon.h>
 
 #include "physics/body.h"
 
@@ -54,24 +54,24 @@ QVector3D Torque::value() const
     return m_value;
 }
 
-FixedTorque::FixedTorque(QString name, QObject *parent) :
-    Torque(name, parent)
+PropellorTorque::PropellorTorque(QObject *parent) :
+    Torque("Propellor", parent)
 {
 
 }
 
-void FixedTorque::calculate()
+void PropellorTorque::calculate()
 {
     // intentionally do nothing
 }
 
-void FixedTorque::setValue(const QVector3D &value)
+void PropellorTorque::setValue(const QVector3D &value)
 {
     m_value = value;
 }
 
-PropellorTorque::PropellorTorque(QObject *parent) :
-    FixedTorque("Propellor", parent)
+SpinningDragTorque::SpinningDragTorque(QObject *parent) :
+    Torque("Spinning Drag", parent)
 {
 
 }

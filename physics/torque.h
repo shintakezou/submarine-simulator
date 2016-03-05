@@ -43,12 +43,12 @@ protected:
     QVector3D m_value;
 };
 
-class FixedTorque : public Torque
+class PropellorTorque : public Torque
 {
     Q_OBJECT
 
 public:
-    explicit FixedTorque(QString name, QObject *parent = 0);
+    explicit PropellorTorque(QObject *parent = 0);
 
 protected:
     void calculate();
@@ -57,12 +57,12 @@ public:
     void setValue(const QVector3D &value);
 };
 
-class PropellorTorque : public FixedTorque
+class SpinningDragTorque : public Torque
 {
     Q_OBJECT
 
 public:
-    explicit PropellorTorque(QObject *parent = 0);
+    explicit SpinningDragTorque(QObject *parent = 0);
 };
 
 } // namespace Physics

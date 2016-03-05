@@ -135,6 +135,40 @@ private:
     QVector3D m_position;
 };
 
+class LiftForce : public Force
+{
+    Q_OBJECT
+
+public:
+    explicit LiftForce(QObject *parent = 0);
+
+protected:
+    void calculate();
+
+public:
+    double fluidDensity() const;
+    void setFluidDensity(double fluidDensity);
+
+    double yawCrossSectionalArea() const;
+    void setYawCrossSectionalArea(double yawCrossSectionalArea);
+
+    double pitchCrossSectionalArea() const;
+    void setPitchCrossSectionalArea(double pitchCrossSectionalArea);
+
+    double coefficientSlope() const;
+    void setCoefficientSlope(double coefficientSlope);
+
+    QVector3D position() const;
+    void setPosition(const QVector3D &position);
+
+private:
+    double m_fluidDensity;
+    double m_yawCrossSectionalArea;
+    double m_pitchCrossSectionalArea;
+    double m_coefficientSlope;
+    QVector3D m_position;
+};
+
 } // namespace Physics
 
 #endif // FORCE_H

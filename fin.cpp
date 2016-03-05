@@ -25,7 +25,8 @@ Fin::Fin(Qt3D::QEntity *scene, Qt3D::QNode *parent) :
     Qt3D::QEntity(parent),
     m_plane(Unknown),
     m_forcePosition(new btVector3()),
-    m_drag(new Physics::DragForce(this))
+    m_drag(new Physics::DragForce(this)),
+    m_lift(new Physics::LiftForce(this))
 {
     auto mesh = new Qt3D::QMesh(this);
     mesh->setSource(QUrl("qrc:/models/fin.obj"));
@@ -41,7 +42,7 @@ Fin::Fin(Qt3D::QEntity *scene, Qt3D::QNode *parent) :
     transform->addTransform(m_rotateTransform);
     addComponent(transform);
 
-    m_forceLift = new ForceArrow(Qt::red, 50., scene);
+    m_forceLift = new ForceArrow(Qt::red, 150., scene);
     m_forceLift->addToScene(scene);
 
     m_forceDrag = new ForceArrow(Qt::green, 150., scene);
@@ -104,16 +105,23 @@ void Fin::calculatePosition(Orientation orientation, float position)
     case North:
     case South:
         m_plane = Horizontal;
+        m_lift->setYawCrossSectionalArea(m_area);
+        m_lift->setPitchCrossSectionalArea(0);
         break;
 
     case East:
     case West:
         m_plane = Vertical;
+        m_lift->setPitchCrossSectionalArea(m_area);
+        m_lift->setYawCrossSectionalArea(0);
         break;
     }
 
     m_drag->setBody(submarine()->body());
     m_drag->setPosition(QVector3D(m_forcePosition->x(), m_forcePosition->y(), m_forcePosition->z()));
+
+    m_lift->setBody(submarine()->body());
+    m_lift->setPosition(QVector3D(m_forcePosition->x(), m_forcePosition->y(), m_forcePosition->z()));
 }
 
 void Fin::applyForces(const Fluid *fluid) const
@@ -123,72 +131,12 @@ void Fin::applyForces(const Fluid *fluid) const
     applyDamping(fluid);
 }
 
-QVector2D calcLift(float fluidDensity, float angleOfAttack, float liftCoefficientSlope, float area, QVector2D velocity)
-{
-    float liftCoefficient = angleOfAttack * liftCoefficientSlope;
-
-    float value = 0.5f * fluidDensity * area * liftCoefficient * velocity.lengthSquared();
-
-    QVector2D result = velocity.normalized();
-
-    // rotate90(1)
-    float x = result.x();
-    result.setX(-result.y());
-    result.setY(x);
-
-    return result * value;
-}
-
 void Fin::applyLift(const Fluid *fluid) const
 {
-    btTransform transform = submarine()->body()->body()->getCenterOfMassTransform();
+    m_lift->setFluidDensity(fluid->density());
 
-    QVector2D velocity;
-    float angleOfAttack;
-
-    switch (m_plane) {
-    case Horizontal:
-        velocity = submarine()->pitchVelocity();
-        angleOfAttack = submarine()->pitchAngleOfAttack();
-        break;
-
-    case Vertical:
-        velocity = submarine()->yawVelocity();
-        angleOfAttack = submarine()->yawAngleOfAttack();
-        break;
-
-    default:
-        qFatal("Unknown fin plane.");
-        return;
-    }
-
-    if (qAbs(angleOfAttack) < qDegreesToRadians(15.)) {
-        QVector2D lift = calcLift(fluid->density(), angleOfAttack, m_liftCoefficientSlope, m_area, velocity);
-
-        btVector3 position = btVector3(m_forcePosition->x(), m_forcePosition->y(), m_forcePosition->z());
-        position = (transform * position) - transform.getOrigin();
-
-        btVector3 force;
-
-        switch (m_plane) {
-        case Horizontal:
-            force = btVector3(lift.x(), lift.y(), 0);
-            break;
-
-        case Vertical:
-            force = btVector3(lift.x(), 0, lift.y());
-            break;
-
-        default:
-            qFatal("Unknown fin plane.");
-            return;
-        }
-
-        submarine()->body()->body()->applyForce(force, position);
-
-        position += transform.getOrigin();
-        m_forceLift->update(force, position);
-    }
+    m_lift->apply();
+    m_forceLift->update(m_lift);
 }
 
 void Fin::applyDrag(const Fluid *fluid) const
@@ -260,17 +208,12 @@ void Fin::setAspectRatio(double aspectRatio)
     m_aspectRatio = aspectRatio;
 }
 
-double Fin::liftCoefficientSlope() const
-{
-    return m_liftCoefficientSlope;
-}
-
-void Fin::setLiftCoefficientSlope(double liftCoefficientSlope)
-{
-    m_liftCoefficientSlope = liftCoefficientSlope;
-}
-
 Physics::DragForce *Fin::drag() const
 {
     return m_drag;
+}
+
+Physics::LiftForce *Fin::lift() const
+{
+    return m_lift;
 }

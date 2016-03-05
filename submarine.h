@@ -22,6 +22,7 @@ namespace Physics {
 class Body;
 class BuoyancyForce;
 class DragForce;
+class LiftForce;
 class PropellorTorque;
 class ThrustForce;
 class WeightForce;
@@ -65,8 +66,6 @@ private:
     void applyBuoyancy();
     void applyThrust();
     void applyDrag(const Fluid *fluid);
-    void applyPitchLift(const Fluid *fluid);
-    void applyYawLift(const Fluid *fluid);
     void applyLift(const Fluid *fluid);
     void applyPitchSpinningDrag(const Fluid *fluid);
     void applyYawSpinningDrag(const Fluid *fluid);
@@ -76,20 +75,6 @@ public:
     Physics::Body *body() const;
 
     double crossSectionalArea() const;
-
-    double pitch() const;
-    double yaw() const;
-    double roll() const;
-
-    QVector2D pitchVelocity() const;
-    QVector2D yawVelocity() const;
-
-    double pitchAngleOfAttack() const;
-    double yawAngleOfAttack() const;
-
-    QVector3D angularVelocity() const;
-    QVector3D linearVelocity() const;
-    QVector3D position() const;
 
     double length() const;
     void setLength(double length);
@@ -102,9 +87,6 @@ public:
 
     double mass() const;
     void setMass(double mass);
-
-    double liftCoefficientSlope() const;
-    void setLiftCoefficientSlope(double liftCoefficientSlope);
 
     double spinningDragCoefficient() const;
     void setSpinningDragCoefficient(double spinningDragCoefficient);
@@ -151,7 +133,6 @@ public:
     Q_PROPERTY(double width READ width WRITE setWidth)
     Q_PROPERTY(double height READ height WRITE setHeight)
     Q_PROPERTY(double mass READ mass WRITE setMass)
-    Q_PROPERTY(double liftCoefficientSlope READ liftCoefficientSlope WRITE setLiftCoefficientSlope)
     Q_PROPERTY(double spinningDragCoefficient READ spinningDragCoefficient WRITE setSpinningDragCoefficient)
     Q_PROPERTY(double crossSectionalArea READ crossSectionalArea STORED false)
     Q_PROPERTY(bool hasHorizontalFins READ hasHorizontalFins WRITE setHasHorizontalFins)
@@ -171,6 +152,7 @@ public:
     Physics::BuoyancyForce *buoyancy() const;
     Physics::ThrustForce *thrust() const;
     Physics::DragForce *drag() const;
+    Physics::LiftForce *lift() const;
 
 private:
     btCapsuleShape *m_shape;
@@ -187,22 +169,14 @@ private:
     ForceArrow *m_forceBuoyancy;
     ForceArrow *m_forceThrust;
     ForceArrow *m_forceDrag;
-    ForceArrow *m_forcePitchLift;
-    ForceArrow *m_forceYawLift;
-    ForceArrow *m_forceHorizontalFinsLift;
-    ForceArrow *m_forceVerticalFinsLift;
-    ForceArrow *m_forceHorizontalFinsDrag;
-    ForceArrow *m_forceVerticalFinsDrag;
+    ForceArrow *m_forceLift;
 
     double m_length;
     double m_width;
     double m_height;
     double m_mass;
-    double m_liftCoefficientSlope;
     double m_spinningDragCoefficient;
     Physics::PropellorTorque *m_propellorTorque;
-
-    QVector3D m_liftPosition;
 
     double m_hasHorizontalFins;
     double m_horizontalFinsArea;
@@ -222,6 +196,7 @@ private:
     Physics::BuoyancyForce *m_buoyancy;
     Physics::ThrustForce *m_thrust;
     Physics::DragForce *m_drag;
+    Physics::LiftForce *m_lift;
 };
 
 #endif // SUBMARINE_H

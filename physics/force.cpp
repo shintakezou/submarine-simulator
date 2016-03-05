@@ -1,6 +1,8 @@
-#include <bullet/btBulletDynamicsCommon.h>
-
 #include <QtDebug>
+#include <QtMath>
+#include <QVector2D>
+
+#include <bullet/btBulletDynamicsCommon.h>
 
 #include "physics/body.h"
 
@@ -230,6 +232,106 @@ QVector3D DragForce::position() const
 }
 
 void DragForce::setPosition(const QVector3D &position)
+{
+    m_position = position;
+}
+
+LiftForce::LiftForce(QObject *parent) :
+    Force("Lift", parent)
+{
+
+}
+
+QVector2D calculateLift(float fluidDensity, float angleOfAttack, float liftCoefficientSlope, float area, QVector2D velocity)
+{
+    float liftCoefficient = angleOfAttack * liftCoefficientSlope;
+
+    float value = 0.5f * fluidDensity * area * liftCoefficient * velocity.lengthSquared();
+
+    QVector2D result = velocity.normalized();
+
+    // rotate90(1)
+    float x = result.x();
+    result.setX(-result.y());
+    result.setY(x);
+
+    return result * value;
+}
+
+void LiftForce::calculate()
+{
+    m_force = QVector3D();
+
+    // pitch
+    QVector2D pitchVelocity = m_body->pitchVelocity();
+    float pitchAngleOfAttack = m_body->pitchAngleOfAttack();
+
+    if (qAbs(pitchAngleOfAttack) < qDegreesToRadians(15.)) {
+        QVector2D pitchLift = calculateLift(m_fluidDensity, pitchAngleOfAttack, m_coefficientSlope, m_pitchCrossSectionalArea, pitchVelocity);
+        m_force += QVector3D(pitchLift.x(), pitchLift.y(), 0);
+    }
+
+    // yaw
+    QVector2D yawVelocity = m_body->yawVelocity();
+    float yawAngleOfAttack = m_body->yawAngleOfAttack();
+
+    if (qAbs(yawAngleOfAttack) < qDegreesToRadians(15.)) {
+        QVector2D yawLift = calculateLift(m_fluidDensity, yawAngleOfAttack, m_coefficientSlope, m_yawCrossSectionalArea, yawVelocity);
+        m_force += QVector3D(yawLift.x(), 0, yawLift.y());
+    }
+
+    btTransform transform = m_body->body()->getCenterOfMassTransform();
+    btVector3 position(m_position.x(), m_position.y(), m_position.z());
+    btVector3 localPosition = (transform * position) - transform.getOrigin();
+    m_localPosition = QVector3D(localPosition.x(), localPosition.y(), localPosition.z());
+}
+
+double LiftForce::fluidDensity() const
+{
+    return m_fluidDensity;
+}
+
+void LiftForce::setFluidDensity(double fluidDensity)
+{
+    m_fluidDensity = fluidDensity;
+}
+
+double LiftForce::yawCrossSectionalArea() const
+{
+    return m_yawCrossSectionalArea;
+}
+
+void LiftForce::setYawCrossSectionalArea(double yawCrossSectionalArea)
+{
+    m_yawCrossSectionalArea = yawCrossSectionalArea;
+}
+
+double LiftForce::pitchCrossSectionalArea() const
+{
+    return m_pitchCrossSectionalArea;
+}
+
+void LiftForce::setPitchCrossSectionalArea(double pitchCrossSectionalArea)
+{
+    m_pitchCrossSectionalArea = pitchCrossSectionalArea;
+}
+
+double LiftForce::coefficientSlope() const
+{
+    return m_coefficientSlope;
+}
+
+void LiftForce::setCoefficientSlope(double coefficientSlope)
+{
+    m_coefficientSlope = coefficientSlope;
+}
+
+QVector3D LiftForce::position() const
+{
+    return m_position;
+}
+
+void LiftForce::setPosition(const QVector3D &position)
 {
     m_position = position;
 }

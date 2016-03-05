@@ -30,6 +30,7 @@
 #include "physics/body.h"
 #include "physics/force.h"
 #include "physics/torque.h"
+#include "torquearrow.h"
 
 #include "submarine.h"
 
@@ -313,6 +314,12 @@ void Submarine::makeForceArrows(Qt3D::QEntity *scene)
 
     auto liftArrow = new ForceArrow(QColor(0xe74c3c), 3.5, scene);
     liftArrow->setForce(m_lift);
+
+    auto propellorTorqueArrow = new TorqueArrow(Qt::red, 0.25, scene);
+    propellorTorqueArrow->setTorque(m_propellorTorque);
+
+    auto spinningDragArrow = new TorqueArrow(Qt::blue, 1., scene);
+    spinningDragArrow->setTorque(m_spinningDrag);
 }
 
 void Submarine::update(const Fluid *fluid, Qt3D::QCamera *camera)

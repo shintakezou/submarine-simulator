@@ -21,6 +21,7 @@ class btVector3;
 namespace Physics {
 class BuoyancyForce;
 class PropellorTorque;
+class ThrustForce;
 class WeightForce;
 }
 
@@ -109,9 +110,6 @@ public:
     double spinningDragCoefficient() const;
     void setSpinningDragCoefficient(double spinningDragCoefficient);
 
-    QVector3D thrust() const;
-    void setThrust(const QVector3D &thrust);
-
     double hasHorizontalFins() const;
     void setHasHorizontalFins(double hasHorizontalFins);
 
@@ -173,6 +171,7 @@ public:
 
     Physics::WeightForce *weight() const;
     Physics::BuoyancyForce *buoyancy() const;
+    Physics::ThrustForce *thrust() const;
 
 private:
     btCapsuleShape *m_shape;
@@ -206,7 +205,6 @@ private:
     Physics::PropellorTorque *m_propellorTorque;
 
     QVector3D m_liftPosition;
-    QVector3D m_thrust;
 
     double m_hasHorizontalFins;
     double m_horizontalFinsArea;
@@ -224,6 +222,7 @@ private:
 
     Physics::WeightForce *m_weight;
     Physics::BuoyancyForce *m_buoyancy;
+    Physics::ThrustForce *m_thrust;
 };
 
 #endif // SUBMARINE_H

@@ -128,3 +128,43 @@ void BuoyancyForce::setPosition(const QVector3D &position)
 {
     m_position = position;
 }
+
+ThrustForce::ThrustForce(QObject *parent) :
+    Force("Thrust", parent)
+{
+
+}
+
+void ThrustForce::calculate()
+{
+    btTransform transform = m_body->getCenterOfMassTransform();
+
+    btVector3 value(m_value.x(), m_value.y(), m_value.z());
+    btVector3 localValue = (transform * value) - transform.getOrigin();
+
+    btVector3 position(m_position.x(), m_position.y(), m_position.z());
+    btVector3 localPosition = (transform * position) - transform.getOrigin();
+
+    m_force = QVector3D(localValue.x(), localValue.y(), localValue.z());
+    m_localPosition = QVector3D(localPosition.x(), localPosition.y(), localPosition.z());
+}
+
+QVector3D ThrustForce::value() const
+{
+    return m_value;
+}
+
+void ThrustForce::setValue(const QVector3D &value)
+{
+    m_value = value;
+}
+
+QVector3D ThrustForce::position() const
+{
+    return m_position;
+}
+
+void ThrustForce::setPosition(const QVector3D &position)
+{
+    m_position = position;
+}

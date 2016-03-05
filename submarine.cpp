@@ -76,7 +76,8 @@ Submarine::Submarine(QObject *parent) :
     m_verticalFinsPosition(0),
     m_verticalFinsAspectRatio(0),
     m_weight(new Physics::WeightForce(this)),
-    m_buoyancy(new Physics::BuoyancyForce(this))
+    m_buoyancy(new Physics::BuoyancyForce(this)),
+    m_thrust(new Physics::ThrustForce(this))
 {
 
 }
@@ -105,7 +106,7 @@ Submarine *Submarine::makeDefault(QObject *parent)
     submarine->setSpinningDragCoefficient(2);
     submarine->buoyancy()->setPosition(QVector3D(0, 0.15, 0));
     submarine->weight()->setPosition(QVector3D());
-    submarine->setThrust(QVector3D(100, 0, 10));
+    submarine->thrust()->setValue(QVector3D(100, 0, 10));
     submarine->propellorTorque()->setValue(QVector3D(20, 0, 0));
 
     submarine->setHasHorizontalFins(true);
@@ -152,6 +153,7 @@ void Submarine::addToWorld(btDynamicsWorld *world)
     m_propellorTorque->setBody(m_body);
     m_weight->setBody(m_body);
     m_buoyancy->setBody(m_body);
+    m_thrust->setBody(m_body);
 }
 
 void Submarine::removeFromWorld(btDynamicsWorld *world)
@@ -395,7 +397,7 @@ void Submarine::applyBuoyancy()
 
 void Submarine::applyThrust()
 {
-    btTransform transform = m_body->getCenterOfMassTransform();
+    /*btTransform transform = m_body->getCenterOfMassTransform();
 
     btVector3 force(m_thrust.x(), m_thrust.y(), m_thrust.z());
     force = (transform * force) - transform.getOrigin();
@@ -403,12 +405,13 @@ void Submarine::applyThrust()
     btVector3 position(-m_length / 2., 0, 0);
     position = (transform * position) - transform.getOrigin();
 
-    qDebug() << position.x() << position.y() << position.z();
-
     m_body->applyForce(force, position);
 
     position += transform.getOrigin();
-    m_forceThrust->update(force, position);
+    m_forceThrust->update(force, position);*/
+
+    m_thrust->apply();
+    m_forceThrust->update(m_thrust);
 }
 
 void Submarine::applyDrag(const Fluid *fluid)
@@ -637,7 +640,9 @@ double Submarine::length() const
 void Submarine::setLength(double length)
 {
     m_length = length;
+
     m_liftPosition = QVector3D(length / 4., 0, 0);
+    m_thrust->setPosition(QVector3D(-length / 2., 0, 0));
 }
 
 double Submarine::width() const
@@ -699,17 +704,6 @@ void Submarine::setSpinningDragCoefficient(double spinningDragCoefficient)
 {
     m_spinningDragCoefficient = spinningDragCoefficient;
 }
-
-QVector3D Submarine::thrust() const
-{
-    return m_thrust;
-}
-
-void Submarine::setThrust(const QVector3D &thrust)
-{
-    m_thrust = thrust;
-}
-
 
 double Submarine::hasHorizontalFins() const
 {
@@ -844,4 +838,9 @@ Physics::WeightForce *Submarine::weight() const
 Physics::BuoyancyForce *Submarine::buoyancy() const
 {
     return m_buoyancy;
+}
+
+Physics::ThrustForce *Submarine::thrust() const
+{
+    return m_thrust;
 }

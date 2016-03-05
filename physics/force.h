@@ -83,6 +83,28 @@ private:
     QVector3D m_position;
 };
 
+class ThrustForce : public Force
+{
+    Q_OBJECT
+
+public:
+    explicit ThrustForce(QObject *parent = 0);
+
+protected:
+    void calculate();
+
+public:
+    QVector3D value() const;
+    void setValue(const QVector3D &value);
+
+    QVector3D position() const;
+    void setPosition(const QVector3D &position);
+
+private:
+    QVector3D m_value;
+    QVector3D m_position;
+};
+
 } // namespace Physics
 
 #endif // FORCE_H

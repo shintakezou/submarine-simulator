@@ -20,6 +20,7 @@ class btVector3;
 
 namespace Physics {
 class BuoyancyForce;
+class DragForce;
 class PropellorTorque;
 class ThrustForce;
 class WeightForce;
@@ -101,9 +102,6 @@ public:
     double mass() const;
     void setMass(double mass);
 
-    double dragCoefficient() const;
-    void setDragCoefficient(double dragCoefficient);
-
     double liftCoefficientSlope() const;
     void setLiftCoefficientSlope(double liftCoefficientSlope);
 
@@ -152,7 +150,6 @@ public:
     Q_PROPERTY(double width READ width WRITE setWidth)
     Q_PROPERTY(double height READ height WRITE setHeight)
     Q_PROPERTY(double mass READ mass WRITE setMass)
-    Q_PROPERTY(double dragCoefficient READ dragCoefficient WRITE setDragCoefficient)
     Q_PROPERTY(double liftCoefficientSlope READ liftCoefficientSlope WRITE setLiftCoefficientSlope)
     Q_PROPERTY(double spinningDragCoefficient READ spinningDragCoefficient WRITE setSpinningDragCoefficient)
     Q_PROPERTY(double crossSectionalArea READ crossSectionalArea STORED false)
@@ -172,6 +169,7 @@ public:
     Physics::WeightForce *weight() const;
     Physics::BuoyancyForce *buoyancy() const;
     Physics::ThrustForce *thrust() const;
+    Physics::DragForce *drag() const;
 
 private:
     btCapsuleShape *m_shape;
@@ -199,7 +197,6 @@ private:
     double m_width;
     double m_height;
     double m_mass;
-    double m_dragCoefficient;
     double m_liftCoefficientSlope;
     double m_spinningDragCoefficient;
     Physics::PropellorTorque *m_propellorTorque;
@@ -223,6 +220,7 @@ private:
     Physics::WeightForce *m_weight;
     Physics::BuoyancyForce *m_buoyancy;
     Physics::ThrustForce *m_thrust;
+    Physics::DragForce *m_drag;
 };
 
 #endif // SUBMARINE_H

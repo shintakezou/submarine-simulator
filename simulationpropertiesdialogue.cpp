@@ -47,7 +47,7 @@ void SimulationPropertiesDialogue::loadSubmarine(const Submarine *submarine)
     ui->spinSubHeight->setValue(submarine->height());
     ui->spinSubLength->setValue(submarine->length());
     ui->spinSubMass->setValue(submarine->mass());
-    ui->spinSubDragCoefficient->setValue(submarine->dragCoefficient());
+    ui->spinSubDragCoefficient->setValue(submarine->drag()->coefficient());
     ui->spinSubLiftCoefficientSlope->setValue(submarine->liftCoefficientSlope());
     ui->spinSubSpinningDragCoefficient->setValue(submarine->spinningDragCoefficient());
     ui->spinSubBuoyancyPositionX->setValue(submarine->buoyancy()->position().x());
@@ -82,7 +82,7 @@ void SimulationPropertiesDialogue::saveSubmarine(Submarine *submarine) const
     submarine->setHeight(ui->spinSubHeight->value());
     submarine->setLength(ui->spinSubLength->value());
     submarine->setMass(ui->spinSubMass->value());
-    submarine->setDragCoefficient(ui->spinSubDragCoefficient->value());
+    submarine->drag()->setCoefficient(ui->spinSubDragCoefficient->value());
     submarine->setLiftCoefficientSlope(ui->spinSubLiftCoefficientSlope->value());
     submarine->setSpinningDragCoefficient(ui->spinSubSpinningDragCoefficient->value());
     submarine->buoyancy()->setPosition(QVector3D(ui->spinSubBuoyancyPositionX->value(),

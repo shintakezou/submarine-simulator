@@ -59,7 +59,6 @@ Submarine::Submarine(QObject *parent) :
     m_width(0),
     m_height(0),
     m_mass(0),
-    m_dragCoefficient(0),
     m_liftCoefficientSlope(0),
     m_spinningDragCoefficient(0),
     m_propellorTorque(new Physics::PropellorTorque(this)),
@@ -77,7 +76,8 @@ Submarine::Submarine(QObject *parent) :
     m_verticalFinsAspectRatio(0),
     m_weight(new Physics::WeightForce(this)),
     m_buoyancy(new Physics::BuoyancyForce(this)),
-    m_thrust(new Physics::ThrustForce(this))
+    m_thrust(new Physics::ThrustForce(this)),
+    m_drag(new Physics::DragForce(this))
 {
 
 }
@@ -101,7 +101,7 @@ Submarine *Submarine::makeDefault(QObject *parent)
     submarine->setWidth(0.6);
     submarine->setHeight(0.7);
     submarine->setMass(140);
-    submarine->setDragCoefficient(0.04);
+    submarine->drag()->setCoefficient(0.04);
     submarine->setLiftCoefficientSlope(M_PI / 2.);
     submarine->setSpinningDragCoefficient(2);
     submarine->buoyancy()->setPosition(QVector3D(0, 0.15, 0));
@@ -154,6 +154,7 @@ void Submarine::addToWorld(btDynamicsWorld *world)
     m_weight->setBody(m_body);
     m_buoyancy->setBody(m_body);
     m_thrust->setBody(m_body);
+    m_drag->setBody(m_body);
 }
 
 void Submarine::removeFromWorld(btDynamicsWorld *world)
@@ -397,37 +398,17 @@ void Submarine::applyBuoyancy()
 
 void Submarine::applyThrust()
 {
-    /*btTransform transform = m_body->getCenterOfMassTransform();
-
-    btVector3 force(m_thrust.x(), m_thrust.y(), m_thrust.z());
-    force = (transform * force) - transform.getOrigin();
-
-    btVector3 position(-m_length / 2., 0, 0);
-    position = (transform * position) - transform.getOrigin();
-
-    m_body->applyForce(force, position);
-
-    position += transform.getOrigin();
-    m_forceThrust->update(force, position);*/
-
     m_thrust->apply();
     m_forceThrust->update(m_thrust);
 }
 
 void Submarine::applyDrag(const Fluid *fluid)
 {
-    btVector3 velocity = m_body->getLinearVelocity();
-    if (velocity.length() == 0) {
-        return;  // can't be normalised
-    }
+    m_drag->setCrossSectionalArea(crossSectionalArea());
+    m_drag->setFluidDensity(fluid->density());
 
-    float value = 0.5f * fluid->density() * crossSectionalArea() * m_dragCoefficient * velocity.length2();
-    btVector3 force = velocity.normalized() * -value;
-
-    m_body->applyCentralForce(force);
-
-    btVector3 position = m_body->getCenterOfMassPosition();
-    m_forceDrag->update(force, position);
+    m_drag->apply();
+    m_forceDrag->update(m_drag);
 }
 
 QVector2D calculateLift(float fluidDensity, float angleOfAttack, float liftCoefficientSlope, float area, QVector2D velocity)
@@ -675,16 +656,6 @@ void Submarine::setMass(double mass)
     m_mass = mass;
 }
 
-double Submarine::dragCoefficient() const
-{
-    return m_dragCoefficient;
-}
-
-void Submarine::setDragCoefficient(double dragCoefficient)
-{
-    m_dragCoefficient = dragCoefficient;
-}
-
 double Submarine::liftCoefficientSlope() const
 {
     return m_liftCoefficientSlope;
@@ -843,4 +814,9 @@ Physics::BuoyancyForce *Submarine::buoyancy() const
 Physics::ThrustForce *Submarine::thrust() const
 {
     return m_thrust;
+}
+
+Physics::DragForce *Submarine::drag() const
+{
+    return m_drag;
 }

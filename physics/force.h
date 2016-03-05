@@ -105,6 +105,32 @@ private:
     QVector3D m_position;
 };
 
+class DragForce : public Force
+{
+    Q_OBJECT
+
+public:
+    explicit DragForce(QObject *parent = 0);
+
+protected:
+    void calculate();
+
+public:
+    double fluidDensity() const;
+    void setFluidDensity(double fluidDensity);
+
+    double crossSectionalArea() const;
+    void setCrossSectionalArea(double crossSectionalArea);
+
+    double coefficient() const;
+    void setCoefficient(double coefficient);
+
+private:
+    double m_fluidDensity;
+    double m_crossSectionalArea;
+    double m_coefficient;
+};
+
 } // namespace Physics
 
 #endif // FORCE_H

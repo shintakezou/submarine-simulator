@@ -168,3 +168,53 @@ void ThrustForce::setPosition(const QVector3D &position)
 {
     m_position = position;
 }
+
+DragForce::DragForce(QObject *parent) :
+    Force("Drag", parent)
+{
+
+}
+
+void DragForce::calculate()
+{
+    btVector3 velocity = m_body->getLinearVelocity();
+    if (velocity.length() == 0) {
+        return;  // can't be normalised
+    }
+
+    float value = 0.5f * m_fluidDensity * m_crossSectionalArea * m_coefficient * velocity.length2();
+    btVector3 force = velocity.normalized() * -value;
+
+    m_force = QVector3D(force.x(), force.y(), force.z());
+    m_localPosition = QVector3D();
+}
+
+double DragForce::fluidDensity() const
+{
+    return m_fluidDensity;
+}
+
+void DragForce::setFluidDensity(double fluidDensity)
+{
+    m_fluidDensity = fluidDensity;
+}
+
+double DragForce::crossSectionalArea() const
+{
+    return m_crossSectionalArea;
+}
+
+void DragForce::setCrossSectionalArea(double crossSectionalArea)
+{
+    m_crossSectionalArea = crossSectionalArea;
+}
+
+double DragForce::coefficient() const
+{
+    return m_coefficient;
+}
+
+void DragForce::setCoefficient(double coefficient)
+{
+    m_coefficient = coefficient;
+}

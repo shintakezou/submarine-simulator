@@ -30,13 +30,13 @@ public:
     QVector3D localPosition() const;
     QVector3D worldPosition() const;
 
-    QVector3D value() const;
+    QVector3D force() const;
 
     Q_PROPERTY(QString name READ name WRITE setName)
     Q_PROPERTY(btRigidBody *body READ body WRITE setBody)
     Q_PROPERTY(QVector3D localPosition READ localPosition)
     Q_PROPERTY(QVector3D worldPosition READ worldPosition STORED false)
-    Q_PROPERTY(QVector3D value READ value)
+    Q_PROPERTY(QVector3D force READ force)
 
 protected:
     QString m_name;
@@ -44,7 +44,7 @@ protected:
     btRigidBody *m_body;
 
     QVector3D m_localPosition;
-    QVector3D m_value;
+    QVector3D m_force;
 };
 
 class WeightForce : public Force

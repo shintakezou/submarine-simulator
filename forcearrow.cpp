@@ -81,7 +81,7 @@ void ForceArrow::update(btVector3 force, btVector3 position)
 
 void ForceArrow::update(const Physics::Force *force)
 {
-    update(force->value(), force->worldPosition());
+    update(force->force(), force->worldPosition());
 }
 
 QColor ForceArrow::colour() const

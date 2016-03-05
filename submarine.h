@@ -24,6 +24,7 @@ class BuoyancyForce;
 class DragForce;
 class LiftForce;
 class PropellorTorque;
+class SpinningDragTorque;
 class ThrustForce;
 class WeightForce;
 }
@@ -88,9 +89,6 @@ public:
     double mass() const;
     void setMass(double mass);
 
-    double spinningDragCoefficient() const;
-    void setSpinningDragCoefficient(double spinningDragCoefficient);
-
     double hasHorizontalFins() const;
     void setHasHorizontalFins(double hasHorizontalFins);
 
@@ -133,7 +131,6 @@ public:
     Q_PROPERTY(double width READ width WRITE setWidth)
     Q_PROPERTY(double height READ height WRITE setHeight)
     Q_PROPERTY(double mass READ mass WRITE setMass)
-    Q_PROPERTY(double spinningDragCoefficient READ spinningDragCoefficient WRITE setSpinningDragCoefficient)
     Q_PROPERTY(double crossSectionalArea READ crossSectionalArea STORED false)
     Q_PROPERTY(bool hasHorizontalFins READ hasHorizontalFins WRITE setHasHorizontalFins)
     Q_PROPERTY(double horizontalFinsArea READ horizontalFinsArea WRITE setHorizontalFinsArea)
@@ -153,6 +150,7 @@ public:
     Physics::ThrustForce *thrust() const;
     Physics::DragForce *drag() const;
     Physics::LiftForce *lift() const;
+    Physics::SpinningDragTorque *spinningDrag() const;
 
 private:
     btCapsuleShape *m_shape;
@@ -175,7 +173,6 @@ private:
     double m_width;
     double m_height;
     double m_mass;
-    double m_spinningDragCoefficient;
     Physics::PropellorTorque *m_propellorTorque;
 
     double m_hasHorizontalFins;
@@ -197,6 +194,7 @@ private:
     Physics::ThrustForce *m_thrust;
     Physics::DragForce *m_drag;
     Physics::LiftForce *m_lift;
+    Physics::SpinningDragTorque *m_spinningDrag;
 };
 
 #endif // SUBMARINE_H

@@ -70,8 +70,82 @@ void PropellorTorque::setValue(const QVector3D &value)
     m_value = value;
 }
 
+float calculateSpinningDrag(float fluidDensity, float area, float spinningDragCoefficient, float angularVelocity, float length)
+{
+    float v2 = angularVelocity * angularVelocity;
+    float value = (0.5f * fluidDensity * area * spinningDragCoefficient * v2) / length;
+
+    float drag = -value;
+    if (angularVelocity < 0) {
+        drag = value;
+    }
+
+    return drag;
+}
+
 SpinningDragTorque::SpinningDragTorque(QObject *parent) :
     Torque("Spinning Drag", parent)
 {
 
+}
+
+void SpinningDragTorque::calculate()
+{
+    float pitchAngularVelocity = m_body->angularVelocity().z();
+    float pitchDrag = calculateSpinningDrag(m_fluidDensity, m_pitchCrossSectionalArea, m_coefficient, pitchAngularVelocity, m_bodyLength);
+
+    float yawAngularVelocity = m_body->angularVelocity().y();
+    float yawDrag = calculateSpinningDrag(m_fluidDensity, m_yawCrossSectionalArea, m_coefficient, yawAngularVelocity, m_bodyLength);
+
+    m_value = QVector3D(0, yawDrag, pitchDrag);
+}
+
+double SpinningDragTorque::fluidDensity() const
+{
+    return m_fluidDensity;
+}
+
+void SpinningDragTorque::setFluidDensity(double fluidDensity)
+{
+    m_fluidDensity = fluidDensity;
+}
+
+double SpinningDragTorque::yawCrossSectionalArea() const
+{
+    return m_yawCrossSectionalArea;
+}
+
+void SpinningDragTorque::setYawCrossSectionalArea(double yawCrossSectionalArea)
+{
+    m_yawCrossSectionalArea = yawCrossSectionalArea;
+}
+
+double SpinningDragTorque::pitchCrossSectionalArea() const
+{
+    return m_pitchCrossSectionalArea;
+}
+
+void SpinningDragTorque::setPitchCrossSectionalArea(double pitchCrossSectionalArea)
+{
+    m_pitchCrossSectionalArea = pitchCrossSectionalArea;
+}
+
+double SpinningDragTorque::coefficient() const
+{
+    return m_coefficient;
+}
+
+void SpinningDragTorque::setCoefficient(double coefficient)
+{
+    m_coefficient = coefficient;
+}
+
+double SpinningDragTorque::bodyLength() const
+{
+    return m_bodyLength;
+}
+
+void SpinningDragTorque::setBodyLength(double bodyLength)
+{
+    m_bodyLength = bodyLength;
 }

@@ -63,6 +63,32 @@ class SpinningDragTorque : public Torque
 
 public:
     explicit SpinningDragTorque(QObject *parent = 0);
+
+protected:
+    void calculate();
+
+public:
+    double fluidDensity() const;
+    void setFluidDensity(double fluidDensity);
+
+    double yawCrossSectionalArea() const;
+    void setYawCrossSectionalArea(double yawCrossSectionalArea);
+
+    double pitchCrossSectionalArea() const;
+    void setPitchCrossSectionalArea(double pitchCrossSectionalArea);
+
+    double coefficient() const;
+    void setCoefficient(double coefficient);
+
+    double bodyLength() const;
+    void setBodyLength(double bodyLength);
+
+private:
+    double m_fluidDensity;
+    double m_yawCrossSectionalArea;
+    double m_pitchCrossSectionalArea;
+    double m_coefficient;
+    double m_bodyLength;
 };
 
 } // namespace Physics

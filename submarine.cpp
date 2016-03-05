@@ -299,23 +299,20 @@ void Submarine::makeFinsEntities(Qt3D::QEntity *scene, Qt3D::QPhongMaterial *mat
 
 void Submarine::makeForceArrows(Qt3D::QEntity *scene)
 {
-    m_forceNoise = new ForceArrow(Qt::red, 1.f);
-    m_forceNoise->addToScene(scene);
+    m_forceWeight = new ForceArrow(Qt::green, 0.5f, scene);
+    m_forceWeight->setForce(m_weight);
 
-    m_forceWeight = new ForceArrow(Qt::green, 0.5f);
-    m_forceWeight->addToScene(scene);
+    m_forceBuoyancy = new ForceArrow(Qt::blue, 0.5f, scene);
+    m_forceBuoyancy->setForce(m_buoyancy);
 
-    m_forceBuoyancy = new ForceArrow(Qt::blue, 0.5f);
-    m_forceBuoyancy->addToScene(scene);
+    m_forceThrust = new ForceArrow(Qt::black, 5.f, scene);
+    m_forceThrust->setForce(m_thrust);
 
-    m_forceThrust = new ForceArrow(Qt::black, 5.f);
-    m_forceThrust->addToScene(scene);
+    m_forceDrag = new ForceArrow(Qt::white, 5.f, scene);
+    m_forceDrag->setForce(m_drag);
 
-    m_forceDrag = new ForceArrow(Qt::white, 5.f);
-    m_forceDrag->addToScene(scene);
-
-    m_forceLift = new ForceArrow(Qt::magenta, 3.f);
-    m_forceLift->addToScene(scene);
+    m_forceLift = new ForceArrow(Qt::magenta, 3.f, scene);
+    m_forceLift->setForce(m_lift);
 }
 
 void Submarine::update(const Fluid *fluid, Qt3D::QCamera *camera)
@@ -372,19 +369,16 @@ void Submarine::applyPropellorTorque()
 void Submarine::applyWeight()
 {
     m_weight->apply();
-    m_forceWeight->update(m_weight);
 }
 
 void Submarine::applyBuoyancy()
 {
     m_buoyancy->apply();
-    m_forceBuoyancy->update(m_buoyancy);
 }
 
 void Submarine::applyThrust()
 {
     m_thrust->apply();
-    m_forceThrust->update(m_thrust);
 }
 
 void Submarine::applyDrag(const Fluid *fluid)
@@ -393,7 +387,6 @@ void Submarine::applyDrag(const Fluid *fluid)
     m_drag->setFluidDensity(fluid->density());
 
     m_drag->apply();
-    m_forceDrag->update(m_drag);
 }
 
 void Submarine::applyLift(const Fluid *fluid)
@@ -403,7 +396,6 @@ void Submarine::applyLift(const Fluid *fluid)
     m_lift->setFluidDensity(fluid->density());
 
     m_lift->apply();
-    m_forceLift->update(m_lift);
 }
 
 void Submarine::applySpinningDrag(const Fluid *fluid)

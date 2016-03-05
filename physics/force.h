@@ -38,6 +38,9 @@ public:
     Q_PROPERTY(QVector3D worldPosition READ worldPosition STORED false)
     Q_PROPERTY(QVector3D force READ force)
 
+signals:
+    void applied();
+
 protected:
     QString m_name;
 

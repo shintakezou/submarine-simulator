@@ -1,3 +1,4 @@
+#include <Qt3DCore/QEntity>
 #include <Qt3DCore/QRotateTransform>
 #include <Qt3DCore/QTransform>
 #include <Qt3DCore/QTranslateTransform>
@@ -44,10 +45,10 @@ Fin::Fin(Qt3D::QEntity *scene, Qt3D::QNode *parent) :
     addComponent(transform);
 
     m_forceLift = new ForceArrow(Qt::red, 150., scene);
-    m_forceLift->addToScene(scene);
+    m_forceLift->setForce(m_lift);
 
     m_forceDrag = new ForceArrow(Qt::green, 150., scene);
-    m_forceDrag->addToScene(scene);
+    m_forceDrag->setForce(m_drag);
 }
 
 void Fin::calculatePosition(Orientation orientation, float position)
@@ -139,7 +140,6 @@ void Fin::applyLift(const Fluid *fluid) const
     m_lift->setFluidDensity(fluid->density());
 
     m_lift->apply();
-    m_forceLift->update(m_lift);
 }
 
 void Fin::applyDrag(const Fluid *fluid) const
@@ -147,7 +147,6 @@ void Fin::applyDrag(const Fluid *fluid) const
     m_drag->setFluidDensity(fluid->density());
 
     m_drag->apply();
-    m_forceDrag->update(m_drag);
 }
 
 void Fin::applyDamping(const Fluid *fluid) const

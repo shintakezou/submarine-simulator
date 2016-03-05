@@ -31,6 +31,8 @@ void Force::apply()
     btVector3 localPosition = btVector3(m_localPosition.x(), m_localPosition.y(), m_localPosition.z());
 
     m_body->body()->applyForce(force, localPosition);
+
+    emit applied();
 }
 
 QString Force::name() const

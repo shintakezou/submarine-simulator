@@ -109,12 +109,6 @@ public:
     double spinningDragCoefficient() const;
     void setSpinningDragCoefficient(double spinningDragCoefficient);
 
-    QVector3D buoyancyPosition() const;
-    void setBuoyancyPosition(const QVector3D &buoyancyPosition);
-
-    QVector3D weightPosition() const;
-    void setWeightPosition(const QVector3D &weightPosition);
-
     QVector3D thrust() const;
     void setThrust(const QVector3D &thrust);
 
@@ -164,8 +158,6 @@ public:
     Q_PROPERTY(double liftCoefficientSlope READ liftCoefficientSlope WRITE setLiftCoefficientSlope)
     Q_PROPERTY(double spinningDragCoefficient READ spinningDragCoefficient WRITE setSpinningDragCoefficient)
     Q_PROPERTY(double crossSectionalArea READ crossSectionalArea STORED false)
-    Q_PROPERTY(QVector3D buoyancyPosition READ buoyancyPosition WRITE setBuoyancyPosition)
-    Q_PROPERTY(QVector3D weightPosition READ weightPosition WRITE setWeightPosition)
     Q_PROPERTY(bool hasHorizontalFins READ hasHorizontalFins WRITE setHasHorizontalFins)
     Q_PROPERTY(double horizontalFinsArea READ horizontalFinsArea WRITE setHorizontalFinsArea)
     Q_PROPERTY(double horizontalFinsLiftCoefficientSlope READ horizontalFinsLiftCoefficientSlope WRITE setHorizontalFinsLiftCoefficientSlope)
@@ -213,8 +205,6 @@ private:
     double m_spinningDragCoefficient;
     Physics::PropellorTorque *m_propellorTorque;
 
-    QVector3D m_buoyancyPosition;
-    QVector3D m_weightPosition;
     QVector3D m_liftPosition;
     QVector3D m_thrust;
 

@@ -103,8 +103,8 @@ Submarine *Submarine::makeDefault(QObject *parent)
     submarine->setDragCoefficient(0.04);
     submarine->setLiftCoefficientSlope(M_PI / 2.);
     submarine->setSpinningDragCoefficient(2);
-    submarine->setBuoyancyPosition(QVector3D(0, 0.15, 0));
-    submarine->setWeightPosition(QVector3D());
+    submarine->buoyancy()->setPosition(QVector3D(0, 0.15, 0));
+    submarine->weight()->setPosition(QVector3D());
     submarine->setThrust(QVector3D(100, 0, 10));
     submarine->propellorTorque()->setValue(QVector3D(20, 0, 0));
 
@@ -383,16 +383,12 @@ void Submarine::applyPropellorTorque()
 
 void Submarine::applyWeight()
 {
-    m_weight->setPosition(m_weightPosition);
-
     m_weight->apply();
     m_forceWeight->update(m_weight);
 }
 
 void Submarine::applyBuoyancy()
 {
-    m_buoyancy->setPosition(m_buoyancyPosition);
-
     m_buoyancy->apply();
     m_forceBuoyancy->update(m_buoyancy);
 }
@@ -702,26 +698,6 @@ double Submarine::spinningDragCoefficient() const
 void Submarine::setSpinningDragCoefficient(double spinningDragCoefficient)
 {
     m_spinningDragCoefficient = spinningDragCoefficient;
-}
-
-QVector3D Submarine::buoyancyPosition() const
-{
-    return m_buoyancyPosition;
-}
-
-void Submarine::setBuoyancyPosition(const QVector3D &buoyancyPosition)
-{
-    m_buoyancyPosition = buoyancyPosition;
-}
-
-QVector3D Submarine::weightPosition() const
-{
-    return m_weightPosition;
-}
-
-void Submarine::setWeightPosition(const QVector3D &weightPosition)
-{
-    m_weightPosition = weightPosition;
 }
 
 QVector3D Submarine::thrust() const

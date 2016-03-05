@@ -50,12 +50,12 @@ void SimulationPropertiesDialogue::loadSubmarine(const Submarine *submarine)
     ui->spinSubDragCoefficient->setValue(submarine->dragCoefficient());
     ui->spinSubLiftCoefficientSlope->setValue(submarine->liftCoefficientSlope());
     ui->spinSubSpinningDragCoefficient->setValue(submarine->spinningDragCoefficient());
-    ui->spinSubBuoyancyPositionX->setValue(submarine->buoyancyPosition().x());
-    ui->spinSubBuoyancyPositionY->setValue(submarine->buoyancyPosition().y());
-    ui->spinSubBuoyancyPositionZ->setValue(submarine->buoyancyPosition().z());
-    ui->spinSubWeightPositionX->setValue(submarine->weightPosition().x());
-    ui->spinSubWeightPositionY->setValue(submarine->weightPosition().y());
-    ui->spinSubWeightPositionZ->setValue(submarine->weightPosition().z());
+    ui->spinSubBuoyancyPositionX->setValue(submarine->buoyancy()->position().x());
+    ui->spinSubBuoyancyPositionY->setValue(submarine->buoyancy()->position().y());
+    ui->spinSubBuoyancyPositionZ->setValue(submarine->buoyancy()->position().z());
+    ui->spinSubWeightPositionX->setValue(submarine->weight()->position().x());
+    ui->spinSubWeightPositionY->setValue(submarine->weight()->position().y());
+    ui->spinSubWeightPositionZ->setValue(submarine->weight()->position().z());
     ui->spinSubThrustX->setValue(submarine->thrust().x());
     ui->spinSubThrustY->setValue(submarine->thrust().y());
     ui->spinSubThrustZ->setValue(submarine->thrust().z());
@@ -85,12 +85,12 @@ void SimulationPropertiesDialogue::saveSubmarine(Submarine *submarine) const
     submarine->setDragCoefficient(ui->spinSubDragCoefficient->value());
     submarine->setLiftCoefficientSlope(ui->spinSubLiftCoefficientSlope->value());
     submarine->setSpinningDragCoefficient(ui->spinSubSpinningDragCoefficient->value());
-    submarine->setBuoyancyPosition(QVector3D(ui->spinSubBuoyancyPositionX->value(),
-                                             ui->spinSubBuoyancyPositionY->value(),
-                                             ui->spinSubBuoyancyPositionZ->value()));
-    submarine->setWeightPosition(QVector3D(ui->spinSubWeightPositionX->value(),
-                                           ui->spinSubWeightPositionY->value(),
-                                           ui->spinSubWeightPositionZ->value()));
+    submarine->buoyancy()->setPosition(QVector3D(ui->spinSubBuoyancyPositionX->value(),
+                                                 ui->spinSubBuoyancyPositionY->value(),
+                                                 ui->spinSubBuoyancyPositionZ->value()));
+    submarine->weight()->setPosition(QVector3D(ui->spinSubWeightPositionX->value(),
+                                               ui->spinSubWeightPositionY->value(),
+                                               ui->spinSubWeightPositionZ->value()));
     submarine->setThrust(QVector3D(ui->spinSubThrustX->value(),
                                    ui->spinSubThrustY->value(),
                                    ui->spinSubThrustZ->value()));

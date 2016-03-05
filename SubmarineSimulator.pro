@@ -28,7 +28,8 @@ SOURCES += main.cpp\
     fin.cpp \
     physics/force.cpp \
     physics/torque.cpp \
-    physics/body.cpp
+    physics/body.cpp \
+    torquearrow.cpp
 
 HEADERS  += mainwindow.h \
     simulation.h \
@@ -40,7 +41,8 @@ HEADERS  += mainwindow.h \
     fin.h \
     physics/force.h \
     physics/torque.h \
-    physics/body.h
+    physics/body.h \
+    torquearrow.h
 
 FORMS    += mainwindow.ui \
     simulationpropertiesdialogue.ui

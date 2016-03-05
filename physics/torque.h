@@ -22,6 +22,9 @@ public:
 protected:
     virtual void calculate() = 0;
 
+signals:
+    void applied();
+
 public:
     QString name() const;
     void setName(const QString &name);

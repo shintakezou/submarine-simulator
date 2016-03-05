@@ -6,5 +6,6 @@
         <file>icons/pause.png</file>
         <file>icons/play.png</file>
         <file>icons/restart.png</file>
+        <file>models/torque-arrow.obj</file>
     </qresource>
 </RCC>

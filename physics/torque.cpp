@@ -28,6 +28,8 @@ void Torque::apply()
 
     btVector3 torque = btVector3(m_value.x(), m_value.y(), m_value.z());
     m_body->body()->applyTorque(torque);
+
+    emit applied();
 }
 
 QString Torque::name() const

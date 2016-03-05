@@ -14,6 +14,7 @@
 #include "physics/force.h"
 #include "physics/torque.h"
 #include "submarine.h"
+#include "torquearrow.h"
 
 #include "fin.h"
 
@@ -49,6 +50,9 @@ Fin::Fin(Qt3D::QEntity *scene, Qt3D::QNode *parent) :
 
     auto dragArrow = new ForceArrow(QColor(0x27ae60), 150., scene);
     dragArrow->setForce(m_drag);
+
+    auto dampingArrow = new TorqueArrow(QColor(0xf1c40f), 1000., scene);
+    dampingArrow->setTorque(m_damping);
 }
 
 void Fin::calculatePosition(Orientation orientation, float position)
@@ -79,6 +83,8 @@ void Fin::calculatePosition(Orientation orientation, float position)
         m_forcePosition->setZ(-radius);
         break;
     }
+
+    m_damping->setRadius(radius);
 
     // FIXME this is required :/
     qDebug() << "p:" << position;

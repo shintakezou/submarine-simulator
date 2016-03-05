@@ -27,25 +27,15 @@
 #include "fin.h"
 #include "fluid.h"
 #include "forcearrow.h"
+#include "physics/body.h"
+#include "physics/force.h"
+#include "physics/torque.h"
 
 #include "submarine.h"
 
 btVector3 qtVector2btVector(QVector3D v)
 {
     return btVector3(v.x(), v.y(), v.z());
-}
-
-float wrapAngle(float angle)
-{
-    while (angle > M_PI) {
-        angle -= M_PI * 2;
-    }
-
-    while (angle < -M_PI) {
-        angle += M_PI * 2;
-    }
-
-    return angle;
 }
 
 Submarine::Submarine(QObject *parent) :
@@ -57,9 +47,7 @@ Submarine::Submarine(QObject *parent) :
     m_width(0),
     m_height(0),
     m_mass(0),
-    m_dragCoefficient(0),
-    m_liftCoefficientSlope(0),
-    m_spinningDragCoefficient(0),
+    m_propellorTorque(new Physics::PropellorTorque(this)),
     m_hasHorizontalFins(false),
     m_horizontalFinsArea(0),
     m_horizontalFinsLiftCoefficientSlope(0),
@@ -71,17 +59,19 @@ Submarine::Submarine(QObject *parent) :
     m_verticalFinsLiftCoefficientSlope(0),
     m_verticalFinsDragCoefficient(0),
     m_verticalFinsPosition(0),
-    m_verticalFinsAspectRatio(0)
+    m_verticalFinsAspectRatio(0),
+    m_weight(new Physics::WeightForce(this)),
+    m_buoyancy(new Physics::BuoyancyForce(this)),
+    m_thrust(new Physics::ThrustForce(this)),
+    m_drag(new Physics::DragForce(this)),
+    m_lift(new Physics::LiftForce(this)),
+    m_spinningDrag(new Physics::SpinningDragTorque(this))
 {
 
 }
 
 Submarine::~Submarine()
 {
-    if (m_body) {
-        delete m_body;
-    }
-
     if (m_shape) {
         delete m_shape;
     }
@@ -95,13 +85,13 @@ Submarine *Submarine::makeDefault(QObject *parent)
     submarine->setWidth(0.6);
     submarine->setHeight(0.7);
     submarine->setMass(140);
-    submarine->setDragCoefficient(0.04);
-    submarine->setLiftCoefficientSlope(M_PI / 2.);
-    submarine->setSpinningDragCoefficient(2);
-    submarine->setBuoyancyPosition(QVector3D(0, 0.15, 0));
-    submarine->setWeightPosition(QVector3D());
-    submarine->setThrust(QVector3D(100, 0, 10));
-    submarine->setPropellorTorque(20);
+    submarine->drag()->setCoefficient(0.04);
+    submarine->lift()->setCoefficientSlope(M_PI / 2.);
+    submarine->spinningDrag()->setCoefficient(2);
+    submarine->buoyancy()->setPosition(QVector3D(0, 0.15, 0));
+    submarine->weight()->setPosition(QVector3D());
+    submarine->thrust()->setValue(QVector3D(100, 0, 10));
+    submarine->propellorTorque()->setValue(QVector3D(20, 0, 0));
 
     submarine->setHasHorizontalFins(true);
     submarine->setHorizontalFinsLiftCoefficientSlope(M_PI);
@@ -135,14 +125,24 @@ void Submarine::addToWorld(btDynamicsWorld *world)
     auto info = btRigidBody::btRigidBodyConstructionInfo(m_mass, 0, m_shape,
                                                          localInertia);
 
-    m_body = new btRigidBody(info);
+    auto body = new btRigidBody(info);
 
-    m_body->setSleepingThresholds(0, 0);
+    body->setSleepingThresholds(0, 0);
 
     auto motionState = new btDefaultMotionState();
-    m_body->setMotionState(motionState);
+    body->setMotionState(motionState);
 
-    world->addRigidBody(m_body);
+    world->addRigidBody(body);
+
+    m_body = new Physics::Body(body, this);
+
+    m_propellorTorque->setBody(m_body);
+    m_weight->setBody(m_body);
+    m_buoyancy->setBody(m_body);
+    m_thrust->setBody(m_body);
+    m_drag->setBody(m_body);
+    m_lift->setBody(m_body);
+    m_spinningDrag->setBody(m_body);
 }
 
 void Submarine::removeFromWorld(btDynamicsWorld *world)
@@ -151,7 +151,7 @@ void Submarine::removeFromWorld(btDynamicsWorld *world)
         qFatal("Not added to the world.");
     }
 
-    world->removeRigidBody(m_body);
+    world->removeRigidBody(m_body->body());
 
     delete m_body;
     delete m_shape;
@@ -259,66 +259,60 @@ void Submarine::makeFinsEntities(Qt3D::QEntity *scene, Qt3D::QPhongMaterial *mat
     if (m_hasHorizontalFins) {
         auto hEntity1 = new Fin(scene, m_entity);
         hEntity1->setSubmarine(this);
+        hEntity1->setArea(m_horizontalFinsArea);
         hEntity1->calculatePosition(Fin::North, m_horizontalFinsPosition);
         hEntity1->addComponent(material);
-        hEntity1->setArea(m_horizontalFinsArea);
-        hEntity1->setDragCoefficient(m_horizontalFinsDragCoefficient);
-        hEntity1->setLiftCoefficientSlope(m_horizontalFinsLiftCoefficientSlope);
+        hEntity1->drag()->setCoefficient(m_horizontalFinsDragCoefficient);
+        hEntity1->lift()->setCoefficientSlope(m_horizontalFinsLiftCoefficientSlope);
         m_fins.append(hEntity1);
 
         auto hEntity2 = new Fin(scene, m_entity);
         hEntity2->setSubmarine(this);
+        hEntity2->setArea(m_horizontalFinsArea);
         hEntity2->calculatePosition(Fin::South, m_horizontalFinsPosition);
         hEntity2->addComponent(material);
-        hEntity2->setArea(m_horizontalFinsArea);
-        hEntity2->setDragCoefficient(m_horizontalFinsDragCoefficient);
-        hEntity2->setLiftCoefficientSlope(m_horizontalFinsLiftCoefficientSlope);
+        hEntity2->drag()->setCoefficient(m_horizontalFinsDragCoefficient);
+        hEntity2->lift()->setCoefficientSlope(m_horizontalFinsLiftCoefficientSlope);
         m_fins.append(hEntity2);
     }
 
     if (m_hasVerticalFins) {
         auto vEntity1 = new Fin(scene, m_entity);
         vEntity1->setSubmarine(this);
+        vEntity1->setArea(m_verticalFinsArea);
         vEntity1->calculatePosition(Fin::East, m_verticalFinsPosition);
         vEntity1->addComponent(material);
-        vEntity1->setArea(m_verticalFinsArea);
-        vEntity1->setDragCoefficient(m_verticalFinsDragCoefficient);
-        vEntity1->setLiftCoefficientSlope(m_verticalFinsLiftCoefficientSlope);
+        vEntity1->drag()->setCoefficient(m_verticalFinsDragCoefficient);
+        vEntity1->lift()->setCoefficientSlope(m_verticalFinsLiftCoefficientSlope);
         m_fins.append(vEntity1);
 
         auto vEntity2 = new Fin(scene, m_entity);
         vEntity2->setSubmarine(this);
+        vEntity2->setArea(m_verticalFinsArea);
         vEntity2->calculatePosition(Fin::West, m_verticalFinsPosition);
         vEntity2->addComponent(material);
-        vEntity2->setArea(m_verticalFinsArea);
-        vEntity2->setDragCoefficient(m_verticalFinsDragCoefficient);
-        vEntity2->setLiftCoefficientSlope(m_verticalFinsLiftCoefficientSlope);
+        vEntity2->drag()->setCoefficient(m_verticalFinsDragCoefficient);
+        vEntity2->lift()->setCoefficientSlope(m_verticalFinsLiftCoefficientSlope);
         m_fins.append(vEntity2);
     }
 }
 
 void Submarine::makeForceArrows(Qt3D::QEntity *scene)
 {
-    m_forceNoise = new ForceArrow(Qt::red, 1.f);
-    m_forceNoise->addToScene(scene);
+    auto weightArrow = new ForceArrow(QColor(0xe67e22), 0.3, scene);
+    weightArrow->setForce(m_weight);
 
-    m_forceWeight = new ForceArrow(Qt::green, 0.5f);
-    m_forceWeight->addToScene(scene);
+    auto buoyancyArrow = new ForceArrow(QColor(0x9b59b6), 0.3, scene);
+    buoyancyArrow->setForce(m_buoyancy);
 
-    m_forceBuoyancy = new ForceArrow(Qt::blue, 0.5f);
-    m_forceBuoyancy->addToScene(scene);
+    auto thrustArrow = new ForceArrow(QColor(0x2c3e50), 5., scene);
+    thrustArrow->setForce(m_thrust);
 
-    m_forceThrust = new ForceArrow(Qt::black, 5.f);
-    m_forceThrust->addToScene(scene);
+    auto dragArrow = new ForceArrow(QColor(0x2ecc71), 5., scene);
+    dragArrow->setForce(m_drag);
 
-    m_forceDrag = new ForceArrow(Qt::white, 5.f);
-    m_forceDrag->addToScene(scene);
-
-    m_forcePitchLift = new ForceArrow(Qt::magenta, 2.f);
-    m_forcePitchLift->addToScene(scene);
-
-    m_forceYawLift = new ForceArrow(Qt::yellow, 2.f);
-    m_forceYawLift->addToScene(scene);
+    auto liftArrow = new ForceArrow(QColor(0xe74c3c), 3.5, scene);
+    liftArrow->setForce(m_lift);
 }
 
 void Submarine::update(const Fluid *fluid, Qt3D::QCamera *camera)
@@ -330,7 +324,7 @@ void Submarine::update(const Fluid *fluid, Qt3D::QCamera *camera)
 
 void Submarine::updateTransformation()
 {
-    btMotionState *motionState = m_body->getMotionState();
+    btMotionState *motionState = m_body->body()->getMotionState();
 
     btTransform transform;
     motionState->getWorldTransform(transform);
@@ -369,161 +363,51 @@ void Submarine::updateForces(const Fluid *fluid)
 
 void Submarine::applyPropellorTorque()
 {
-    m_body->applyTorque(btVector3(m_propellorTorque, 0, 0));
+    m_propellorTorque->apply();
 }
 
 void Submarine::applyWeight()
 {
-    btVector3 force(0, -9.81 * m_mass, 0);
-
-    btVector3 position = m_body->getCenterOfMassTransform() * qtVector2btVector(m_weightPosition);
-
-    m_body->applyForce(force, position);
-    m_forceWeight->update(force, position);
+    m_weight->apply();
 }
 
 void Submarine::applyBuoyancy()
 {
-    btVector3 force(0, 9.81 * m_mass, 0);
-
-    btVector3 position = m_body->getCenterOfMassTransform() * qtVector2btVector(m_buoyancyPosition);
-
-    m_body->applyForce(force, position);
-    m_forceBuoyancy->update(force, position);
+    m_buoyancy->apply();
 }
 
 void Submarine::applyThrust()
 {
-    btTransform transform = m_body->getCenterOfMassTransform();
-
-    btVector3 force(m_thrust.x(), m_thrust.y(), m_thrust.z());
-    force = (transform * force) - transform.getOrigin();
-
-    btVector3 position(-m_length / 2., 0, 0);
-    position = (transform * position) - transform.getOrigin();
-
-    m_body->applyForce(force, position);
-
-    position += transform.getOrigin();
-    m_forceThrust->update(force, position);
+    m_thrust->apply();
 }
 
 void Submarine::applyDrag(const Fluid *fluid)
 {
-    btVector3 velocity = m_body->getLinearVelocity();
-    if (velocity.length() == 0) {
-        return;  // can't be normalised
-    }
+    m_drag->setCrossSectionalArea(crossSectionalArea());
+    m_drag->setFluidDensity(fluid->density());
 
-    float value = 0.5f * fluid->density() * crossSectionalArea() * m_dragCoefficient * velocity.length2();
-    btVector3 force = velocity.normalized() * -value;
-
-    m_body->applyCentralForce(force);
-
-    btVector3 position = m_body->getCenterOfMassPosition();
-    m_forceDrag->update(force, position);
-}
-
-QVector2D calculateLift(float fluidDensity, float angleOfAttack, float liftCoefficientSlope, float area, QVector2D velocity)
-{
-    float liftCoefficient = angleOfAttack * liftCoefficientSlope;
-
-    float value = 0.5f * fluidDensity * area * liftCoefficient * velocity.lengthSquared();
-
-    QVector2D result = velocity.normalized();
-
-    // rotate90(1)
-    float x = result.x();
-    result.setX(-result.y());
-    result.setY(x);
-
-    return result * value;
-}
-
-void Submarine::applyPitchLift(const Fluid *fluid)
-{
-    btTransform transform = m_body->getCenterOfMassTransform();
-
-    QVector2D velocity = pitchVelocity();
-    float angleOfAttack = pitchAngleOfAttack();
-
-    if (qAbs(angleOfAttack) < qDegreesToRadians(15.)) {
-        QVector2D lift = calculateLift(fluid->density(), angleOfAttack, m_liftCoefficientSlope, crossSectionalArea(), velocity);
-
-        btVector3 position = qtVector2btVector(m_liftPosition);
-        position = (transform * position) - transform.getOrigin();
-
-        btVector3 force(lift.x(), lift.y(), 0);
-
-        m_body->applyForce(force, position);
-
-        position += transform.getOrigin();
-        m_forcePitchLift->update(force, position);
-    }
-}
-
-void Submarine::applyYawLift(const Fluid *fluid)
-{
-    btTransform transform = m_body->getCenterOfMassTransform();
-
-    QVector2D velocity = yawVelocity();
-    float angleOfAttack = yawAngleOfAttack();
-
-    if (qAbs(angleOfAttack) < qDegreesToRadians(15.)) {
-        QVector2D lift = calculateLift(fluid->density(), angleOfAttack, m_liftCoefficientSlope, crossSectionalArea(), velocity);
-
-        btVector3 position = qtVector2btVector(m_liftPosition);
-        position = (transform * position) - transform.getOrigin();
-
-        btVector3 force(lift.x(), 0, lift.y());
-
-        m_body->applyForce(force, position);
-
-        position += transform.getOrigin();
-        m_forceYawLift->update(force, position);
-    }
+    m_drag->apply();
 }
 
 void Submarine::applyLift(const Fluid *fluid)
 {
-    applyPitchLift(fluid);
-    applyYawLift(fluid);
-}
+    m_lift->setPitchCrossSectionalArea(M_PI * m_width * m_length);
+    m_lift->setYawCrossSectionalArea(M_PI * m_height * m_length);
+    m_lift->setFluidDensity(fluid->density());
 
-float calculateSpinningDrag(float fluidDensity, float area, float spinningDragCoefficient, float angularVelocity, float length)
-{
-    float v2 = angularVelocity * angularVelocity;
-    float value = (0.5f * fluidDensity * area * spinningDragCoefficient * v2) / length;
-
-    float drag = -value;
-    if (angularVelocity < 0) {
-        drag = value;
-    }
-
-    return drag;
-}
-
-void Submarine::applyPitchSpinningDrag(const Fluid *fluid)
-{
-    float angularVelocity = m_body->getAngularVelocity().z();
-    float drag = calculateSpinningDrag(fluid->density(), crossSectionalArea(), m_spinningDragCoefficient, angularVelocity, m_length);
-    m_body->applyTorque(btVector3(0, 0, drag));
-}
-
-void Submarine::applyYawSpinningDrag(const Fluid *fluid)
-{
-    float angularVelocity = m_body->getAngularVelocity().y();
-    float drag = calculateSpinningDrag(fluid->density(), crossSectionalArea(), m_spinningDragCoefficient, angularVelocity, m_length);
-    m_body->applyTorque(btVector3(0, 0, drag));
+    m_lift->apply();
 }
 
 void Submarine::applySpinningDrag(const Fluid *fluid)
 {
-    applyPitchSpinningDrag(fluid);
-    applyYawSpinningDrag(fluid);
+    m_spinningDrag->setFluidDensity(fluid->density());
+    m_spinningDrag->setPitchCrossSectionalArea(M_PI * m_width * m_length);
+    m_spinningDrag->setYawCrossSectionalArea(M_PI * m_height * m_length);
+
+    m_spinningDrag->apply();
 }
 
-btRigidBody *Submarine::body() const
+Physics::Body *Submarine::body() const
 {
     return m_body;
 }
@@ -531,99 +415,6 @@ btRigidBody *Submarine::body() const
 double Submarine::crossSectionalArea() const
 {
     return M_PI * m_width * m_height;
-}
-
-double Submarine::pitch() const
-{
-    //return m_body->getOrientation().z();
-
-    btTransform transform;
-    m_body->getMotionState()->getWorldTransform(transform);
-
-    btMatrix3x3 basis = transform.getBasis();
-
-    float yaw, pitch, roll;
-    // yes, those do appear to be in the wrong order, but it is correct
-    basis.getEulerYPR(pitch, yaw, roll);
-
-    return wrapAngle(pitch);
-}
-
-double Submarine::yaw() const
-{
-    //return m_body->getOrientation().y();
-
-    btTransform transform;
-    m_body->getMotionState()->getWorldTransform(transform);
-
-    btMatrix3x3 basis = transform.getBasis();
-
-    float yaw, pitch, roll;
-    // yes, those do appear to be in the wrong order, but it is correct
-    basis.getEulerYPR(pitch, yaw, roll);
-
-    return wrapAngle(yaw);
-}
-
-double Submarine::roll() const
-{
-    //return m_body->getOrientation().x();
-
-    btTransform transform;
-    m_body->getMotionState()->getWorldTransform(transform);
-
-    btMatrix3x3 basis = transform.getBasis();
-
-    float yaw, pitch, roll;
-
-    // yes, those do appear to be in the wrong order, but I'm sure it is correct
-    basis.getEulerYPR(pitch, yaw, roll);
-
-    return wrapAngle(roll);
-}
-
-QVector2D Submarine::pitchVelocity() const
-{
-    btVector3 velocity = m_body->getLinearVelocity();
-    return QVector2D(velocity.x(), velocity.y());
-}
-
-QVector2D Submarine::yawVelocity() const
-{
-    btVector3 velocity = m_body->getLinearVelocity();
-    return QVector2D(velocity.x(), velocity.z());
-}
-
-double Submarine::pitchAngleOfAttack() const
-{
-    QVector2D velocity = pitchVelocity();
-    float velocityAngle = wrapAngle(atan2(velocity.y(), velocity.x()));
-    return wrapAngle(pitch() - velocityAngle);
-}
-
-double Submarine::yawAngleOfAttack() const
-{
-    QVector2D velocity = yawVelocity();
-    float velocityAngle = wrapAngle(atan2(velocity.y(), velocity.x()));
-    return wrapAngle(yaw() - velocityAngle);
-}
-
-QVector3D Submarine::angularVelocity() const
-{
-    btVector3 v = m_body->getAngularVelocity();
-    return QVector3D(v.x(), v.y(), v.z());
-}
-
-QVector3D Submarine::linearVelocity() const
-{
-    btVector3 v = m_body->getLinearVelocity();
-    return QVector3D(v.x(), v.y(), v.z());
-}
-
-QVector3D Submarine::position() const
-{
-    btVector3 p = m_body->getCenterOfMassPosition();
-    return QVector3D(p.x(), p.y(), p.z());
 }
 
 double Submarine::length() const
@@ -634,7 +425,10 @@ double Submarine::length() const
 void Submarine::setLength(double length)
 {
     m_length = length;
-    m_liftPosition = QVector3D(length / 4., 0, 0);
+
+    m_lift->setPosition(QVector3D(length / 4., 0, 0));
+    m_thrust->setPosition(QVector3D(-length / 2., 0, 0));
+    m_spinningDrag->setBodyLength(length);
 }
 
 double Submarine::width() const
@@ -666,67 +460,6 @@ void Submarine::setMass(double mass)
 {
     m_mass = mass;
 }
-
-double Submarine::dragCoefficient() const
-{
-    return m_dragCoefficient;
-}
-
-void Submarine::setDragCoefficient(double dragCoefficient)
-{
-    m_dragCoefficient = dragCoefficient;
-}
-
-double Submarine::liftCoefficientSlope() const
-{
-    return m_liftCoefficientSlope;
-}
-
-void Submarine::setLiftCoefficientSlope(double liftCoefficientSlope)
-{
-    m_liftCoefficientSlope = liftCoefficientSlope;
-}
-
-double Submarine::spinningDragCoefficient() const
-{
-    return m_spinningDragCoefficient;
-}
-
-void Submarine::setSpinningDragCoefficient(double spinningDragCoefficient)
-{
-    m_spinningDragCoefficient = spinningDragCoefficient;
-}
-
-QVector3D Submarine::buoyancyPosition() const
-{
-    return m_buoyancyPosition;
-}
-
-void Submarine::setBuoyancyPosition(const QVector3D &buoyancyPosition)
-{
-    m_buoyancyPosition = buoyancyPosition;
-}
-
-QVector3D Submarine::weightPosition() const
-{
-    return m_weightPosition;
-}
-
-void Submarine::setWeightPosition(const QVector3D &weightPosition)
-{
-    m_weightPosition = weightPosition;
-}
-
-QVector3D Submarine::thrust() const
-{
-    return m_thrust;
-}
-
-void Submarine::setThrust(const QVector3D &thrust)
-{
-    m_thrust = thrust;
-}
-
 
 double Submarine::hasHorizontalFins() const
 {
@@ -848,12 +581,37 @@ void Submarine::setVerticalFinsAspectRatio(double verticalFinsAspectRatio)
     m_verticalFinsAspectRatio = verticalFinsAspectRatio;
 }
 
-double Submarine::propellorTorque() const
+Physics::PropellorTorque *Submarine::propellorTorque() const
 {
     return m_propellorTorque;
 }
 
-void Submarine::setPropellorTorque(double propellorTorque)
+Physics::WeightForce *Submarine::weight() const
 {
-    m_propellorTorque = propellorTorque;
+    return m_weight;
+}
+
+Physics::BuoyancyForce *Submarine::buoyancy() const
+{
+    return m_buoyancy;
+}
+
+Physics::ThrustForce *Submarine::thrust() const
+{
+    return m_thrust;
+}
+
+Physics::DragForce *Submarine::drag() const
+{
+    return m_drag;
+}
+
+Physics::LiftForce *Submarine::lift() const
+{
+    return m_lift;
+}
+
+Physics::SpinningDragTorque *Submarine::spinningDrag() const
+{
+    return m_spinningDrag;
 }

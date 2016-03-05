@@ -1,3 +1,4 @@
+#include <Qt3DCore/QEntity>
 #include <Qt3DCore/QRotateTransform>
 #include <Qt3DCore/QTransform>
 #include <Qt3DCore/QTranslateTransform>
@@ -9,6 +10,9 @@
 
 #include "fluid.h"
 #include "forcearrow.h"
+#include "physics/body.h"
+#include "physics/force.h"
+#include "physics/torque.h"
 #include "submarine.h"
 
 #include "fin.h"
@@ -21,7 +25,10 @@ float calculateEllipseProportion(float proportion)
 Fin::Fin(Qt3D::QEntity *scene, Qt3D::QNode *parent) :
     Qt3D::QEntity(parent),
     m_plane(Unknown),
-    m_forcePosition(new btVector3())
+    m_forcePosition(new btVector3()),
+    m_drag(new Physics::DragForce(this)),
+    m_lift(new Physics::LiftForce(this)),
+    m_damping(new Physics::FinDampingTorque(this))
 {
     auto mesh = new Qt3D::QMesh(this);
     mesh->setSource(QUrl("qrc:/models/fin.obj"));
@@ -37,11 +44,11 @@ Fin::Fin(Qt3D::QEntity *scene, Qt3D::QNode *parent) :
     transform->addTransform(m_rotateTransform);
     addComponent(transform);
 
-    m_forceLift = new ForceArrow(Qt::red, 50., scene);
-    m_forceLift->addToScene(scene);
+    auto liftArrow = new ForceArrow(QColor(0xc0392b), 200., scene);
+    liftArrow->setForce(m_lift);
 
-    m_forceDrag = new ForceArrow(Qt::green, 50., scene);
-    m_forceDrag->addToScene(scene);
+    auto dragArrow = new ForceArrow(QColor(0x27ae60), 150., scene);
+    dragArrow->setForce(m_drag);
 }
 
 void Fin::calculatePosition(Orientation orientation, float position)
@@ -100,13 +107,25 @@ void Fin::calculatePosition(Orientation orientation, float position)
     case North:
     case South:
         m_plane = Horizontal;
+        m_lift->setYawCrossSectionalArea(m_area);
+        m_lift->setPitchCrossSectionalArea(0);
         break;
 
     case East:
     case West:
         m_plane = Vertical;
+        m_lift->setPitchCrossSectionalArea(m_area);
+        m_lift->setYawCrossSectionalArea(0);
         break;
     }
+
+    m_drag->setBody(submarine()->body());
+    m_drag->setPosition(QVector3D(m_forcePosition->x(), m_forcePosition->y(), m_forcePosition->z()));
+
+    m_lift->setBody(submarine()->body());
+    m_lift->setPosition(QVector3D(m_forcePosition->x(), m_forcePosition->y(), m_forcePosition->z()));
+
+    m_damping->setBody(submarine()->body());
 }
 
 void Fin::applyForces(const Fluid *fluid) const
@@ -116,147 +135,25 @@ void Fin::applyForces(const Fluid *fluid) const
     applyDamping(fluid);
 }
 
-QVector2D calcLift(float fluidDensity, float angleOfAttack, float liftCoefficientSlope, float area, QVector2D velocity)
-{
-    float liftCoefficient = angleOfAttack * liftCoefficientSlope;
-
-    float value = 0.5f * fluidDensity * area * liftCoefficient * velocity.lengthSquared();
-
-    QVector2D result = velocity.normalized();
-
-    // rotate90(1)
-    float x = result.x();
-    result.setX(-result.y());
-    result.setY(x);
-
-    return result * value;
-}
-
 void Fin::applyLift(const Fluid *fluid) const
 {
-    btTransform transform = submarine()->body()->getCenterOfMassTransform();
+    m_lift->setFluidDensity(fluid->density());
 
-    QVector2D velocity;
-    float angleOfAttack;
-
-    switch (m_plane) {
-    case Horizontal:
-        velocity = submarine()->pitchVelocity();
-        angleOfAttack = submarine()->pitchAngleOfAttack();
-        break;
-
-    case Vertical:
-        velocity = submarine()->yawVelocity();
-        angleOfAttack = submarine()->yawAngleOfAttack();
-        break;
-
-    default:
-        qFatal("Unknown fin plane.");
-        return;
-    }
-
-    if (qAbs(angleOfAttack) < qDegreesToRadians(15.)) {
-        QVector2D lift = calcLift(fluid->density(), angleOfAttack, m_liftCoefficientSlope, m_area, velocity);
-
-        btVector3 position = btVector3(m_forcePosition->x(), m_forcePosition->y(), m_forcePosition->z());
-        position = (transform * position) - transform.getOrigin();
-
-        btVector3 force;
-
-        switch (m_plane) {
-        case Horizontal:
-            force = btVector3(lift.x(), lift.y(), 0);
-            break;
-
-        case Vertical:
-            force = btVector3(lift.x(), 0, lift.y());
-            break;
-
-        default:
-            qFatal("Unknown fin plane.");
-            return;
-        }
-
-        submarine()->body()->applyForce(force, position);
-
-        position += transform.getOrigin();
-        m_forceLift->update(force, position);
-    }
+    m_lift->apply();
 }
 
 void Fin::applyDrag(const Fluid *fluid) const
 {
-    btTransform transform = submarine()->body()->getCenterOfMassTransform();
+    m_drag->setFluidDensity(fluid->density());
 
-    QVector2D velocity;
-
-    switch (m_plane) {
-    case Horizontal:
-        velocity = submarine()->pitchVelocity();
-        break;
-
-    case Vertical:
-        velocity = submarine()->yawVelocity();
-        break;
-
-    default:
-        qFatal("Unknown fin plane.");
-        return;
-    }
-
-    float v2 = velocity.lengthSquared();
-    float value = 0.5f * fluid->density() * m_area * m_dragCoefficient * v2;
-
-    QVector2D drag = velocity.normalized() * -value;
-
-    btVector3 position = btVector3(m_forcePosition->x(), m_forcePosition->y(), m_forcePosition->z());
-    position = (transform * position) - transform.getOrigin();
-
-    btVector3 force;
-
-    switch (m_plane) {
-    case Horizontal:
-        force = btVector3(drag.x(), drag.y(), 0);
-        break;
-
-    case Vertical:
-        force = btVector3(drag.x(), 0, drag.y());
-        break;
-
-    default:
-        qFatal("Unknown fin plane.");
-        return;
-    }
-
-    submarine()->body()->applyForce(force, position);
-
-    position += transform.getOrigin();
-    m_forceDrag->update(force, position);
+    m_drag->apply();
 }
 
 void Fin::applyDamping(const Fluid *fluid) const
 {
-    float span = qSqrt(m_aspectRatio * m_area);
+    m_damping->setFluidDensity(fluid->density());
 
-    float radius = 0;
-    switch (m_plane) {
-    case Horizontal:
-        radius = m_forcePosition->z();
-        break;
-
-    case Vertical:
-        radius = m_forcePosition->y();
-        break;
-
-    default:
-        qFatal("Unknown fin plane.");
-        return;
-    }
-
-    float v2 = submarine()->body()->getAngularVelocity().x() * submarine()->body()->getAngularVelocity().x();
-    float torque = -2.f * fluid->density() * m_area * v2 * (radius + span) * (radius + span) * (radius + span / 2.f);
-
-    submarine()->body()->applyTorque(btVector3(torque, 0, 0));
+    m_damping->apply();
 }
 
 Fin::Plane Fin::plane() const
@@ -282,34 +179,22 @@ double Fin::area() const
 void Fin::setArea(double area)
 {
     m_area = area;
+
+    m_drag->setCrossSectionalArea(m_area);
+    m_damping->setCrossSectionalArea(m_area);
 }
 
-double Fin::aspectRatio() const
+Physics::DragForce *Fin::drag() const
 {
-    return m_aspectRatio;
+    return m_drag;
 }
 
-void Fin::setAspectRatio(double aspectRatio)
+Physics::LiftForce *Fin::lift() const
 {
-    m_aspectRatio = aspectRatio;
+    return m_lift;
 }
 
-double Fin::liftCoefficientSlope() const
+Physics::FinDampingTorque *Fin::damping() const
 {
-    return m_liftCoefficientSlope;
-}
-
-void Fin::setLiftCoefficientSlope(double liftCoefficientSlope)
-{
-    m_liftCoefficientSlope = liftCoefficientSlope;
-}
-
-double Fin::dragCoefficient() const
-{
-    return m_dragCoefficient;
-}
-
-void Fin::setDragCoefficient(double dragCoefficient)
-{
-    m_dragCoefficient = dragCoefficient;
+    return m_damping;
 }

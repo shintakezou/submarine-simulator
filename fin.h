@@ -14,6 +14,12 @@ class Fluid;
 class ForceArrow;
 class Submarine;
 
+namespace Physics {
+class DragForce;
+class FinDampingTorque;
+class LiftForce;
+}
+
 class Fin : public Qt3D::QEntity
 {
     Q_OBJECT
@@ -49,37 +55,28 @@ public:
     double area() const;
     void setArea(double area);
 
-    double aspectRatio() const;
-    void setAspectRatio(double aspectRatio);
-
-    double liftCoefficientSlope() const;
-    void setLiftCoefficientSlope(double liftCoefficientSlope);
-
-    double dragCoefficient() const;
-    void setDragCoefficient(double dragCoefficient);
+    Physics::DragForce *drag() const;
+    Physics::LiftForce *lift() const;
+    Physics::FinDampingTorque *damping() const;
 
     Q_PROPERTY(Submarine *submarine READ submarine WRITE setSubmarine)
     Q_PROPERTY(Plane plane READ plane)
     Q_PROPERTY(double area READ area WRITE setArea)
-    Q_PROPERTY(double aspectRatio READ aspectRatio WRITE setAspectRatio)
-    Q_PROPERTY(double liftCoefficientSlope READ liftCoefficientSlope WRITE setLiftCoefficientSlope)
-    Q_PROPERTY(double dragCoefficient READ dragCoefficient WRITE setDragCoefficient)
 
 private:
     Qt3D::QRotateTransform *m_rotateTransform;
     Qt3D::QTranslateTransform *m_translateTransform;
 
-    ForceArrow *m_forceLift;
-    ForceArrow *m_forceDrag;
-
     Submarine *m_submarine;
     Plane m_plane;
     double m_area;
     double m_aspectRatio;
-    double m_liftCoefficientSlope;
-    double m_dragCoefficient;
 
     btVector3 *m_forcePosition;
+
+    Physics::DragForce *m_drag;
+    Physics::LiftForce *m_lift;
+    Physics::FinDampingTorque *m_damping;
 };
 
 #endif // FIN_H

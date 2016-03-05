@@ -1,3 +1,5 @@
+#include "physics/force.h"
+#include "physics/torque.h"
 #include "simulation.h"
 #include "fluid.h"
 #include "submarine.h"
@@ -45,19 +47,19 @@ void SimulationPropertiesDialogue::loadSubmarine(const Submarine *submarine)
     ui->spinSubHeight->setValue(submarine->height());
     ui->spinSubLength->setValue(submarine->length());
     ui->spinSubMass->setValue(submarine->mass());
-    ui->spinSubDragCoefficient->setValue(submarine->dragCoefficient());
-    ui->spinSubLiftCoefficientSlope->setValue(submarine->liftCoefficientSlope());
-    ui->spinSubSpinningDragCoefficient->setValue(submarine->spinningDragCoefficient());
-    ui->spinSubBuoyancyPositionX->setValue(submarine->buoyancyPosition().x());
-    ui->spinSubBuoyancyPositionY->setValue(submarine->buoyancyPosition().y());
-    ui->spinSubBuoyancyPositionZ->setValue(submarine->buoyancyPosition().z());
-    ui->spinSubWeightPositionX->setValue(submarine->weightPosition().x());
-    ui->spinSubWeightPositionY->setValue(submarine->weightPosition().y());
-    ui->spinSubWeightPositionZ->setValue(submarine->weightPosition().z());
-    ui->spinSubThrustX->setValue(submarine->thrust().x());
-    ui->spinSubThrustY->setValue(submarine->thrust().y());
-    ui->spinSubThrustZ->setValue(submarine->thrust().z());
-    ui->spinSubPropellorTorque->setValue(submarine->propellorTorque());
+    ui->spinSubDragCoefficient->setValue(submarine->drag()->coefficient());
+    ui->spinSubLiftCoefficientSlope->setValue(submarine->lift()->coefficientSlope());
+    ui->spinSubSpinningDragCoefficient->setValue(submarine->spinningDrag()->coefficient());
+    ui->spinSubBuoyancyPositionX->setValue(submarine->buoyancy()->position().x());
+    ui->spinSubBuoyancyPositionY->setValue(submarine->buoyancy()->position().y());
+    ui->spinSubBuoyancyPositionZ->setValue(submarine->buoyancy()->position().z());
+    ui->spinSubWeightPositionX->setValue(submarine->weight()->position().x());
+    ui->spinSubWeightPositionY->setValue(submarine->weight()->position().y());
+    ui->spinSubWeightPositionZ->setValue(submarine->weight()->position().z());
+    ui->spinSubThrustX->setValue(submarine->thrust()->value().x());
+    ui->spinSubThrustY->setValue(submarine->thrust()->value().y());
+    ui->spinSubThrustZ->setValue(submarine->thrust()->value().z());
+    ui->spinSubPropellorTorque->setValue(submarine->propellorTorque()->value().x());
 
     ui->checkHorizontalFinsEnabled->setChecked(submarine->hasHorizontalFins());
     ui->spinHorizontalFinsArea->setValue(submarine->horizontalFinsArea());
@@ -80,19 +82,19 @@ void SimulationPropertiesDialogue::saveSubmarine(Submarine *submarine) const
     submarine->setHeight(ui->spinSubHeight->value());
     submarine->setLength(ui->spinSubLength->value());
     submarine->setMass(ui->spinSubMass->value());
-    submarine->setDragCoefficient(ui->spinSubDragCoefficient->value());
-    submarine->setLiftCoefficientSlope(ui->spinSubLiftCoefficientSlope->value());
-    submarine->setSpinningDragCoefficient(ui->spinSubSpinningDragCoefficient->value());
-    submarine->setBuoyancyPosition(QVector3D(ui->spinSubBuoyancyPositionX->value(),
-                                             ui->spinSubBuoyancyPositionY->value(),
-                                             ui->spinSubBuoyancyPositionZ->value()));
-    submarine->setWeightPosition(QVector3D(ui->spinSubWeightPositionX->value(),
-                                           ui->spinSubWeightPositionY->value(),
-                                           ui->spinSubWeightPositionZ->value()));
-    submarine->setThrust(QVector3D(ui->spinSubThrustX->value(),
-                                   ui->spinSubThrustY->value(),
-                                   ui->spinSubThrustZ->value()));
-    submarine->setPropellorTorque(ui->spinSubPropellorTorque->value());
+    submarine->drag()->setCoefficient(ui->spinSubDragCoefficient->value());
+    submarine->lift()->setCoefficientSlope(ui->spinSubLiftCoefficientSlope->value());
+    submarine->spinningDrag()->setCoefficient(ui->spinSubSpinningDragCoefficient->value());
+    submarine->buoyancy()->setPosition(QVector3D(ui->spinSubBuoyancyPositionX->value(),
+                                                 ui->spinSubBuoyancyPositionY->value(),
+                                                 ui->spinSubBuoyancyPositionZ->value()));
+    submarine->weight()->setPosition(QVector3D(ui->spinSubWeightPositionX->value(),
+                                               ui->spinSubWeightPositionY->value(),
+                                               ui->spinSubWeightPositionZ->value()));
+    submarine->thrust()->setValue(QVector3D(ui->spinSubThrustX->value(),
+                                            ui->spinSubThrustY->value(),
+                                            ui->spinSubThrustZ->value()));
+    submarine->propellorTorque()->setValue(QVector3D(ui->spinSubPropellorTorque->value(), 0, 0));
 
     submarine->setHasHorizontalFins(ui->checkHorizontalFinsEnabled->isChecked());
     submarine->setHorizontalFinsArea(ui->spinHorizontalFinsArea->value());

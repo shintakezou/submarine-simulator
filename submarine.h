@@ -18,6 +18,17 @@ class btRigidBody;
 class btDynamicsWorld;
 class btVector3;
 
+namespace Physics {
+class Body;
+class BuoyancyForce;
+class DragForce;
+class LiftForce;
+class PropellorTorque;
+class SpinningDragTorque;
+class ThrustForce;
+class WeightForce;
+}
+
 class Fin;
 class Fluid;
 class ForceArrow;
@@ -56,31 +67,15 @@ private:
     void applyBuoyancy();
     void applyThrust();
     void applyDrag(const Fluid *fluid);
-    void applyPitchLift(const Fluid *fluid);
-    void applyYawLift(const Fluid *fluid);
     void applyLift(const Fluid *fluid);
     void applyPitchSpinningDrag(const Fluid *fluid);
     void applyYawSpinningDrag(const Fluid *fluid);
     void applySpinningDrag(const Fluid *fluid);
 
 public:
-    btRigidBody *body() const;
+    Physics::Body *body() const;
 
     double crossSectionalArea() const;
-
-    double pitch() const;
-    double yaw() const;
-    double roll() const;
-
-    QVector2D pitchVelocity() const;
-    QVector2D yawVelocity() const;
-
-    double pitchAngleOfAttack() const;
-    double yawAngleOfAttack() const;
-
-    QVector3D angularVelocity() const;
-    QVector3D linearVelocity() const;
-    QVector3D position() const;
 
     double length() const;
     void setLength(double length);
@@ -93,24 +88,6 @@ public:
 
     double mass() const;
     void setMass(double mass);
-
-    double dragCoefficient() const;
-    void setDragCoefficient(double dragCoefficient);
-
-    double liftCoefficientSlope() const;
-    void setLiftCoefficientSlope(double liftCoefficientSlope);
-
-    double spinningDragCoefficient() const;
-    void setSpinningDragCoefficient(double spinningDragCoefficient);
-
-    QVector3D buoyancyPosition() const;
-    void setBuoyancyPosition(const QVector3D &buoyancyPosition);
-
-    QVector3D weightPosition() const;
-    void setWeightPosition(const QVector3D &weightPosition);
-
-    QVector3D thrust() const;
-    void setThrust(const QVector3D &thrust);
 
     double hasHorizontalFins() const;
     void setHasHorizontalFins(double hasHorizontalFins);
@@ -148,19 +125,13 @@ public:
     double verticalFinsAspectRatio() const;
     void setVerticalFinsAspectRatio(double verticalFinsAspectRatio);
 
-    double propellorTorque() const;
-    void setPropellorTorque(double propellorTorque);
+    Physics::PropellorTorque *propellorTorque() const;
 
     Q_PROPERTY(double length READ length WRITE setLength)
     Q_PROPERTY(double width READ width WRITE setWidth)
     Q_PROPERTY(double height READ height WRITE setHeight)
     Q_PROPERTY(double mass READ mass WRITE setMass)
-    Q_PROPERTY(double dragCoefficient READ dragCoefficient WRITE setDragCoefficient)
-    Q_PROPERTY(double liftCoefficientSlope READ liftCoefficientSlope WRITE setLiftCoefficientSlope)
-    Q_PROPERTY(double spinningDragCoefficient READ spinningDragCoefficient WRITE setSpinningDragCoefficient)
     Q_PROPERTY(double crossSectionalArea READ crossSectionalArea STORED false)
-    Q_PROPERTY(QVector3D buoyancyPosition READ buoyancyPosition WRITE setBuoyancyPosition)
-    Q_PROPERTY(QVector3D weightPosition READ weightPosition WRITE setWeightPosition)
     Q_PROPERTY(bool hasHorizontalFins READ hasHorizontalFins WRITE setHasHorizontalFins)
     Q_PROPERTY(double horizontalFinsArea READ horizontalFinsArea WRITE setHorizontalFinsArea)
     Q_PROPERTY(double horizontalFinsLiftCoefficientSlope READ horizontalFinsLiftCoefficientSlope WRITE setHorizontalFinsLiftCoefficientSlope)
@@ -174,9 +145,16 @@ public:
     Q_PROPERTY(double verticalFinsPosition READ verticalFinsPosition WRITE setVerticalFinsPosition)
     Q_PROPERTY(double verticalFinsAspectRatio READ verticalFinsAspectRatio WRITE setVerticalFinsAspectRatio)
 
+    Physics::WeightForce *weight() const;
+    Physics::BuoyancyForce *buoyancy() const;
+    Physics::ThrustForce *thrust() const;
+    Physics::DragForce *drag() const;
+    Physics::LiftForce *lift() const;
+    Physics::SpinningDragTorque *spinningDrag() const;
+
 private:
     btCapsuleShape *m_shape;
-    btRigidBody *m_body;
+    Physics::Body *m_body;
 
     Qt3D::QEntity *m_entity;
     Qt3D::QTranslateTransform *m_translateTransform;
@@ -184,31 +162,11 @@ private:
 
     QVector<Fin *> m_fins;
 
-    ForceArrow *m_forceNoise;
-    ForceArrow *m_forceWeight;
-    ForceArrow *m_forceBuoyancy;
-    ForceArrow *m_forceThrust;
-    ForceArrow *m_forceDrag;
-    ForceArrow *m_forcePitchLift;
-    ForceArrow *m_forceYawLift;
-    ForceArrow *m_forceHorizontalFinsLift;
-    ForceArrow *m_forceVerticalFinsLift;
-    ForceArrow *m_forceHorizontalFinsDrag;
-    ForceArrow *m_forceVerticalFinsDrag;
-
     double m_length;
     double m_width;
     double m_height;
     double m_mass;
-    double m_dragCoefficient;
-    double m_liftCoefficientSlope;
-    double m_spinningDragCoefficient;
-    double m_propellorTorque;
-
-    QVector3D m_buoyancyPosition;
-    QVector3D m_weightPosition;
-    QVector3D m_liftPosition;
-    QVector3D m_thrust;
+    Physics::PropellorTorque *m_propellorTorque;
 
     double m_hasHorizontalFins;
     double m_horizontalFinsArea;
@@ -223,6 +181,13 @@ private:
     double m_verticalFinsDragCoefficient;
     double m_verticalFinsPosition;
     double m_verticalFinsAspectRatio;
+
+    Physics::WeightForce *m_weight;
+    Physics::BuoyancyForce *m_buoyancy;
+    Physics::ThrustForce *m_thrust;
+    Physics::DragForce *m_drag;
+    Physics::LiftForce *m_lift;
+    Physics::SpinningDragTorque *m_spinningDrag;
 };
 
 #endif // SUBMARINE_H

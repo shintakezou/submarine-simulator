@@ -10,13 +10,36 @@
 #include <Qt3DRenderer/QPhongMaterial>
 #include <Qt3DRenderer/QMesh>
 
+#include "physics/force.h"
+
 #include "forcearrow.h"
 
-ForceArrow::ForceArrow(QColor colour, float scale, QObject *parent) :
-    QObject(parent),
+ForceArrow::ForceArrow(QColor colour, float scale, Qt3D::QNode *parent) :
+    Qt3D::QEntity(parent),
     m_colour(colour),
-    m_scale(scale)
+    m_scale(scale),
+    m_force(0)
 {
+    auto material = new Qt3D::QPhongMaterial(this);
+    material->setAmbient(m_colour);
+    addComponent(material);
+
+    auto mesh = new Qt3D::QMesh(this);
+    mesh->setSource(QUrl("qrc:/models/arrow.obj"));
+    addComponent(mesh);
+
+    auto transform = new Qt3D::QTransform(this);
+
+    m_rotateTransform = new Qt3D::QRotateTransform(this);
+    transform->addTransform(m_rotateTransform);
+
+    m_scaleTransform = new Qt3D::QScaleTransform(this);
+    transform->addTransform(m_scaleTransform);
+
+    m_translateTransform = new Qt3D::QTranslateTransform(this);
+    transform->addTransform(m_translateTransform);
+
+    addComponent(transform);
 
 }
 
@@ -25,34 +48,11 @@ ForceArrow::~ForceArrow()
 
 }
 
-void ForceArrow::addToScene(Qt3D::QEntity *scene)
+void ForceArrow::update()
 {
-    auto entity = new Qt3D::QEntity(scene);
+    QVector3D force = m_force->force();
+    QVector3D position = m_force->worldPosition();
 
-    auto material = new Qt3D::QPhongMaterial(entity);
-    material->setAmbient(m_colour);
-    entity->addComponent(material);
-
-    auto mesh = new Qt3D::QMesh(entity);
-    mesh->setSource(QUrl("qrc:/models/arrow.obj"));
-    entity->addComponent(mesh);
-
-    auto transform = new Qt3D::QTransform(entity);
-
-    m_rotateTransform = new Qt3D::QRotateTransform(entity);
-    transform->addTransform(m_rotateTransform);
-
-    m_scaleTransform = new Qt3D::QScaleTransform(entity);
-    transform->addTransform(m_scaleTransform);
-
-    m_translateTransform = new Qt3D::QTranslateTransform(entity);
-    transform->addTransform(m_translateTransform);
-
-    entity->addComponent(transform);
-}
-
-void ForceArrow::update(QVector3D force, QVector3D position)
-{
     QVector3D up = QVector3D(0, 1, 0);
     QVector3D dir = force.normalized();
 
@@ -67,14 +67,7 @@ void ForceArrow::update(QVector3D force, QVector3D position)
 
     m_translateTransform->setTranslation(position);
 
-    m_scaleTransform->setScale((force.length() / 500.) * m_scale);
-}
-
-void ForceArrow::update(btVector3 force, btVector3 position)
-{
-    QVector3D forceVector(force.x(), force.y(), force.z());
-    QVector3D positionVector(position.x(), position.y(), position.z());
-    update(forceVector, positionVector);
+    m_scaleTransform->setScale((force.length() / 250.) * m_scale);
 }
 
 QColor ForceArrow::colour() const
@@ -82,17 +75,23 @@ QColor ForceArrow::colour() const
     return m_colour;
 }
 
-void ForceArrow::setColour(const QColor &colour)
-{
-    m_colour = colour;
-}
-
 float ForceArrow::scale() const
 {
     return m_scale;
 }
 
-void ForceArrow::setScale(float scale)
+Physics::Force *ForceArrow::force() const
 {
-    m_scale = scale;
+    return m_force;
+}
+
+void ForceArrow::setForce(Physics::Force *force)
+{
+    if (m_force) {
+        disconnect(m_force, &Physics::Force::applied, this, &ForceArrow::update);
+    }
+
+    m_force = force;
+
+    connect(m_force, &Physics::Force::applied, this, &ForceArrow::update);
 }

@@ -77,17 +77,17 @@ Simulation::Simulation() :
 
     m_submarine->addToScene(m_rootEntity);
 
-    m_axisX = new ForceArrow(Qt::red, 1, this);
+    /*m_axisX = new ForceArrow(Qt::red, 1, m_rootEntity);
     m_axisX->addToScene(m_rootEntity);
     m_axisX->update(QVector3D(500, 0, 0), QVector3D());
 
-    m_axisY = new ForceArrow(Qt::green, 1, this);
+    m_axisY = new ForceArrow(Qt::green, 1, m_rootEntity);
     m_axisY->addToScene(m_rootEntity);
     m_axisY->update(QVector3D(0, 500, 0), QVector3D());
 
-    m_axisZ = new ForceArrow(Qt::blue, 1, this);
+    m_axisZ = new ForceArrow(Qt::blue, 1, m_rootEntity);
     m_axisZ->addToScene(m_rootEntity);
-    m_axisZ->update(QVector3D(0, 0, 500), QVector3D());
+    m_axisZ->update(QVector3D(0, 0, 500), QVector3D());*/
 }
 
 Simulation::~Simulation()

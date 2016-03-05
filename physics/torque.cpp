@@ -1,4 +1,5 @@
 #include <QtDebug>
+#include <QtMath>
 
 #include <bullet/btBulletDynamicsCommon.h>
 
@@ -148,4 +149,60 @@ double SpinningDragTorque::bodyLength() const
 void SpinningDragTorque::setBodyLength(double bodyLength)
 {
     m_bodyLength = bodyLength;
+}
+
+FinDampingTorque::FinDampingTorque(QObject *parent) :
+    Torque("Fin Damping", parent)
+{
+
+}
+
+void FinDampingTorque::calculate()
+{
+    float span = qSqrt(m_aspectRatio * m_crossSectionalArea);
+
+    float v2 = m_body->angularVelocity().x() * m_body->angularVelocity().x();
+    float torque = -2.f * m_fluidDensity * m_crossSectionalArea * v2 * (m_radius + span) * (m_radius + span) * (m_radius + span / 2.f);
+
+    m_value = QVector3D(torque, 0, 0);
+}
+
+double FinDampingTorque::fluidDensity() const
+{
+    return m_fluidDensity;
+}
+
+void FinDampingTorque::setFluidDensity(double fluidDensity)
+{
+    m_fluidDensity = fluidDensity;
+}
+
+double FinDampingTorque::crossSectionalArea() const
+{
+    return m_crossSectionalArea;
+}
+
+void FinDampingTorque::setCrossSectionalArea(double crossSectionalArea)
+{
+    m_crossSectionalArea = crossSectionalArea;
+}
+
+double FinDampingTorque::aspectRatio() const
+{
+    return m_aspectRatio;
+}
+
+void FinDampingTorque::setAspectRatio(double aspectRatio)
+{
+    m_aspectRatio = aspectRatio;
+}
+
+double FinDampingTorque::radius() const
+{
+    return m_radius;
+}
+
+void FinDampingTorque::setRadius(double radius)
+{
+    m_radius = radius;
 }

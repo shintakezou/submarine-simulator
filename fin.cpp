@@ -7,11 +7,11 @@
 
 #include <bullet/btBulletDynamicsCommon.h>
 
-#include "physics/body.h"
-#include "physics/force.h"
-
 #include "fluid.h"
 #include "forcearrow.h"
+#include "physics/body.h"
+#include "physics/force.h"
+#include "physics/torque.h"
 #include "submarine.h"
 
 #include "fin.h"
@@ -26,7 +26,8 @@ Fin::Fin(Qt3D::QEntity *scene, Qt3D::QNode *parent) :
     m_plane(Unknown),
     m_forcePosition(new btVector3()),
     m_drag(new Physics::DragForce(this)),
-    m_lift(new Physics::LiftForce(this))
+    m_lift(new Physics::LiftForce(this)),
+    m_damping(new Physics::FinDampingTorque(this))
 {
     auto mesh = new Qt3D::QMesh(this);
     mesh->setSource(QUrl("qrc:/models/fin.obj"));
@@ -122,6 +123,8 @@ void Fin::calculatePosition(Orientation orientation, float position)
 
     m_lift->setBody(submarine()->body());
     m_lift->setPosition(QVector3D(m_forcePosition->x(), m_forcePosition->y(), m_forcePosition->z()));
+
+    m_damping->setBody(submarine()->body());
 }
 
 void Fin::applyForces(const Fluid *fluid) const
@@ -141,7 +144,6 @@ void Fin::applyLift(const Fluid *fluid) const
 
 void Fin::applyDrag(const Fluid *fluid) const
 {
-    m_drag->setCrossSectionalArea(m_area);
     m_drag->setFluidDensity(fluid->density());
 
     m_drag->apply();
@@ -150,27 +152,9 @@ void Fin::applyDrag(const Fluid *fluid) const
 
 void Fin::applyDamping(const Fluid *fluid) const
 {
-    float span = qSqrt(m_aspectRatio * m_area);
+    m_damping->setFluidDensity(fluid->density());
 
-    float radius = 0;
-    switch (m_plane) {
-    case Horizontal:
-        radius = m_forcePosition->z();
-        break;
-
-    case Vertical:
-        radius = m_forcePosition->y();
-        break;
-
-    default:
-        qFatal("Unknown fin plane.");
-        return;
-    }
-
-    float v2 = submarine()->body()->body()->getAngularVelocity().x() * submarine()->body()->body()->getAngularVelocity().x();
-    float torque = -2.f * fluid->density() * m_area * v2 * (radius + span) * (radius + span) * (radius + span / 2.f);
-
-    submarine()->body()->body()->applyTorque(btVector3(torque, 0, 0));
+    m_damping->apply();
 }
 
 Fin::Plane Fin::plane() const
@@ -196,16 +180,9 @@ double Fin::area() const
 void Fin::setArea(double area)
 {
     m_area = area;
-}
 
-double Fin::aspectRatio() const
-{
-    return m_aspectRatio;
-}
-
-void Fin::setAspectRatio(double aspectRatio)
-{
-    m_aspectRatio = aspectRatio;
+    m_drag->setCrossSectionalArea(m_area);
+    m_damping->setCrossSectionalArea(m_area);
 }
 
 Physics::DragForce *Fin::drag() const
@@ -216,4 +193,9 @@ Physics::DragForce *Fin::drag() const
 Physics::LiftForce *Fin::lift() const
 {
     return m_lift;
+}
+
+Physics::FinDampingTorque *Fin::damping() const
+{
+    return m_damping;
 }

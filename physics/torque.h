@@ -91,6 +91,37 @@ private:
     double m_bodyLength;
 };
 
+class FinDampingTorque : public Torque
+{
+    Q_OBJECT
+
+public:
+    explicit FinDampingTorque(QObject *parent = 0);
+
+protected:
+    void calculate();
+
+public:
+    double fluidDensity() const;
+    void setFluidDensity(double fluidDensity);
+
+    double crossSectionalArea() const;
+    void setCrossSectionalArea(double crossSectionalArea);
+
+    double aspectRatio() const;
+    void setAspectRatio(double aspectRatio);
+
+    double radius() const;
+    void setRadius(double radius);
+
+private:
+    double m_fluidDensity;
+    double m_crossSectionalArea;
+    double m_aspectRatio;
+    double m_radius;
+
+};
+
 } // namespace Physics
 
 #endif // TORQUE_H

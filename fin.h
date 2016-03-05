@@ -16,6 +16,7 @@ class Submarine;
 
 namespace Physics {
 class DragForce;
+class FinDampingTorque;
 class LiftForce;
 }
 
@@ -54,16 +55,13 @@ public:
     double area() const;
     void setArea(double area);
 
-    double aspectRatio() const;
-    void setAspectRatio(double aspectRatio);
-
     Physics::DragForce *drag() const;
     Physics::LiftForce *lift() const;
+    Physics::FinDampingTorque *damping() const;
 
     Q_PROPERTY(Submarine *submarine READ submarine WRITE setSubmarine)
     Q_PROPERTY(Plane plane READ plane)
     Q_PROPERTY(double area READ area WRITE setArea)
-    Q_PROPERTY(double aspectRatio READ aspectRatio WRITE setAspectRatio)
 
 private:
     Qt3D::QRotateTransform *m_rotateTransform;
@@ -76,12 +74,12 @@ private:
     Plane m_plane;
     double m_area;
     double m_aspectRatio;
-    double m_liftCoefficientSlope;
 
     btVector3 *m_forcePosition;
 
     Physics::DragForce *m_drag;
     Physics::LiftForce *m_lift;
+    Physics::FinDampingTorque *m_damping;
 };
 
 #endif // FIN_H

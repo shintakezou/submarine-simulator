@@ -164,7 +164,11 @@ void FinDampingTorque::calculate()
     float span = qSqrt(m_aspectRatio * m_crossSectionalArea);
 
     float v2 = m_body->angularVelocity().x() * m_body->angularVelocity().x();
-    float torque = -2.f * m_fluidDensity * m_crossSectionalArea * v2 * (m_radius + span) * (m_radius + span) * (m_radius + span / 2.f);
+    float torque = 2.f * m_fluidDensity * m_crossSectionalArea * v2 * (m_radius + span) * (m_radius + span) * (m_radius + span / 2.f);
+
+    if (m_body->angularVelocity().x() > 0) {
+        torque = -torque;
+    }
 
     m_value = QVector3D(torque, 0, 0);
 }

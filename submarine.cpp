@@ -74,7 +74,9 @@ Submarine::Submarine(QObject *parent) :
     m_verticalFinsLiftCoefficientSlope(0),
     m_verticalFinsDragCoefficient(0),
     m_verticalFinsPosition(0),
-    m_verticalFinsAspectRatio(0)
+    m_verticalFinsAspectRatio(0),
+    m_weight(new Physics::WeightForce(this)),
+    m_buoyancy(new Physics::BuoyancyForce(this))
 {
 
 }
@@ -148,6 +150,8 @@ void Submarine::addToWorld(btDynamicsWorld *world)
     world->addRigidBody(m_body);
 
     m_propellorTorque->setBody(m_body);
+    m_weight->setBody(m_body);
+    m_buoyancy->setBody(m_body);
 }
 
 void Submarine::removeFromWorld(btDynamicsWorld *world)
@@ -375,27 +379,22 @@ void Submarine::updateForces(const Fluid *fluid)
 void Submarine::applyPropellorTorque()
 {
     m_propellorTorque->apply();
-    //m_body->applyTorque(btVector3(m_propellorTorque, 0, 0));
 }
 
 void Submarine::applyWeight()
 {
-    btVector3 force(0, -9.81 * m_mass, 0);
+    m_weight->setPosition(m_weightPosition);
 
-    btVector3 position = m_body->getCenterOfMassTransform() * qtVector2btVector(m_weightPosition);
-
-    m_body->applyForce(force, position);
-    m_forceWeight->update(force, position);
+    m_weight->apply();
+    m_forceWeight->update(m_weight);
 }
 
 void Submarine::applyBuoyancy()
 {
-    btVector3 force(0, 9.81 * m_mass, 0);
+    m_buoyancy->setPosition(m_buoyancyPosition);
 
-    btVector3 position = m_body->getCenterOfMassTransform() * qtVector2btVector(m_buoyancyPosition);
-
-    m_body->applyForce(force, position);
-    m_forceBuoyancy->update(force, position);
+    m_buoyancy->apply();
+    m_forceBuoyancy->update(m_buoyancy);
 }
 
 void Submarine::applyThrust()
@@ -407,6 +406,8 @@ void Submarine::applyThrust()
 
     btVector3 position(-m_length / 2., 0, 0);
     position = (transform * position) - transform.getOrigin();
+
+    qDebug() << position.x() << position.y() << position.z();
 
     m_body->applyForce(force, position);
 
@@ -857,4 +858,14 @@ void Submarine::setVerticalFinsAspectRatio(double verticalFinsAspectRatio)
 Physics::PropellorTorque *Submarine::propellorTorque() const
 {
     return m_propellorTorque;
+}
+
+Physics::WeightForce *Submarine::weight() const
+{
+    return m_weight;
+}
+
+Physics::BuoyancyForce *Submarine::buoyancy() const
+{
+    return m_buoyancy;
 }

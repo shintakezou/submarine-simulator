@@ -13,7 +13,7 @@ class Force : public QObject
     Q_OBJECT
 
 public:
-    explicit Force(QString name, btRigidBody *body, QObject *parent = 0);
+    explicit Force(QString name, QObject *parent = 0);
 
     void apply();
 
@@ -25,6 +25,7 @@ public:
     void setName(const QString &name);
 
     btRigidBody *body() const;
+    void setBody(btRigidBody *body);
 
     QVector3D localPosition() const;
     QVector3D worldPosition() const;
@@ -32,7 +33,7 @@ public:
     QVector3D value() const;
 
     Q_PROPERTY(QString name READ name WRITE setName)
-    Q_PROPERTY(btRigidBody *body READ body)
+    Q_PROPERTY(btRigidBody *body READ body WRITE setBody)
     Q_PROPERTY(QVector3D localPosition READ localPosition)
     Q_PROPERTY(QVector3D worldPosition READ worldPosition STORED false)
     Q_PROPERTY(QVector3D value READ value)
@@ -51,10 +52,35 @@ class WeightForce : public Force
     Q_OBJECT
 
 public:
-    explicit WeightForce(btRigidBody *body, QObject *parent = 0);
+    explicit WeightForce(QObject *parent = 0);
 
 protected:
     void calculate();
+
+public:
+    QVector3D position() const;
+    void setPosition(const QVector3D &position);
+
+private:
+    QVector3D m_position;
+};
+
+class BuoyancyForce : public Force
+{
+    Q_OBJECT
+
+public:
+    explicit BuoyancyForce(QObject *parent = 0);
+
+protected:
+    void calculate();
+
+public:
+    QVector3D position() const;
+    void setPosition(const QVector3D &position);
+
+private:
+    QVector3D m_position;
 };
 
 } // namespace Physics

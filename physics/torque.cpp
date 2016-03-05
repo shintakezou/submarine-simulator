@@ -17,7 +17,7 @@ Torque::Torque(QString name, QObject *parent) :
 void Torque::apply()
 {
     if (!m_body) {
-        qCritical() << "Body not set on:" << m_name;
+        qCritical() << "Body not set on torque:" << m_name;
         return;
     }
 

@@ -19,9 +19,9 @@ class btDynamicsWorld;
 class btVector3;
 
 namespace Physics {
-class Force;
-class Torque;
+class BuoyancyForce;
 class PropellorTorque;
+class WeightForce;
 }
 
 class Fin;
@@ -179,6 +179,9 @@ public:
     Q_PROPERTY(double verticalFinsPosition READ verticalFinsPosition WRITE setVerticalFinsPosition)
     Q_PROPERTY(double verticalFinsAspectRatio READ verticalFinsAspectRatio WRITE setVerticalFinsAspectRatio)
 
+    Physics::WeightForce *weight() const;
+    Physics::BuoyancyForce *buoyancy() const;
+
 private:
     btCapsuleShape *m_shape;
     btRigidBody *m_body;
@@ -228,6 +231,9 @@ private:
     double m_verticalFinsDragCoefficient;
     double m_verticalFinsPosition;
     double m_verticalFinsAspectRatio;
+
+    Physics::WeightForce *m_weight;
+    Physics::BuoyancyForce *m_buoyancy;
 };
 
 #endif // SUBMARINE_H

@@ -25,9 +25,11 @@ public:
 
     QVector2D pitchVelocity() const;
     QVector2D yawVelocity() const;
+    QVector2D rollVelocity() const;
 
     double pitchAngleOfAttack() const;
     double yawAngleOfAttack() const;
+    double rollAngleOfAttack() const;
 
     QVector3D angularVelocity() const;
     QVector3D linearVelocity() const;

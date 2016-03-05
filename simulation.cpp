@@ -162,3 +162,8 @@ double Simulation::time() const
     return m_time;
 }
 
+bool Simulation::paused() const
+{
+    return m_paused;
+}
+

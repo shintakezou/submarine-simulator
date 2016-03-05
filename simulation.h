@@ -41,6 +41,8 @@ public:
 
     double time() const;
 
+    bool paused() const;
+
     Q_PROPERTY(Fluid *fluid READ fluid WRITE setFluid)
     Q_PROPERTY(Submarine *submarine READ submarine WRITE setSubmarine)
     Q_PROPERTY(double time READ time)

@@ -94,6 +94,12 @@ QVector2D Body::yawVelocity() const
     return QVector2D(velocity.x(), velocity.z());
 }
 
+QVector2D Body::rollVelocity() const
+{
+    btVector3 velocity = m_body->getLinearVelocity();
+    return QVector2D(velocity.y(), velocity.z());
+}
+
 double Body::pitchAngleOfAttack() const
 {
     QVector2D velocity = pitchVelocity();
@@ -106,6 +112,13 @@ double Body::yawAngleOfAttack() const
     QVector2D velocity = yawVelocity();
     float velocityAngle = wrapAngle(atan2(velocity.y(), velocity.x()));
     return wrapAngle(yaw() - velocityAngle);
+}
+
+double Body::rollAngleOfAttack() const
+{
+    QVector2D velocity = rollVelocity();
+    float velocityAngle = wrapAngle(atan2(velocity.y(), velocity.x()));
+    return wrapAngle(roll() - velocityAngle);
 }
 
 QVector3D Body::angularVelocity() const

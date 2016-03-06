@@ -12,6 +12,8 @@ SimulationPropertiesDialogue::SimulationPropertiesDialogue(QWidget *parent) :
     ui(new Ui::SimulationPropertiesDialogue)
 {
     ui->setupUi(this);
+
+    setWindowModality(Qt::WindowModal);
 }
 
 SimulationPropertiesDialogue::~SimulationPropertiesDialogue()

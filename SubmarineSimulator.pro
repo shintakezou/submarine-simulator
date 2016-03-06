@@ -16,6 +16,10 @@ CONFIG += c++11
 TARGET = SubmarineSimulator
 TEMPLATE = app
 
+mac {
+    QT += macextras
+    ICON = icons/logo.icns
+}
 
 SOURCES += main.cpp\
         mainwindow.cpp \

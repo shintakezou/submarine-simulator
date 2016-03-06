@@ -2,6 +2,11 @@
 #include <QWidget>
 #include <QTimer>
 
+#ifdef Q_OS_OSX
+#include <QMacToolBar>
+#include <QMacToolBarItem>
+#endif
+
 #include "physics/body.h"
 #include "simulationpropertiesdialogue.h"
 #include "submarine.h"
@@ -85,6 +90,10 @@ MainWindow::MainWindow(QWidget *parent) :
 
     m_timer->start(25);
 
+#ifdef Q_OS_OSX
+    initialiseMacToolbar();
+#endif
+
     playSimulation();
 }
 
@@ -92,6 +101,29 @@ MainWindow::~MainWindow()
 {
     delete m_simulation;
     delete ui;
+}
+
+void MainWindow::initialiseMacToolbar()
+{
+    QMacToolBar *toolBar = new QMacToolBar(this);
+
+    QMacToolBarItem *propertiesItem = toolBar->addItem(QIcon(":/icons/properties.svg"), "Change Properties");
+    connect(propertiesItem, &QMacToolBarItem::activated, this, &MainWindow::changeSimulationProperties);
+
+    toolBar->addSeparator();
+
+    m_playPauseItem = toolBar->addItem(QIcon(":/icons/play.svg"), "Play/Pause");
+
+    QMacToolBarItem *restartItem = toolBar->addItem(QIcon(":/icons/restart.svg"), "Restart");
+    connect(restartItem, &QMacToolBarItem::activated, this, &MainWindow::restartSimulation);
+
+    QMacToolBarItem *stepItem = toolBar->addItem(QIcon(":/icons/step.svg"), "Step");
+    connect(stepItem, &QMacToolBarItem::activated, this, &MainWindow::stepSimulation);
+
+    window()->winId(); // create window->windowhandle()
+    toolBar->attachToWindow(window()->windowHandle());
+
+    ui->mainToolBar->hide();
 }
 
 void MainWindow::showAbout() {
@@ -173,6 +205,13 @@ void MainWindow::playSimulation()
 
     ui->actionPlay->setVisible(false);
     ui->actionPause->setVisible(true);
+
+#ifdef Q_OS_OSX
+    m_playPauseItem->setIcon(QIcon(":/icons/pause.svg"));
+    m_playPauseItem->setText("Pause");
+    disconnect(m_playPauseItem);
+    connect(m_playPauseItem, &QMacToolBarItem::activated, this, &MainWindow::pauseSimulation);
+#endif
 }
 
 void MainWindow::pauseSimulation()
@@ -181,6 +220,13 @@ void MainWindow::pauseSimulation()
 
     ui->actionPlay->setVisible(true);
     ui->actionPause->setVisible(false);
+
+#ifdef Q_OS_OSX
+    m_playPauseItem->setIcon(QIcon(":/icons/play.svg"));
+    m_playPauseItem->setText("Play");
+    disconnect(m_playPauseItem);
+    connect(m_playPauseItem, &QMacToolBarItem::activated, this, &MainWindow::playSimulation);
+#endif
 }
 
 void MainWindow::restartSimulation()

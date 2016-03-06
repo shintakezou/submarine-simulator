@@ -5,6 +5,7 @@
 
 class Simulation;
 class QTimer;
+class QMacToolBarItem;
 
 namespace Ui {
 class MainWindow;
@@ -17,6 +18,9 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
+
+private:
+    void initialiseMacToolbar();
 
 public slots:
     void showAbout();
@@ -33,6 +37,10 @@ private:
     Simulation *m_simulation;
     QWidget *m_simulationWidget;
     QTimer *m_timer;
+
+#ifdef Q_OS_OSX
+    QMacToolBarItem *m_playPauseItem;
+#endif
 };
 
 #endif // MAINWINDOW_H

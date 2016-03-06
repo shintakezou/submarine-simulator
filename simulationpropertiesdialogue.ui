@@ -7,19 +7,34 @@
     <x>0</x>
     <y>0</y>
     <width>600</width>
-    <height>750</height>
+    <height>680</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
     <width>600</width>
-    <height>750</height>
+    <height>680</height>
    </size>
   </property>
   <property name="windowTitle">
    <string>Simulation Properties</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="spacing">
+    <number>2</number>
+   </property>
+   <property name="leftMargin">
+    <number>10</number>
+   </property>
+   <property name="topMargin">
+    <number>10</number>
+   </property>
+   <property name="rightMargin">
+    <number>10</number>
+   </property>
+   <property name="bottomMargin">
+    <number>10</number>
+   </property>
    <item>
     <widget class="QGroupBox" name="groupBox">
      <property name="title">
@@ -27,16 +42,16 @@
      </property>
      <layout class="QFormLayout" name="formLayout">
       <property name="leftMargin">
-       <number>8</number>
+       <number>6</number>
       </property>
       <property name="topMargin">
-       <number>8</number>
+       <number>6</number>
       </property>
       <property name="rightMargin">
-       <number>8</number>
+       <number>6</number>
       </property>
       <property name="bottomMargin">
-       <number>8</number>
+       <number>6</number>
       </property>
       <item row="0" column="0">
        <widget class="QLabel" name="label">
@@ -68,16 +83,16 @@
      </property>
      <layout class="QFormLayout" name="formLayout_2">
       <property name="leftMargin">
-       <number>8</number>
+       <number>6</number>
       </property>
       <property name="topMargin">
-       <number>8</number>
+       <number>6</number>
       </property>
       <property name="rightMargin">
-       <number>8</number>
+       <number>6</number>
       </property>
       <property name="bottomMargin">
-       <number>8</number>
+       <number>6</number>
       </property>
       <item row="0" column="0">
        <widget class="QLabel" name="label_2">
@@ -88,6 +103,9 @@
       </item>
       <item row="0" column="1">
        <layout class="QGridLayout" name="gridLayout">
+        <property name="verticalSpacing">
+         <number>2</number>
+        </property>
         <item row="0" column="2">
          <widget class="QDoubleSpinBox" name="spinSubLength">
           <property name="suffix">
@@ -329,6 +347,9 @@
       </item>
       <item row="7" column="1">
        <layout class="QGridLayout" name="gridLayout_2">
+        <property name="verticalSpacing">
+         <number>2</number>
+        </property>
         <item row="0" column="1">
          <widget class="QDoubleSpinBox" name="spinSubThrustY">
           <property name="suffix">
@@ -477,6 +498,9 @@
    </item>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
+     <property name="spacing">
+      <number>8</number>
+     </property>
      <item>
       <widget class="QGroupBox" name="groupBox_3">
        <property name="title">
@@ -484,24 +508,17 @@
        </property>
        <layout class="QFormLayout" name="formLayout_3">
         <property name="leftMargin">
-         <number>8</number>
+         <number>6</number>
         </property>
         <property name="topMargin">
-         <number>8</number>
+         <number>6</number>
         </property>
         <property name="rightMargin">
-         <number>8</number>
+         <number>6</number>
         </property>
         <property name="bottomMargin">
-         <number>8</number>
+         <number>6</number>
         </property>
-        <item row="0" column="0">
-         <widget class="QCheckBox" name="checkHorizontalFinsEnabled">
-          <property name="text">
-           <string>Enabled</string>
-          </property>
-         </widget>
-        </item>
         <item row="1" column="0">
          <widget class="QLabel" name="label_11">
           <property name="text">
@@ -608,6 +625,13 @@
           </property>
          </widget>
         </item>
+        <item row="0" column="1">
+         <widget class="QCheckBox" name="checkHorizontalFinsEnabled">
+          <property name="text">
+           <string>Enabled</string>
+          </property>
+         </widget>
+        </item>
        </layout>
       </widget>
      </item>
@@ -618,24 +642,17 @@
        </property>
        <layout class="QFormLayout" name="formLayout_4">
         <property name="leftMargin">
-         <number>8</number>
+         <number>6</number>
         </property>
         <property name="topMargin">
-         <number>8</number>
+         <number>6</number>
         </property>
         <property name="rightMargin">
-         <number>8</number>
+         <number>6</number>
         </property>
         <property name="bottomMargin">
-         <number>8</number>
+         <number>6</number>
         </property>
-        <item row="0" column="0">
-         <widget class="QCheckBox" name="checkVerticalFinsEnabled">
-          <property name="text">
-           <string>Enabled</string>
-          </property>
-         </widget>
-        </item>
         <item row="1" column="0">
          <widget class="QLabel" name="label_16">
           <property name="text">
@@ -739,6 +756,13 @@
           </property>
          </widget>
         </item>
+        <item row="0" column="1">
+         <widget class="QCheckBox" name="checkVerticalFinsEnabled">
+          <property name="text">
+           <string>Enabled</string>
+          </property>
+         </widget>
+        </item>
        </layout>
       </widget>
      </item>
@@ -779,13 +803,11 @@
   <tabstop>spinSubThrustX</tabstop>
   <tabstop>spinSubThrustY</tabstop>
   <tabstop>spinSubThrustZ</tabstop>
-  <tabstop>checkHorizontalFinsEnabled</tabstop>
   <tabstop>spinHorizontalFinsArea</tabstop>
   <tabstop>spinHorizontalFinsDragCoefficient</tabstop>
   <tabstop>spinHorizontalFinsLiftCoefficientSlope</tabstop>
   <tabstop>spinHorizontalFinsPosition</tabstop>
   <tabstop>spinHorizontalFinsAspectRatio</tabstop>
-  <tabstop>checkVerticalFinsEnabled</tabstop>
   <tabstop>spinVerticalFinsArea</tabstop>
   <tabstop>spinVerticalFinsDragCoefficient</tabstop>
   <tabstop>spinVerticalFinsLiftCoefficientSlope</tabstop>

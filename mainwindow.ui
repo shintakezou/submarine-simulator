@@ -60,7 +60,11 @@
      <string>Simulation</string>
     </property>
     <addaction name="actionChange_Properties"/>
+    <addaction name="separator"/>
+    <addaction name="actionPlay"/>
+    <addaction name="actionPause"/>
     <addaction name="actionRestart"/>
+    <addaction name="actionStep"/>
    </widget>
    <widget class="QMenu" name="menuWindow">
     <property name="title">

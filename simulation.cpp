@@ -35,7 +35,7 @@
 
 Simulation::Simulation() :
     Qt3D::QWindow(),
-    m_time(0)
+    m_frame(0)
 {
     m_fluid = Fluid::makeDefault(this);
     m_submarine = Submarine::makeDefault(this);
@@ -108,7 +108,8 @@ void Simulation::step()
 
     m_submarine->update(m_fluid, defaultCamera());
     m_world->stepSimulation(dt, 10);
-    m_time += dt;
+
+    m_frame += 1;
 }
 
 void Simulation::reset()
@@ -144,7 +145,13 @@ void Simulation::setSubmarine(Submarine *submarine)
     m_submarine = submarine;
 }
 
+int Simulation::frame() const
+{
+    return m_frame;
+}
+
 double Simulation::time() const
 {
-    return m_time;
+    double dt = 1.f / 60.f;
+    return m_frame * dt;
 }

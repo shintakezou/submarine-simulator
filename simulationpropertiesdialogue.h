@@ -29,6 +29,11 @@ private:
     void loadSubmarine(const Submarine *submarine);
     void saveSubmarine(Submarine *submarine) const;
 
+public:
+    bool shouldStartPaused() const;
+
+    Q_PROPERTY(bool shouldStartPaused READ shouldStartPaused STORED false)
+
 private:
     Ui::SimulationPropertiesDialogue *ui;
 };

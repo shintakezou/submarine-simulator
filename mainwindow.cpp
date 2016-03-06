@@ -104,6 +104,10 @@ void MainWindow::changeSimulationProperties() {
     if (d.exec() == QDialog::Accepted) {
         restartSimulation();
         d.saveSimulation(m_simulation);
+
+        if (d.shouldStartPaused()) {
+            pauseSimulation();
+        }
     }
 }
 

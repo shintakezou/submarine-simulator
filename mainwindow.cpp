@@ -2,6 +2,9 @@
 #include <QWidget>
 #include <QTimer>
 
+#include <QMacToolBar>
+#include <QMacToolBarItem>
+
 #include "physics/body.h"
 #include "simulationpropertiesdialogue.h"
 #include "submarine.h"
@@ -88,6 +91,13 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->chartPosition->legend->setVisible(true);
 
     m_timer->start(25);
+
+    QMacToolBar *toolBar = new QMacToolBar(this);
+    QMacToolBarItem *toolBarItem = toolBar->addItem(QIcon(), QStringLiteral("foo"));
+    //connect(toolButton, SIGNAL(activated()), this, SLOT(fooClicked()))
+
+    window()->winId(); // create window->windowhandle()
+    toolBar->attachToWindow(window()->windowHandle());
 }
 
 MainWindow::~MainWindow()

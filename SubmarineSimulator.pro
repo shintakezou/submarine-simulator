@@ -6,7 +6,6 @@
 
 QT += core gui widgets printsupport
 QT += 3dcore 3drenderer 3dinput
-QT += macextras
 
 QT_CONFIG -= no-pkg-config
 CONFIG += link_pkgconfig
@@ -17,6 +16,10 @@ CONFIG += c++11
 TARGET = SubmarineSimulator
 TEMPLATE = app
 
+mac {
+    QT += macextras
+    ICON = icons/logo.icns
+}
 
 SOURCES += main.cpp\
         mainwindow.cpp \

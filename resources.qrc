@@ -9,5 +9,6 @@
         <file>icons/properties.svg</file>
         <file>icons/restart.svg</file>
         <file>icons/step.svg</file>
+        <file>icons/logo.png</file>
     </qresource>
 </RCC>

@@ -112,11 +112,7 @@ void MainWindow::initialiseMacToolbar()
 
     toolBar->addSeparator();
 
-    QMacToolBarItem *playItem = toolBar->addItem(QIcon(":/icons/play.svg"), "Play");
-    connect(playItem, &QMacToolBarItem::activated, this, &MainWindow::playSimulation);
-
-    QMacToolBarItem *pauseItem = toolBar->addItem(QIcon(":/icons/pause.svg"), "Pause");
-    connect(pauseItem, &QMacToolBarItem::activated, this, &MainWindow::pauseSimulation);
+    m_playPauseItem = toolBar->addItem(QIcon(":/icons/play.svg"), "Play/Pause");
 
     QMacToolBarItem *restartItem = toolBar->addItem(QIcon(":/icons/restart.svg"), "Restart");
     connect(restartItem, &QMacToolBarItem::activated, this, &MainWindow::restartSimulation);
@@ -209,6 +205,13 @@ void MainWindow::playSimulation()
 
     ui->actionPlay->setVisible(false);
     ui->actionPause->setVisible(true);
+
+#ifdef Q_OS_OSX
+    m_playPauseItem->setIcon(QIcon(":/icons/pause.svg"));
+    m_playPauseItem->setText("Pause");
+    disconnect(m_playPauseItem);
+    connect(m_playPauseItem, &QMacToolBarItem::activated, this, &MainWindow::pauseSimulation);
+#endif
 }
 
 void MainWindow::pauseSimulation()
@@ -217,6 +220,13 @@ void MainWindow::pauseSimulation()
 
     ui->actionPlay->setVisible(true);
     ui->actionPause->setVisible(false);
+
+#ifdef Q_OS_OSX
+    m_playPauseItem->setIcon(QIcon(":/icons/play.svg"));
+    m_playPauseItem->setText("Play");
+    disconnect(m_playPauseItem);
+    connect(m_playPauseItem, &QMacToolBarItem::activated, this, &MainWindow::playSimulation);
+#endif
 }
 
 void MainWindow::restartSimulation()

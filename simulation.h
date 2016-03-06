@@ -28,9 +28,7 @@ public:
 
 public slots:
     void step();
-    void play();
-    void pause();
-    void restart();
+    void reset();
 
 public:
     Fluid *fluid() const;
@@ -39,13 +37,13 @@ public:
     Submarine *submarine() const;
     void setSubmarine(Submarine *submarine);
 
+    int frame() const;
     double time() const;
-
-    bool paused() const;
 
     Q_PROPERTY(Fluid *fluid READ fluid WRITE setFluid)
     Q_PROPERTY(Submarine *submarine READ submarine WRITE setSubmarine)
-    Q_PROPERTY(double time READ time)
+    Q_PROPERTY(int frame READ frame)
+    Q_PROPERTY(double time READ time STORED false)
 
 private:
     // simulation
@@ -55,8 +53,7 @@ private:
     ForceArrow *m_axisY;
     ForceArrow *m_axisZ;
 
-    double m_time;
-    bool m_paused;
+    int m_frame;
 
     // physics
     btDiscreteDynamicsWorld *m_world;

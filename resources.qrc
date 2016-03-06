@@ -3,9 +3,11 @@
         <file>models/arrow.obj</file>
         <file>models/propellor.obj</file>
         <file>models/fin.obj</file>
-        <file>icons/pause.png</file>
-        <file>icons/play.png</file>
-        <file>icons/restart.png</file>
         <file>models/torque-arrow.obj</file>
+        <file>icons/pause.svg</file>
+        <file>icons/play.svg</file>
+        <file>icons/properties.svg</file>
+        <file>icons/restart.svg</file>
+        <file>icons/step.svg</file>
     </qresource>
 </RCC>

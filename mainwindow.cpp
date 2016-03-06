@@ -21,15 +21,11 @@ MainWindow::MainWindow(QWidget *parent) :
     m_simulation = new Simulation();
     m_simulation->show();
 
-    connect(m_timer, &QTimer::timeout, m_simulation, &Simulation::step);
-
     m_simulationWidget = QWidget::createWindowContainer(m_simulation, this);
     m_simulationWidget->setMinimumSize(320, 320);
     ui->leftLayout->insertWidget(0, m_simulationWidget, 1);
 
     ui->chartPosition->setMinimumHeight(200);
-
-    connect(m_timer, &QTimer::timeout, this, &MainWindow::updateCharts);
 
     ui->chartAngle->addGraph()->setPen(QPen(Qt::red));  // roll
     ui->chartAngle->graph(0)->setName("Roll");
@@ -88,6 +84,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->chartPosition->legend->setVisible(true);
 
     m_timer->start(25);
+
+    playSimulation();
 }
 
 MainWindow::~MainWindow()
@@ -97,7 +95,7 @@ MainWindow::~MainWindow()
 }
 
 void MainWindow::showAbout() {
-    QMessageBox::about(this, "Submarine Simulation", "A submarine simulation developed for SUHPS.");
+    QMessageBox::about(this, "Submarine Simulation", "A submarine simulation developed for SUHPS.\n\nIcons from Material Design by Google.");
 }
 
 void MainWindow::changeSimulationProperties() {
@@ -106,6 +104,10 @@ void MainWindow::changeSimulationProperties() {
     if (d.exec() == QDialog::Accepted) {
         restartSimulation();
         d.saveSimulation(m_simulation);
+
+        if (d.shouldStartPaused()) {
+            pauseSimulation();
+        }
     }
 }
 
@@ -126,10 +128,6 @@ void clearPlots(QCustomPlot *plot) {
 }
 
 void MainWindow::updateCharts() {
-    if (m_simulation->paused()) {
-        return;
-    }
-
     Submarine *submarine = m_simulation->submarine();
     double time = m_simulation->time();
 
@@ -171,12 +169,18 @@ void MainWindow::updateCharts() {
 
 void MainWindow::playSimulation()
 {
-    m_simulation->play();
+    connect(m_timer, &QTimer::timeout, this, &MainWindow::stepSimulation);
+
+    ui->actionPlay->setVisible(false);
+    ui->actionPause->setVisible(true);
 }
 
 void MainWindow::pauseSimulation()
 {
-    m_simulation->pause();
+    disconnect(m_timer, &QTimer::timeout, this, &MainWindow::stepSimulation);
+
+    ui->actionPlay->setVisible(true);
+    ui->actionPause->setVisible(false);
 }
 
 void MainWindow::restartSimulation()
@@ -186,5 +190,13 @@ void MainWindow::restartSimulation()
     clearPlots(ui->chartLinearVelocity);
     clearPlots(ui->chartPosition);
 
-    m_simulation->restart();
+    m_simulation->reset();
+
+    stepSimulation();
+}
+
+void MainWindow::stepSimulation()
+{
+    m_simulation->step();
+    updateCharts();
 }

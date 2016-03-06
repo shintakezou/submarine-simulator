@@ -123,6 +123,8 @@ void Simulation::reset()
     m_world->setGravity(btVector3(0, 0, 0));
 
     m_submarine->addToWorld(m_world);
+
+    m_frame = 0;
 }
 
 Fluid *Simulation::fluid() const

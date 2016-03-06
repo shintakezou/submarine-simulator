@@ -89,6 +89,7 @@
    <addaction name="actionPlay"/>
    <addaction name="actionPause"/>
    <addaction name="actionRestart"/>
+   <addaction name="actionStep"/>
   </widget>
   <action name="actionAbout">
    <property name="text">
@@ -138,6 +139,15 @@
    </property>
    <property name="text">
     <string>Pause</string>
+   </property>
+  </action>
+  <action name="actionStep">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/icons/step.svg</normaloff>:/icons/step.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Step</string>
    </property>
   </action>
  </widget>
@@ -234,6 +244,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionStep</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>stepSimulation()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>499</x>
+     <y>359</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>showAbout()</slot>
@@ -241,5 +267,6 @@
   <slot>restartSimulation()</slot>
   <slot>playSimulation()</slot>
   <slot>pauseSimulation()</slot>
+  <slot>stepSimulation()</slot>
  </slots>
 </ui>

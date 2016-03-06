@@ -35,8 +35,7 @@
 
 Simulation::Simulation() :
     Qt3D::QWindow(),
-    m_time(0),
-    m_paused(false)
+    m_time(0)
 {
     m_fluid = Fluid::makeDefault(this);
     m_submarine = Submarine::makeDefault(this);
@@ -107,24 +106,12 @@ void Simulation::step()
 {
     float dt = 1.f / 60.f;
 
-    if (!m_paused) {
-        m_submarine->update(m_fluid, defaultCamera());
-        m_world->stepSimulation(dt, 10);
-        m_time += dt;
-    }
+    m_submarine->update(m_fluid, defaultCamera());
+    m_world->stepSimulation(dt, 10);
+    m_time += dt;
 }
 
-void Simulation::play()
-{
-    m_paused = false;
-}
-
-void Simulation::pause()
-{
-    m_paused = true;
-}
-
-void Simulation::restart()
+void Simulation::reset()
 {
     m_submarine->removeFromWorld(m_world);
     delete m_world;
@@ -161,9 +148,3 @@ double Simulation::time() const
 {
     return m_time;
 }
-
-bool Simulation::paused() const
-{
-    return m_paused;
-}
-

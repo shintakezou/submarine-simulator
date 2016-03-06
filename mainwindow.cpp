@@ -2,8 +2,10 @@
 #include <QWidget>
 #include <QTimer>
 
+#ifdef Q_OS_OSX
 #include <QMacToolBar>
 #include <QMacToolBarItem>
+#endif
 
 #include "physics/body.h"
 #include "simulationpropertiesdialogue.h"
@@ -92,18 +94,39 @@ MainWindow::MainWindow(QWidget *parent) :
 
     m_timer->start(25);
 
-    QMacToolBar *toolBar = new QMacToolBar(this);
-    QMacToolBarItem *toolBarItem = toolBar->addItem(QIcon(), QStringLiteral("foo"));
-    //connect(toolButton, SIGNAL(activated()), this, SLOT(fooClicked()))
-
-    window()->winId(); // create window->windowhandle()
-    toolBar->attachToWindow(window()->windowHandle());
+#ifdef Q_OS_OSX
+    initialiseMacToolbar();
+#endif
 }
 
 MainWindow::~MainWindow()
 {
     delete m_simulation;
     delete ui;
+}
+
+void MainWindow::initialiseMacToolbar()
+{
+    QMacToolBar *toolBar = new QMacToolBar(this);
+
+    QMacToolBarItem *propertiesItem = toolBar->addItem(QIcon(":/icons/properties.png"), "Change Properties");
+    connect(propertiesItem, &QMacToolBarItem::activated, this, &MainWindow::changeSimulationProperties);
+
+    toolBar->addSeparator();
+
+    QMacToolBarItem *playItem = toolBar->addItem(QIcon(":/icons/play.png"), "Play");
+    connect(playItem, &QMacToolBarItem::activated, this, &MainWindow::playSimulation);
+
+    QMacToolBarItem *pauseItem = toolBar->addItem(QIcon(":/icons/pause.png"), "Pause");
+    connect(pauseItem, &QMacToolBarItem::activated, this, &MainWindow::pauseSimulation);
+
+    QMacToolBarItem *restartItem = toolBar->addItem(QIcon(":/icons/restart.png"), "Retart");
+    connect(restartItem, &QMacToolBarItem::activated, this, &MainWindow::restartSimulation);
+
+    window()->winId(); // create window->windowhandle()
+    toolBar->attachToWindow(window()->windowHandle());
+
+    ui->mainToolBar->hide();
 }
 
 void MainWindow::showAbout() {

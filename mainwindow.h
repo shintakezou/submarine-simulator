@@ -18,6 +18,9 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+private:
+    void initialiseMacToolbar();
+
 public slots:
     void showAbout();
     void changeSimulationProperties();

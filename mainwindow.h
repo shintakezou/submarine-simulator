@@ -29,6 +29,7 @@ public slots:
     void playSimulation();
     void pauseSimulation();
     void restartSimulation();
+    void stepSimulation();
 
 private:
     Ui::MainWindow *ui;

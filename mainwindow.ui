@@ -85,9 +85,11 @@
     <bool>false</bool>
    </attribute>
    <addaction name="actionChange_Properties"/>
+   <addaction name="separator"/>
    <addaction name="actionPlay"/>
    <addaction name="actionPause"/>
    <addaction name="actionRestart"/>
+   <addaction name="actionStep"/>
   </widget>
   <action name="actionAbout">
    <property name="text">
@@ -98,6 +100,10 @@
    </property>
   </action>
   <action name="actionChange_Properties">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/icons/properties.svg</normaloff>:/icons/properties.svg</iconset>
+   </property>
    <property name="text">
     <string>Change Properties</string>
    </property>
@@ -108,7 +114,7 @@
   <action name="actionRestart">
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/icons/restart.png</normaloff>:/icons/restart.png</iconset>
+     <normaloff>:/icons/restart.svg</normaloff>:/icons/restart.svg</iconset>
    </property>
    <property name="text">
     <string>Restart</string>
@@ -116,23 +122,44 @@
    <property name="toolTip">
     <string>Restart</string>
    </property>
+   <property name="shortcut">
+    <string>R</string>
+   </property>
   </action>
   <action name="actionPlay">
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/icons/play.png</normaloff>:/icons/play.png</iconset>
+     <normaloff>:/icons/play.svg</normaloff>:/icons/play.svg</iconset>
    </property>
    <property name="text">
     <string>Play</string>
+   </property>
+   <property name="shortcut">
+    <string>P</string>
    </property>
   </action>
   <action name="actionPause">
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/icons/pause.png</normaloff>:/icons/pause.png</iconset>
+     <normaloff>:/icons/pause.svg</normaloff>:/icons/pause.svg</iconset>
    </property>
    <property name="text">
     <string>Pause</string>
+   </property>
+   <property name="shortcut">
+    <string>P</string>
+   </property>
+  </action>
+  <action name="actionStep">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/icons/step.svg</normaloff>:/icons/step.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Step</string>
+   </property>
+   <property name="shortcut">
+    <string>S</string>
    </property>
   </action>
  </widget>
@@ -229,6 +256,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionStep</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>stepSimulation()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>499</x>
+     <y>359</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>showAbout()</slot>
@@ -236,5 +279,6 @@
   <slot>restartSimulation()</slot>
   <slot>playSimulation()</slot>
   <slot>pauseSimulation()</slot>
+  <slot>stepSimulation()</slot>
  </slots>
 </ui>

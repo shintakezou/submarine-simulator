@@ -112,3 +112,8 @@ void SimulationPropertiesDialogue::saveSubmarine(Submarine *submarine) const
     submarine->setVerticalFinsPosition(ui->spinVerticalFinsPosition->value());
     submarine->setVerticalFinsAspectRatio(ui->spinVerticalFinsAspectRatio->value());
 }
+
+bool SimulationPropertiesDialogue::shouldStartPaused() const
+{
+    return ui->checkStartPaused->isChecked();
+}

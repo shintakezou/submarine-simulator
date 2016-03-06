@@ -107,19 +107,22 @@ void MainWindow::initialiseMacToolbar()
 {
     QMacToolBar *toolBar = new QMacToolBar(this);
 
-    QMacToolBarItem *propertiesItem = toolBar->addItem(QIcon(":/icons/properties.png"), "Change Properties");
+    QMacToolBarItem *propertiesItem = toolBar->addItem(QIcon(":/icons/properties.svg"), "Change Properties");
     connect(propertiesItem, &QMacToolBarItem::activated, this, &MainWindow::changeSimulationProperties);
 
     toolBar->addSeparator();
 
-    QMacToolBarItem *playItem = toolBar->addItem(QIcon(":/icons/play.png"), "Play");
+    QMacToolBarItem *playItem = toolBar->addItem(QIcon(":/icons/play.svg"), "Play");
     connect(playItem, &QMacToolBarItem::activated, this, &MainWindow::playSimulation);
 
-    QMacToolBarItem *pauseItem = toolBar->addItem(QIcon(":/icons/pause.png"), "Pause");
+    QMacToolBarItem *pauseItem = toolBar->addItem(QIcon(":/icons/pause.svg"), "Pause");
     connect(pauseItem, &QMacToolBarItem::activated, this, &MainWindow::pauseSimulation);
 
-    QMacToolBarItem *restartItem = toolBar->addItem(QIcon(":/icons/restart.png"), "Retart");
+    QMacToolBarItem *restartItem = toolBar->addItem(QIcon(":/icons/restart.svg"), "Restart");
     connect(restartItem, &QMacToolBarItem::activated, this, &MainWindow::restartSimulation);
+
+    QMacToolBarItem *stepItem = toolBar->addItem(QIcon(":/icons/step.svg"), "Step");
+    connect(stepItem, &QMacToolBarItem::activated, this, &MainWindow::stepSimulation);
 
     window()->winId(); // create window->windowhandle()
     toolBar->attachToWindow(window()->windowHandle());

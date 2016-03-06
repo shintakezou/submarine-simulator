@@ -97,7 +97,7 @@ MainWindow::~MainWindow()
 }
 
 void MainWindow::showAbout() {
-    QMessageBox::about(this, "Submarine Simulation", "A submarine simulation developed for SUHPS.");
+    QMessageBox::about(this, "Submarine Simulation", "A submarine simulation developed for SUHPS.\n\nIcons from Material Design by Google.");
 }
 
 void MainWindow::changeSimulationProperties() {

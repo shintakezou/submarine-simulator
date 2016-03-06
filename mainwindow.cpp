@@ -88,6 +88,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->chartPosition->legend->setVisible(true);
 
     m_timer->start(25);
+
+    playSimulation();
 }
 
 MainWindow::~MainWindow()
@@ -172,11 +174,17 @@ void MainWindow::updateCharts() {
 void MainWindow::playSimulation()
 {
     m_simulation->play();
+
+    ui->actionPlay->setVisible(false);
+    ui->actionPause->setVisible(true);
 }
 
 void MainWindow::pauseSimulation()
 {
     m_simulation->pause();
+
+    ui->actionPlay->setVisible(true);
+    ui->actionPause->setVisible(false);
 }
 
 void MainWindow::restartSimulation()
